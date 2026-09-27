@@ -1,0 +1,28 @@
+{
+  "type": "wordpress-site-package",
+  "version": "2.0.0",
+  "site": "touchgrass",
+  "theme": "touchgrass",
+  "corePlugin": "touchgrass-core",
+  "requires": {
+    "wordpress": ">=6.5",
+    "php": ">=8.1",
+    "woocommerce": ">=9.0"
+  },
+  "features": {
+    "woocommerce": true,
+    "demoContent": true,
+    "checkoutBlocks": true,
+    "classicCheckout": true,
+    "editableContent": true,
+    "oneClickDemo": true
+  },
+  "demo": {
+    "products": 9,
+    "categories": [
+      "Plots",
+      "Accessories"
+    ],
+    "coupon": "GOOUTSIDE"
+  }
+}
