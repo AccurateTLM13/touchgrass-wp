@@ -1,6 +1,9 @@
 <?php
 /**
- * Single product with brand guarantees block after the summary.
+ * Single product: WooCommerce's default content-single-product template
+ * (all hooks, notices, gallery, and extension compatibility retained),
+ * followed by the brand guarantees block. Guarantees come from the same
+ * Customizer fields as the homepage trust row — one source of truth.
  */
 defined( 'ABSPATH' ) || exit;
 
@@ -14,9 +17,10 @@ get_header( 'shop' );
 	endwhile;
 	?>
 	<div class="tg-guarantees" style="max-width:560px;margin:0 0 4rem">
-		<div>🚚 <b><?php _e( 'Free shipping over $50.', 'touchgrass' ); ?></b> <?php _e( 'The grass travels better than you do.', 'touchgrass' ); ?></div>
-		<div>🌱 <b><?php _e( '30-day regrow guarantee.', 'touchgrass' ); ?></b> <?php _e( 'Dead grass is replaced free. No interrogation.', 'touchgrass' ); ?></div>
-		<div>💧 <b><?php _e( 'Mist every 2–3 days.', 'touchgrass' ); ?></b> <?php _e( 'The Mister exists for exactly this ritual.', 'touchgrass' ); ?></div>
+		<?php $icons = [ 1 => '🚚', 2 => '🌱', 3 => '💧' ]; ?>
+		<?php for ( $i = 1; $i <= 3; $i++ ) : ?>
+		<div><?php echo esc_html( $icons[ $i ] ); ?> <b><?php echo esc_html( tg_brand( "tg_guarantee_{$i}_title" ) ); ?>.</b> <?php echo esc_html( tg_brand( "tg_guarantee_{$i}_text" ) ); ?></div>
+		<?php endfor; ?>
 	</div>
 </div>
 <?php

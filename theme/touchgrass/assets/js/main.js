@@ -38,11 +38,15 @@
 		});
 	});
 
-	// Newsletter: real AJAX subscribe (core plugin stores it). No fake success.
+	// Newsletter: real AJAX subscribe. No fake success.
 	var form = document.getElementById('newsForm');
 	if (form) {
 		form.addEventListener('submit', function (ev) {
 			ev.preventDefault();
+			submitNewsletter(false);
+		});
+
+		function submitNewsletter(retried) {
 			var email = document.getElementById('newsEmail');
 			var done = document.getElementById('newsDone');
 			var errBox = document.getElementById('newsError');
@@ -59,17 +63,39 @@
 						form.style.display = 'none';
 						document.getElementById('newsFine').style.display = 'none';
 						if (done) { done.textContent = json.data.message; done.style.display = 'block'; }
+					} else if (json && json.data && json.data.code === 'expired_nonce' && !retried) {
+						/* Long-cached page: fetch a fresh nonce and retry once, silently. */
+						refreshNonce(function () { submitNewsletter(true); }, function () {
+							showError((json.data && json.data.message) || 'Something went wrong. The grass apologizes.');
+						});
 					} else {
-						var msg = (json && json.data && json.data.message) || 'Something went wrong. The grass apologizes.';
-						if (errBox) { errBox.textContent = msg; errBox.style.display = 'block'; }
-						if (btn) { btn.disabled = false; }
+						showError((json && json.data && json.data.message) || 'Something went wrong. The grass apologizes.');
 					}
 				})
 				.catch(function () {
-					if (errBox) { errBox.textContent = 'Could not reach the greenhouse. Try again.'; errBox.style.display = 'block'; }
-					if (btn) { btn.disabled = false; }
+					showError('Could not reach the greenhouse. Try again.');
 				});
-		});
+
+			function showError(msg) {
+				if (errBox) { errBox.textContent = msg; errBox.style.display = 'block'; }
+				if (btn) { btn.disabled = false; }
+			}
+		}
+
+		function refreshNonce(ok, fail) {
+			var data = new FormData();
+			data.append('action', 'tg_newsletter_nonce_refresh');
+			fetch(form.action, { method: 'POST', body: data, credentials: 'same-origin' })
+				.then(function (res) { return res.json(); })
+				.then(function (json) {
+					if (json && json.success && json.data.nonce) {
+						var field = form.querySelector('input[name="tg_newsletter_nonce"]');
+						if (field) { field.value = json.data.nonce; }
+						ok();
+					} else { fail(); }
+				})
+				.catch(fail);
+		}
 	}
 	// Mobile nav toggle.
 	var toggle = document.querySelector('.nav-toggle');

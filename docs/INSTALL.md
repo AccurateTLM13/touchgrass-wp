@@ -1,77 +1,79 @@
-# Touch Grass — WordPress Install Package
+# Installing Touch Grass
 
-Everything you need to run the Touch Grass WooCommerce store on your own WordPress.
+Requires: **WordPress 6.5+**, **PHP 8.1+**, **WooCommerce 9.0+** (tested on WP 7.1.2, PHP 8.4, WC 11.1.2).
 
-## What's in the box
+## What to install
 
-| File | What it is |
-|---|---|
-| `touchgrass-theme.zip` | The custom Touch Grass theme — upload via Appearance → Themes → Add New → Upload |
-| `touchgrass-demo-pay.zip` | Demo Pay gateway (mock checkout, no real charges) — upload via Plugins → Add New → Upload |
-| `product-images/` | 9 product photos (`.webp`) used by the setup script |
-| `touchgrass-content-setup.sh` | One-shot script: creates categories, imports images, creates all 9 products, creates the `GOOUTSIDE` coupon |
+| File | What it is | Required? |
+|---|---|---|
+| `touchgrass-theme-2.1.0.zip` | The Touch Grass theme (presentation) | Yes |
+| `touchgrass-core-2.1.0.zip` | Touch Grass — Core (functionality: FAQs, testimonials, product fields, demo importer, newsletter, Demo Pay) | Recommended |
 
-## Install steps
+WooCommerce powers the shop, cart, checkout, orders, and payments. The theme
+works without it (pages and posts render; commerce UI hides itself), but there
+is no store without it.
 
-### 1. The basics (on your server or local machine)
+## Steps (no SSH, no PHP edits)
 
-- PHP 8.1+, MySQL/MariaDB, Apache or Nginx
-- A fresh WordPress install
-- [WP-CLI](https://wp-cli.org/) installed (needed for step 4)
+1. In wp-admin, go to **Plugins → Add New → Upload Plugin** and install
+   `touchgrass-core-2.1.0.zip`, then **Activate**.
+2. Go to **Appearance → Themes → Add New → Upload Theme** and install
+   `touchgrass-theme-2.1.0.zip`, then **Activate**.
+3. Install and activate **WooCommerce** (Plugins → Add New, search
+   "WooCommerce") and run its setup wizard. Make sure the **Shop, Cart,
+   Checkout, and My account** pages exist.
+4. Go to **Touch Grass → Touch Grass Setup** in the admin menu. The status
+   checklist tells you exactly what's missing.
+5. Optional: click **Import Demo Content** to install the demo catalogue
+   (9 products, images, coupon, FAQs, testimonials, menu). Rerunning it never
+   duplicates and never overwrites your product names, descriptions, or
+   prices. See "Demo content" below.
+6. Configure payments: **WooCommerce → Settings → Payments**. Enable a real
+   gateway (Stripe, PayPal, etc.). **Demo mode is OFF by default** — the
+   Demo Pay mock gateway only appears when you explicitly enable demo mode
+   on the Touch Grass Setup screen. See `docs/PAYMENTS.md`.
+7. Customize branding: **Appearance → Customize → Touch Grass**. Every string,
+   image, link, stat, guarantee, and section toggle lives there.
+   See `docs/CUSTOMIZE.md`.
+8. Newsletter (optional): add a Buttondown API key on the Touch Grass Setup
+   screen. Until you do, the signup section stays hidden. See
+   `docs/NEWSLETTER.md`.
+9. Launch: when the catalogue is ready, take the store live from
+   **WooCommerce → Settings** (the "coming soon" switch). The demo importer
+   never changes this for you.
 
-### 2. Install WooCommerce
+## Demo content
 
-In WP admin: Plugins → Add New → search **WooCommerce** → Install → Activate.
-Run through the WooCommerce setup wizard (store address, currency — pick anything, it's a demo).
+- **Import** is optional, admin-only, and idempotent: run it twice and the
+  second run only refreshes the importer's own display fields (taglines,
+  badges, images, categories). Your edits to names, descriptions, and prices
+  survive.
+- **Reset Demo Products** (separate button, asks for confirmation) is the
+  *only* action that overwrites commercial fields — and only on products the
+  importer manages. Your own products are never touched.
+- Imported FAQs/testimonials are flagged as demo material in the admin.
+- The importer never publishes your store and never touches payment settings.
 
-### 3. Install the Touch Grass theme + Demo Pay
+## Updating
 
-- Appearance → Themes → Add New → **Upload Theme** → choose `touchgrass-theme.zip` → Activate
-- Plugins → Add New → **Upload Plugin** → choose `touchgrass-demo-pay.zip` → Activate
-- In WooCommerce → Settings → Payments, enable **Demo Pay** (it approves every order instantly — no real money moves)
+1. Download the new ZIPs, then **Appearance → Themes** (or **Plugins**):
+   upload the new ZIP — WordPress will offer to replace the existing theme/
+   plugin with the newer version. Your content, settings, and Customizer
+   values are stored in the database and survive the update.
+2. After updating, visit **Touch Grass → Touch Grass Setup** and confirm the
+   checklist is green.
 
-### 4. Load the products, images & coupon
+## Uninstall
 
-From a terminal on the server, with the `product-images/` folder next to the script:
-
-```bash
-chmod +x touchgrass-content-setup.sh
-./touchgrass-content-setup.sh /path/to/wordpress
-```
-
-This creates:
-- Categories: **Plots** (7 products), **Accessories** (2 products)
-- All 9 products with prices, descriptions, badges, and photos
-- Coupon **`GOOUTSIDE`** — 20% off, because irony
-
-The script is idempotent — safe to run twice, it won't duplicate anything.
-
-### 5. Pretty permalinks
-
-Settings → Permalinks → choose **Post name** → Save. (The shop, cart, and checkout pages need this.)
-
-## The catalog
-
-| Product | Price |
-|---|---|
-| The Daily Driver (Bestseller) | $29 |
-| The Commuter | $24 |
-| The Standup | $34 |
-| The Pro Max (Low stock, on sale) | ~~$74~~ $59 |
-| Pair Programmer | $44 |
-| Seedling Starter Kit | $19 |
-| The Night Shift (Staff pick) | $39 |
-| The Tiny Gnome | $12 |
-| The Mister | $16 |
-
-## Brand notes
-
-- Product copy is straight-faced luxury. Transaction copy lets the mask slip.
-- "Going outside is free." / "We're not judging. We're invoicing." / "Your money is safe. For now."
-- Promo bar code: `GOOUTSIDE`
-
-## Troubleshooting
-
-- **Products don't show in the shop?** The setup script registers each product through WooCommerce's data store (`wp wc product update`). If you add products by hand later, create them via Products → Add New in WP admin, not raw post inserts.
-- **Images 403?** Make sure the web server user owns `wp-content/uploads` (e.g. `chown -R www-data:www-data wp-content/uploads`).
-- **Checkout 404s?** Re-save permalinks (step 5) and confirm WooCommerce's Shop/Cart/Checkout pages exist under Pages.
+- Deactivating **Touch Grass — Core** leaves your products, FAQs,
+  testimonials, menu, and coupon in place. The theme degrades gracefully
+  (no fatals; commerce UI hides).
+- Deleting the plugin removes its settings (`tg_demo_mode`,
+  `tg_buttondown_api_key`, gateway settings). Content is kept — delete it
+  manually if you want a clean slate. Subscriber records (`tg_subscriber`
+  posts under Touch Grass → Subscribers) are kept too; delete them there if
+  your retention policy requires it.
+- The legacy standalone **Touch Grass — Demo Pay** plugin (v1) is not part
+  of the supported installation. If it's still installed, the core plugin
+  prevents it from loading (it would crash the site) and the dashboard tells
+  you to deactivate and delete it.

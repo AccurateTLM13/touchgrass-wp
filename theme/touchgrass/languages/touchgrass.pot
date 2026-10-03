@@ -1,0 +1,820 @@
+# Copyright (C) 2026 Bobby John Studio
+# This file is distributed under the GNU General Public License v2 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Touch Grass 2.1.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/theme/touchgrass\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-10-03T16:00:52+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: touchgrass\n"
+
+#. Theme Name of the theme
+#: style.css
+#: front-page.php:58
+#: front-page.php:77
+#: inc/customizer.php:229
+#: inc/template-tags.php:179
+msgid "Touch Grass"
+msgstr ""
+
+#. Theme URI of the theme
+#: style.css
+msgid "https://touchgrass.example/"
+msgstr ""
+
+#. Description of the theme
+#: style.css
+msgid "A custom WooCommerce theme for Touch Grass — premium plots of real grass for people who live indoors. Deadpan luxury, mercenary checkout."
+msgstr ""
+
+#. Author of the theme
+#: style.css
+msgid "Bobby John Studio"
+msgstr ""
+
+#. Author URI of the theme
+#: style.css
+msgid "https://example.com/"
+msgstr ""
+
+#: 404.php:3
+msgid "Lost in the lawn"
+msgstr ""
+
+#: 404.php:4
+msgid "This page went outside."
+msgstr ""
+
+#: 404.php:5
+msgid "It never came back. Unlike our grass, which stays exactly where you put it."
+msgstr ""
+
+#: 404.php:6
+msgid "Back to safety"
+msgstr ""
+
+#: archive.php:3
+msgid "Archive"
+msgstr ""
+
+#: archive.php:14
+msgid "Nothing here. The grass is empty."
+msgstr ""
+
+#: footer.php:11
+#: header.php:36
+msgid "Shop"
+msgstr ""
+
+#: footer.php:17
+msgid "All products"
+msgstr ""
+
+#: footer.php:23
+msgid "Company"
+msgstr ""
+
+#: footer.php:30
+#: header.php:37
+msgid "Why grass?"
+msgstr ""
+
+#: footer.php:31
+#: header.php:38
+#: inc/customizer.php:220
+msgid "Reviews"
+msgstr ""
+
+#: footer.php:32
+#: header.php:39
+msgid "FAQ"
+msgstr ""
+
+#: footer.php:39
+msgid "Support"
+msgstr ""
+
+#: footer.php:46
+msgid "Shipping info"
+msgstr ""
+
+#: footer.php:47
+msgid "Returns"
+msgstr ""
+
+#: footer.php:49
+#: functions.php:65
+msgid "Cart"
+msgstr ""
+
+#: footer.php:58
+#, php-format
+msgid "© %1$s %2$s. %3$s"
+msgstr ""
+
+#: front-page.php:62
+msgid "A tray of lush green grass photographed in a studio"
+msgstr ""
+
+#: front-page.php:65
+msgid "The Daily Driver, photographed like it matters."
+msgstr ""
+
+#: front-page.php:73
+msgid "A moment of honesty"
+msgstr ""
+
+#: front-page.php:76
+msgid "Outside versus Touch Grass"
+msgstr ""
+
+#: front-page.php:77
+msgid "Outside"
+msgstr ""
+
+#: front-page.php:80
+msgid "Price"
+msgstr ""
+
+#: front-page.php:80
+msgid "Free"
+msgstr ""
+
+#: front-page.php:81
+msgid "Weather"
+msgstr ""
+
+#: front-page.php:81
+msgid "Yes"
+msgstr ""
+
+#: front-page.php:81
+msgid "No"
+msgstr ""
+
+#: front-page.php:82
+msgid "Bugs"
+msgstr ""
+
+#: front-page.php:82
+msgid "So many"
+msgstr ""
+
+#: front-page.php:82
+msgid "Zero"
+msgstr ""
+
+#: front-page.php:83
+msgid "Pants"
+msgstr ""
+
+#: front-page.php:83
+msgid "Required"
+msgstr ""
+
+#: front-page.php:83
+msgid "Optional"
+msgstr ""
+
+#: front-page.php:84
+msgid "Other people"
+msgstr ""
+
+#: front-page.php:84
+msgid "Inevitable"
+msgstr ""
+
+#: front-page.php:84
+#: front-page.php:85
+msgid "None"
+msgstr ""
+
+#: front-page.php:85
+msgid "Effort"
+msgstr ""
+
+#: front-page.php:85
+msgid "Walking"
+msgstr ""
+
+#: front-page.php:101
+msgid "The lineup"
+msgstr ""
+
+#: front-page.php:127
+msgid "The greenhouse is being stocked. Check back shortly."
+msgstr ""
+
+#: front-page.php:137
+msgid "The program"
+msgstr ""
+
+#: front-page.php:138
+msgid "Three steps."
+msgstr ""
+
+#: front-page.php:138
+msgid "Zero going outside."
+msgstr ""
+
+#: front-page.php:155
+msgid "How Touch Grass works"
+msgstr ""
+
+#: front-page.php:158
+msgid "Hands gently touching a tray of grass"
+msgstr ""
+
+#: front-page.php:171
+msgid "The touched"
+msgstr ""
+
+#: front-page.php:190
+msgid "A Touch Grass plot on a desk next to a laptop"
+msgstr ""
+
+#: front-page.php:191
+msgid "The Daily Driver, at work."
+msgstr ""
+
+#: front-page.php:201
+msgid "Objections"
+msgstr ""
+
+#: front-page.php:202
+msgid "Overruled."
+msgstr ""
+
+#: front-page.php:218
+msgid "Field notes"
+msgstr ""
+
+#: front-page.php:219
+msgid "Join the touched."
+msgstr ""
+
+#: front-page.php:220
+msgid "One email a month. Occasionally about grass. Mostly about new ways to separate you from your money. Unsubscribe whenever; the grass will not take it personally."
+msgstr ""
+
+#: front-page.php:223
+msgid "Email address"
+msgstr ""
+
+#: front-page.php:226
+msgid "Subscribe"
+msgstr ""
+
+#: front-page.php:228
+msgid "No spam. The grass insists."
+msgstr ""
+
+#: functions.php:21
+msgid "Touch Grass theme: WooCommerce is not active. The storefront design will load, but the shop, cart, and checkout need WooCommerce."
+msgstr ""
+
+#: functions.php:40
+msgid "Primary navigation"
+msgstr ""
+
+#: functions.php:41
+msgid "Footer — Shop"
+msgstr ""
+
+#: functions.php:42
+msgid "Footer — Company"
+msgstr ""
+
+#: functions.php:43
+msgid "Footer — Support"
+msgstr ""
+
+#. translators: 1: rating, 2: review count
+#: functions.php:84
+#, php-format
+msgid "%1$s out of 5 stars"
+msgstr ""
+
+#. translators: 1: review count
+#: functions.php:89
+#, php-format
+msgid "(%d reviews)"
+msgstr ""
+
+#: functions.php:114
+msgid "Demo store."
+msgstr ""
+
+#: functions.php:115
+msgid "Checkout is a mock — no card is charged, no grass is actually shipped. Yet."
+msgstr ""
+
+#: functions.php:130
+msgid "Promo code (try GOOUTSIDE)"
+msgstr ""
+
+#: header.php:12
+msgid "Skip to content"
+msgstr ""
+
+#: header.php:21
+msgid "Primary"
+msgstr ""
+
+#: header.php:45
+msgid "Menu"
+msgstr ""
+
+#: inc/customizer.php:23
+msgid "Show announcement bar"
+msgstr ""
+
+#: inc/customizer.php:29
+msgid "Announcement text"
+msgstr ""
+
+#: inc/customizer.php:30
+msgid "Fresh Cut Friday — <strong>20% off</strong> with code <code>GOOUTSIDE</code>, for the irony."
+msgstr ""
+
+#: inc/customizer.php:33
+msgid "Keep this consistent with a real coupon in WooCommerce → Coupons. Links allowed."
+msgstr ""
+
+#: inc/customizer.php:37
+msgid "Hero image"
+msgstr ""
+
+#: inc/customizer.php:41
+msgid "Empty = the theme’s default grass photo."
+msgstr ""
+
+#: inc/customizer.php:44
+msgid "Hero eyebrow"
+msgstr ""
+
+#: inc/customizer.php:45
+msgid "Cultivated indoors. Like you."
+msgstr ""
+
+#: inc/customizer.php:50
+msgid "Hero headline"
+msgstr ""
+
+#: inc/customizer.php:51
+msgid "Go ahead.<br>Touch <em>grass</em>."
+msgstr ""
+
+#: inc/customizer.php:56
+msgid "Hero sub-copy"
+msgstr ""
+
+#: inc/customizer.php:57
+msgid "Hand-grown plots of real grass, shipped to your desk. Going outside is free. This is $29. You do the math."
+msgstr ""
+
+#: inc/customizer.php:62
+msgid "Hero primary button label"
+msgstr ""
+
+#: inc/customizer.php:63
+msgid "Shop the grass"
+msgstr ""
+
+#: inc/customizer.php:68
+msgid "Hero primary button link"
+msgstr ""
+
+#: inc/customizer.php:72
+msgid "Empty = your WooCommerce shop page."
+msgstr ""
+
+#: inc/customizer.php:75
+msgid "Hero secondary button label"
+msgstr ""
+
+#: inc/customizer.php:76
+#: inc/customizer.php:219
+msgid "How it works"
+msgstr ""
+
+#: inc/customizer.php:81
+msgid "Hero secondary button link"
+msgstr ""
+
+#: inc/customizer.php:87
+msgid "Trust row: rating text"
+msgstr ""
+
+#: inc/customizer.php:91
+msgid "Empty = computed live from product reviews; hidden when there are no reviews yet."
+msgstr ""
+
+#: inc/customizer.php:95
+msgid "Confession headline"
+msgstr ""
+
+#: inc/customizer.php:96
+msgid "Going outside is free."
+msgstr ""
+
+#: inc/customizer.php:101
+msgid "Confession copy"
+msgstr ""
+
+#: inc/customizer.php:102
+msgid "The sun is shining right now, at no charge. Parks are public. Fresh air costs nothing. And yet — here you are, on a website, about to spend $29 on a rectangle of grass. <b>Should you just go for a walk? Yes. Will you? No.</b> We can&rsquo;t stop you, and we won&rsquo;t. In fact: how can we make this easier for you?"
+msgstr ""
+
+#: inc/customizer.php:107
+msgid "Confession table: Touch Grass price"
+msgstr ""
+
+#: inc/customizer.php:114
+msgid "Show shop section on homepage"
+msgstr ""
+
+#: inc/customizer.php:120
+msgid "Shop heading"
+msgstr ""
+
+#: inc/customizer.php:121
+msgid "Nine rectangles* of grass."
+msgstr ""
+
+#: inc/customizer.php:126
+msgid "Shop subheading"
+msgstr ""
+
+#: inc/customizer.php:127
+msgid "*Two are circles. Two are not grass. We counted them anyway."
+msgstr ""
+
+#: inc/customizer.php:132
+msgid "Products per shop page"
+msgstr ""
+
+#: inc/customizer.php:139
+msgid "“How it works” image"
+msgstr ""
+
+#: inc/customizer.php:143
+msgid "Empty = the theme’s default photo."
+msgstr ""
+
+#: inc/customizer.php:145
+msgid "Step 1 title"
+msgstr ""
+
+#: inc/customizer.php:145
+msgid "Admit it."
+msgstr ""
+
+#: inc/customizer.php:146
+msgid "Step 1 text"
+msgstr ""
+
+#: inc/customizer.php:146
+msgid "You need grass. You won&rsquo;t go outside. This is fine. Everyone here has agreed not to mention it."
+msgstr ""
+
+#: inc/customizer.php:147
+msgid "Step 2 title"
+msgstr ""
+
+#: inc/customizer.php:147
+msgid "Pay us."
+msgstr ""
+
+#: inc/customizer.php:148
+msgid "Step 2 text"
+msgstr ""
+
+#: inc/customizer.php:148
+msgid "Pick a plot. We ship within 48 hours. The money part is the easiest part — for us."
+msgstr ""
+
+#: inc/customizer.php:149
+msgid "Step 3 title"
+msgstr ""
+
+#: inc/customizer.php:149
+msgid "Touch it."
+msgstr ""
+
+#: inc/customizer.php:150
+msgid "Step 3 text"
+msgstr ""
+
+#: inc/customizer.php:150
+msgid "Daily. That is the entire program."
+msgstr ""
+
+#: inc/customizer.php:153
+msgid "Reviews heading"
+msgstr ""
+
+#: inc/customizer.php:154
+msgid "8,600 indoor humans.<br>Zero walks taken."
+msgstr ""
+
+#: inc/customizer.php:159
+msgid "Reviews subheading"
+msgstr ""
+
+#: inc/customizer.php:160
+msgid "Every review from someone who chose $29 over free."
+msgstr ""
+
+#: inc/customizer.php:164
+msgid "Stat 1 value"
+msgstr ""
+
+#: inc/customizer.php:164
+msgid "8,600+"
+msgstr ""
+
+#: inc/customizer.php:165
+msgid "Stat 1 label"
+msgstr ""
+
+#: inc/customizer.php:165
+msgid "verified reviews"
+msgstr ""
+
+#: inc/customizer.php:166
+msgid "Stat 2 value"
+msgstr ""
+
+#: inc/customizer.php:166
+msgid "4.9"
+msgstr ""
+
+#: inc/customizer.php:167
+msgid "Stat 2 label"
+msgstr ""
+
+#: inc/customizer.php:167
+msgid "average rating"
+msgstr ""
+
+#: inc/customizer.php:168
+msgid "Stat 3 value"
+msgstr ""
+
+#: inc/customizer.php:168
+msgid "0"
+msgstr ""
+
+#: inc/customizer.php:169
+msgid "Stat 3 label"
+msgstr ""
+
+#: inc/customizer.php:169
+msgid "walks taken"
+msgstr ""
+
+#: inc/customizer.php:171
+msgid "Guarantee 1 title"
+msgstr ""
+
+#: inc/customizer.php:171
+msgid "30-day regrow guarantee"
+msgstr ""
+
+#: inc/customizer.php:172
+msgid "Guarantee 1 text"
+msgstr ""
+
+#: inc/customizer.php:172
+msgid "If your grass dies within 30 days, a replacement ships free. No interrogation."
+msgstr ""
+
+#: inc/customizer.php:173
+msgid "Guarantee 2 title"
+msgstr ""
+
+#: inc/customizer.php:173
+msgid "Free shipping over $50"
+msgstr ""
+
+#: inc/customizer.php:174
+msgid "Guide 2 text — keep consistent with WooCommerce → Settings → Shipping"
+msgstr ""
+
+#: inc/customizer.php:174
+msgid "Orders over $50 ship free. The grass travels better than you do."
+msgstr ""
+
+#: inc/customizer.php:175
+msgid "Guarantee 3 title"
+msgstr ""
+
+#: inc/customizer.php:175
+msgid "No sunlight required"
+msgstr ""
+
+#: inc/customizer.php:176
+msgid "Guarantee 3 text"
+msgstr ""
+
+#: inc/customizer.php:176
+msgid "Grown for desks, basements, and other places the sun forgot."
+msgstr ""
+
+#: inc/customizer.php:179
+msgid "Footer tagline"
+msgstr ""
+
+#: inc/customizer.php:180
+msgid "Premium plots of real grass for people who live indoors. Grown with care, shipped with speed, touched with joy."
+msgstr ""
+
+#: inc/customizer.php:185
+msgid "Footer credit line"
+msgstr ""
+
+#: inc/customizer.php:186
+msgid "Made with chlorophyll."
+msgstr ""
+
+#: inc/customizer.php:191
+msgid "Footer signoff"
+msgstr ""
+
+#: inc/customizer.php:192
+msgid "Going outside is still free."
+msgstr ""
+
+#: inc/customizer.php:197
+msgid "Show “honesty” section"
+msgstr ""
+
+#: inc/customizer.php:198
+msgid "Show “how it works” section"
+msgstr ""
+
+#: inc/customizer.php:199
+msgid "Show reviews section"
+msgstr ""
+
+#: inc/customizer.php:200
+msgid "Show FAQ section"
+msgstr ""
+
+#: inc/customizer.php:201
+msgid "Show newsletter section"
+msgstr ""
+
+#: inc/customizer.php:204
+msgid "Promo code (displayed in announcements)"
+msgstr ""
+
+#: inc/customizer.php:208
+msgid "Display only. The actual discount lives in WooCommerce → Coupons."
+msgstr ""
+
+#: inc/customizer.php:215
+msgid "Announcement bar"
+msgstr ""
+
+#: inc/customizer.php:216
+msgid "Homepage hero"
+msgstr ""
+
+#: inc/customizer.php:217
+msgid "Honesty section"
+msgstr ""
+
+#: inc/customizer.php:218
+msgid "Shop section"
+msgstr ""
+
+#: inc/customizer.php:221
+msgid "Guarantees"
+msgstr ""
+
+#: inc/customizer.php:222
+msgid "Footer"
+msgstr ""
+
+#: inc/customizer.php:223
+msgid "Section visibility"
+msgstr ""
+
+#: inc/template-tags.php:22
+msgid "Is the grass real?"
+msgstr ""
+
+#: inc/template-tags.php:22
+msgid "Yes. This is our most common question and, frankly, the most insulting. It is real grass, grown in a real greenhouse, by people with dirt under their nails."
+msgstr ""
+
+#: inc/template-tags.php:23
+msgid "How often do I water it?"
+msgstr ""
+
+#: inc/template-tags.php:23
+msgid "A light mist every two to three days. The Mister exists for exactly this ritual."
+msgstr ""
+
+#: inc/template-tags.php:24
+msgid "Will it survive my apartment?"
+msgstr ""
+
+#: inc/template-tags.php:24
+msgid "If you survive your apartment, the grass will. It asks less of you than your houseplants did."
+msgstr ""
+
+#: inc/template-tags.php:25
+msgid "How fast is shipping?"
+msgstr ""
+
+#: inc/template-tags.php:25
+msgid "Orders leave the greenhouse within 48 hours. The grass travels better than you do."
+msgstr ""
+
+#: inc/template-tags.php:26
+msgid "What if my grass dies?"
+msgstr ""
+
+#: inc/template-tags.php:26
+msgid "Then it lived a short, beautiful, indoor life. The 30-day regrow guarantee means a replacement ships free. No interrogation."
+msgstr ""
+
+#: inc/template-tags.php:27
+msgid "Isn't going outside free?"
+msgstr ""
+
+#: inc/template-tags.php:27
+msgid "Yes. And yet here you are. We're not judging. We're invoicing."
+msgstr ""
+
+#: inc/template-tags.php:28
+msgid "Is this a joke?"
+msgstr ""
+
+#: inc/template-tags.php:28
+msgid "The grass is real. The price is real. Your refusal to go outside is real. Which part sounds like a joke?"
+msgstr ""
+
+#: inc/template-tags.php:65
+msgid "\"I bought it as a joke for our hackathon team. It is now the most important object in the office. Our standups are 40% calmer.\""
+msgstr ""
+
+#: inc/template-tags.php:65
+msgid "Backend dev · The Daily Driver"
+msgstr ""
+
+#: inc/template-tags.php:66
+msgid "\"My therapist asked what changed. I said grass. She wrote it down.\""
+msgstr ""
+
+#: inc/template-tags.php:66
+msgid "ML engineer · The Pro Max"
+msgstr ""
+
+#: inc/template-tags.php:67
+msgid "\"It sits next to my monitor. I have named it. We are close.\""
+msgstr ""
+
+#: inc/template-tags.php:67
+msgid "Frontend dev · The Night Shift"
+msgstr ""
+
+#. translators: 1: average rating, 2: review count
+#: inc/template-tags.php:139
+#, php-format
+msgid "%1$s from %2$s reviews"
+msgstr ""
+
+#: search.php:3
+msgid "Search"
+msgstr ""
+
+#: search.php:4
+#, php-format
+msgid "Results for &ldquo;%s&rdquo;"
+msgstr ""
+
+#: search.php:13
+msgid "No results. Try \"grass\"."
+msgstr ""
+
+#: woocommerce/archive-product.php:14
+msgid "The collection"
+msgstr ""
+
+#: woocommerce/archive-product.php:21
+msgid "Everything"
+msgstr ""
+
+#: woocommerce/content-product.php:22
+msgid "Sale"
+msgstr ""
