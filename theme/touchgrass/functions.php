@@ -1,6 +1,9 @@
 <?php
 /**
  * Touch Grass theme setup.
+ *
+ * Requires: WordPress 6.5+, PHP 8.1+. WooCommerce is optional: without it,
+ * normal pages and posts render and commerce UI hides itself.
  */
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
@@ -8,10 +11,11 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
 require_once get_template_directory() . '/inc/customizer.php';
 require_once get_template_directory() . '/inc/template-tags.php';
 
-define( 'TG_VERSION', '2.0.0' );
+define( 'TG_VERSION', '2.1.0' );
 
-/* WooCommerce is required for the shop; nudge the admin if it's missing. */
+/* WooCommerce is optional; nudge admins (not visitors) if it's missing. */
 add_action( 'admin_notices', function () {
+	if ( ! current_user_can( 'manage_options' ) ) { return; }
 	if ( class_exists( 'WooCommerce' ) ) { return; }
 	echo '<div class="notice notice-warning"><p>'
 		. esc_html__( 'Touch Grass theme: WooCommerce is not active. The storefront design will load, but the shop, cart, and checkout need WooCommerce.', 'touchgrass' )
@@ -22,14 +26,19 @@ add_action( 'after_setup_theme', function () {
 	add_theme_support( 'title-tag' );
 	add_theme_support( 'post-thumbnails' );
 	add_theme_support( 'html5', [ 'search-form', 'comment-form', 'comment-list', 'gallery', 'caption', 'style', 'script' ] );
-	add_theme_support( 'custom-logo' );
+	add_theme_support( 'custom-logo', [
+		'height'      => 48,
+		'width'       => 220,
+		'flex-height' => true,
+		'flex-width'  => true,
+	] );
 	add_theme_support( 'woocommerce' );
 	add_theme_support( 'wc-product-gallery-zoom' );
 	add_theme_support( 'wc-product-gallery-lightbox' );
 	add_theme_support( 'wc-product-gallery-slider' );
 	register_nav_menus( [
-		'primary' => __( 'Primary navigation', 'touchgrass' ),
-		'foot_shop' => __( 'Footer — Shop', 'touchgrass' ),
+		'primary'      => __( 'Primary navigation', 'touchgrass' ),
+		'foot_shop'    => __( 'Footer — Shop', 'touchgrass' ),
 		'foot_company' => __( 'Footer — Company', 'touchgrass' ),
 		'foot_support' => __( 'Footer — Support', 'touchgrass' ),
 	] );
@@ -41,7 +50,7 @@ add_action( 'wp_enqueue_scripts', function () {
 	wp_enqueue_script( 'touchgrass', get_template_directory_uri() . '/assets/js/main.js', [], TG_VERSION, true );
 } );
 
-/* Cart count for the header button. */
+/* Cart count for the header button (WooCommerce only). */
 add_filter( 'woocommerce_add_to_cart_fragments', function ( $fragments ) {
 	ob_start();
 	tg_cart_button_inner();
@@ -58,31 +67,68 @@ function tg_cart_button_inner() {
 	echo '</span>';
 }
 
-/* Star rating helper (gold stars, no icon fonts). */
-function tg_stars( $rating = 5 ) {
-	$full = str_repeat( '★', (int) $rating );
-	return '<span class="stars" aria-label="' . esc_attr( $rating ) . ' out of 5 stars">' . $full . '</span>';
+/**
+ * Star rating helper (gold stars, no icon fonts).
+ *
+ * @param float $rating Average rating, e.g. 4.5.
+ * @param int   $count  Review count (0 hides the count suffix).
+ * @return string
+ */
+function tg_stars( $rating = 5, $count = 0 ) {
+	$rating = max( 0, min( 5, (float) $rating ) );
+	$full   = (int) floor( $rating );
+	$half   = ( $rating - $full ) >= 0.5 ? 1 : 0;
+	$stars  = str_repeat( '★', $full ) . ( $half ? '⯪' : '' );
+	$label  = sprintf(
+		/* translators: 1: rating, 2: review count */
+		__( '%1$s out of 5 stars', 'touchgrass' ),
+		number_format_i18n( $rating, 1 )
+	);
+	if ( $count > 0 ) {
+		/* translators: 1: review count */
+		$label .= ' ' . sprintf( __( '(%d reviews)', 'touchgrass' ), $count );
+	}
+	return '<span class="stars" aria-label="' . esc_attr( $label ) . '">' . esc_html( $stars ) . '</span>';
 }
 
 /* tg_product_badge() / tg_product_tagline() live in the core plugin.
-   front-page.php guards both with function_exists(), so the theme
+   Every theme call site guards them with function_exists(), so the theme
    degrades gracefully when the plugin is inactive. */
 
-/* Keep the shop tidy: 9 products per page, our catalogue size. */
-add_filter( 'loop_shop_per_page', function () { return 9; } );
+/* Products per shop page: editable in the Customizer (default 9). */
+add_filter( 'loop_shop_per_page', function () {
+	return max( 1, (int) tg_brand( 'tg_products_per_page' ) ?: 9 );
+} );
 
-/* Demo-store notice on cart + checkout. */
+/* Demo-store notice on cart + checkout — demo mode only. Covers both the
+ * classic shortcode templates (woocommerce_before_cart / _checkout_form) and
+ * the Cart/Checkout blocks (render_block filter on the top-level blocks). */
 add_action( 'woocommerce_before_cart', 'tg_demo_notice' );
+add_action( 'woocommerce_cart_is_empty', 'tg_demo_notice' );
 add_action( 'woocommerce_before_checkout_form', 'tg_demo_notice' );
 function tg_demo_notice() {
-	echo '<div class="tg-demo-note"><strong>' . esc_html__( 'Demo store.', 'touchgrass' ) . '</strong> '
+	echo tg_demo_notice_html(); // phpcs:ignore
+}
+function tg_demo_notice_html() {
+	if ( ! function_exists( 'tg_demo_mode' ) || ! tg_demo_mode() ) { return ''; }
+	return '<div class="tg-demo-note" role="note"><strong>' . esc_html__( 'Demo store.', 'touchgrass' ) . '</strong> '
 		. esc_html__( 'Checkout is a mock — no card is charged, no grass is actually shipped. Yet.', 'touchgrass' ) . '</div>';
 }
+add_filter( 'render_block', function ( $block_content, $block ) {
+	if ( ! isset( $block['blockName'] ) || ! in_array( $block['blockName'], [ 'woocommerce/cart', 'woocommerce/checkout' ], true ) ) {
+		return $block_content;
+	}
+	return tg_demo_notice_html() . $block_content;
+}, 10, 2 );
 
-/* Rename the coupon label copy on cart. */
+/* Coupon hint on cart: only in demo mode, and only when the coupon exists. */
 add_filter( 'gettext', function ( $translated, $text, $domain ) {
 	if ( 'woocommerce' === $domain && 'Coupon code' === $text ) {
-		return 'Promo code (try GOOUTSIDE)';
+		if ( function_exists( 'tg_demo_mode' ) && tg_demo_mode()
+			&& function_exists( 'wc_get_coupon_id_by_code' )
+			&& wc_get_coupon_id_by_code( 'GOOUTSIDE' ) ) {
+			return __( 'Promo code (try GOOUTSIDE)', 'touchgrass' );
+		}
 	}
 	return $translated;
 }, 10, 3 );

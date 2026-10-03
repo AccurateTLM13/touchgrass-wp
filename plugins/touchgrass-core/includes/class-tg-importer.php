@@ -1,18 +1,27 @@
 <?php
 /**
- * Idempotent demo-content importer for the Touch Grass store.
+ * Demo-content importer for the Touch Grass store.
  *
- * Safe to run any number of times: every object is looked up before it is
- * created, and existing objects are updated in place instead of duplicated.
+ * Design principles (production quality):
  *
- * - Products: looked up by SKU (contract table).
- * - Categories: looked up by slug (plots, accessories).
- * - Media: looked up by attachment slug before sideloading from assets/demo/.
- * - Coupon: looked up by code via wc_get_coupon_id_by_code().
- * - FAQs / testimonials: looked up by post slug before wp_insert_post().
- * - Menu "Primary": looked up by name; items checked by title.
+ * - Reruns NEVER duplicate: every object is looked up before it is created.
+ * - Reruns NEVER overwrite merchant edits to commercial fields. Products with
+ *   a demo SKU are flagged _tg_demo_managed (adopted on rerun if an older
+ *   version imported them); on rerun only the importer's "voice" fields
+ *   (tagline, badge, image, categories) refresh — name, description, prices,
+ *   and sale status are left exactly as the merchant left them. A separate,
+ *   explicit reset action restores demo values for managed products.
+ * - Bundled images are copied to temp files before sideloading, so an import
+ *   can never consume or move the plugin's own assets.
+ * - Failures are counted and reported per step (created / updated / skipped /
+ *   failed) instead of silently dropped.
+ * - The import never changes store visibility (woocommerce_coming_soon) and
+ *   never touches payment gateway configuration.
+ * - Imported FAQs/testimonials are flagged _tg_demo_content so the dashboard
+ *   can identify them as demo material.
  *
- * Pure PHP — no WP-CLI, no SSH. Runs from the admin dashboard.
+ * Pure PHP — no WP-CLI, no SSH. Runs from the admin dashboard, administrators
+ * only (manage_options capability, verified in the AJAX handler).
  */
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
@@ -118,7 +127,7 @@ class TG_Importer {
 	}
 
 	/**
-	 * Run the full import. Returns an array of step => [ created, updated, skipped ].
+	 * Run the full import. Returns step => [ created, updated, skipped, failed ].
 	 */
 	public static function run() {
 		if ( ! tg_core_woo_active() ) {
@@ -136,22 +145,60 @@ class TG_Importer {
 		$report['faqs']         = self::import_faqs();
 		$report['testimonials'] = self::import_testimonials();
 		$report['menu']         = self::import_menu();
+		$report['stats']        = self::import_demo_stats();
 
-		// Take the storefront live: a fresh WooCommerce install hides the
-		// catalog behind "coming soon" until launched. The demo is meant
-		// to be seen the moment the import finishes.
-		if ( 'yes' === get_option( 'woocommerce_coming_soon' ) ) {
-			update_option( 'woocommerce_coming_soon', 'no' );
-			$report['store_live'] = [ 'created' => 1, 'updated' => 0, 'skipped' => 0 ];
-		} else {
-			$report['store_live'] = [ 'created' => 0, 'updated' => 0, 'skipped' => 1 ];
-		}
+		/* Store visibility is reported, never changed: importing demo content
+		 * must not publish the store or touch payment configuration. */
+		$report['store_visibility'] = [
+			'created' => 0,
+			'updated' => 0,
+			'skipped' => 0,
+			'failed'  => 0,
+			'note'    => 'yes' === get_option( 'woocommerce_coming_soon' )
+				? __( 'Store is in “coming soon” mode — launch it from WooCommerce → Settings when ready.', 'touchgrass-core' )
+				: __( 'Store is live.', 'touchgrass-core' ),
+		];
+
+		update_option( 'tg_demo_imported', current_time( 'mysql' ) );
 
 		return $report;
 	}
 
+	/**
+	 * Explicit reset: restore demo name/description/prices for products the
+	 * importer manages. Merchant-created products are never touched.
+	 * This is the ONLY action that overwrites commercial fields — it is
+	 * separate from import and requires confirmation in the dashboard.
+	 *
+	 * @return array step => counts
+	 */
+	public static function reset_products() {
+		if ( ! tg_core_woo_active() ) {
+			return [ 'error' => __( 'WooCommerce is not active.', 'touchgrass-core' ) ];
+		}
+		$t = self::tally();
+		foreach ( self::products() as $sku => $data ) {
+			$product_id = function_exists( 'wc_get_product_id_by_sku' ) ? wc_get_product_id_by_sku( $sku ) : 0;
+			if ( ! $product_id ) { $t['skipped']++; continue; }
+			if ( ! get_post_meta( $product_id, '_tg_demo_managed', true ) ) { $t['skipped']++; continue; }
+			$product = wc_get_product( $product_id );
+			if ( ! $product ) { $t['failed']++; continue; }
+			$product->set_name( $data['name'] );
+			$product->set_description( $data['description'] );
+			$product->set_short_description( $data['tagline'] );
+			$product->set_regular_price( (string) $data['price'] );
+			$product->set_sale_price( $data['sale'] ? (string) $data['sale'] : '' );
+			$product->set_price( $data['sale'] ? (string) $data['sale'] : (string) $data['price'] );
+			$product->update_meta_data( '_tg_tagline', $data['tagline'] );
+			$product->update_meta_data( '_tg_badge', $data['badge'] );
+			$product->save();
+			$t['updated']++;
+		}
+		return [ 'products_reset' => $t ];
+	}
+
 	protected static function tally() {
-		return [ 'created' => 0, 'updated' => 0, 'skipped' => 0 ];
+		return [ 'created' => 0, 'updated' => 0, 'skipped' => 0, 'failed' => 0 ];
 	}
 
 	/* ---------- categories ---------- */
@@ -168,7 +215,41 @@ class TG_Importer {
 				continue;
 			}
 			$result = wp_insert_term( $name, 'product_cat', [ 'slug' => $slug ] );
-			if ( ! is_wp_error( $result ) ) { $t['created']++; }
+			if ( is_wp_error( $result ) ) { $t['failed']++; } else { $t['created']++; }
+		}
+		return $t;
+	}
+
+	/**
+	 * Demo proof stats for the homepage "reviews" section.
+	 *
+	 * The theme ships with empty stat defaults (no fictional claims on a fresh
+	 * install). The demo importer fills them in as clearly-marked demo
+	 * material — but only when the merchant hasn't customized them, so reruns
+	 * preserve merchant edits.
+	 *
+	 * @return array
+	 */
+	protected static function import_demo_stats() {
+		$t = self::tally();
+		$demo_stats = [
+			'tg_proof_title'  => __( '8,600 indoor humans.<br>Zero walks taken.', 'touchgrass-core' ),
+			'tg_stat_1_value' => __( '8,600+', 'touchgrass-core' ),
+			'tg_stat_1_label' => __( 'verified reviews', 'touchgrass-core' ),
+			'tg_stat_2_value' => __( '4.9', 'touchgrass-core' ),
+			'tg_stat_2_label' => __( 'average rating', 'touchgrass-core' ),
+		];
+		foreach ( $demo_stats as $mod => $value ) {
+			if ( '' !== trim( (string) get_theme_mod( $mod, '' ) ) ) {
+				$t['skipped']++;
+				continue;
+			}
+			set_theme_mod( $mod, $value );
+			$t['created']++;
+		}
+		if ( $t['created'] > 0 ) {
+			/* Flag so the dashboard can identify these as demo material. */
+			update_option( 'tg_demo_stats_set', current_time( 'mysql' ) );
 		}
 		return $t;
 	}
@@ -179,7 +260,13 @@ class TG_Importer {
 		$t = self::tally();
 		$map = [];
 		$dir = TG_CORE_PATH . 'assets/demo/';
-		foreach ( glob( $dir . '*.webp' ) as $file ) {
+		$files = glob( $dir . '*.webp' );
+		if ( ! $files ) {
+			$t['failed']++;
+			$t['map'] = $map;
+			return $t;
+		}
+		foreach ( $files as $file ) {
 			$slug = pathinfo( $file, PATHINFO_FILENAME );
 			$existing = get_page_by_path( $slug, OBJECT, 'attachment' );
 			if ( $existing ) {
@@ -187,15 +274,27 @@ class TG_Importer {
 				$t['skipped']++;
 				continue;
 			}
+			/* Copy to a temp file first: media_handle_sideload() MOVES its
+			 * tmp_name, so handing it the plugin's own asset would consume
+			 * the bundled image on the first import. */
+			$tmp = wp_tempnam( basename( $file ) );
+			if ( ! $tmp || ! @copy( $file, $tmp ) ) {
+				$t['failed']++;
+				continue;
+			}
 			$file_array = [
 				'name'     => basename( $file ),
 				'type'     => 'image/webp',
-				'tmp_name' => $file,
+				'tmp_name' => $tmp,
 				'error'    => 0,
-				'size'     => filesize( $file ),
+				'size'     => filesize( $tmp ),
 			];
 			$att_id = media_handle_sideload( $file_array, 0 );
-			if ( is_wp_error( $att_id ) ) { continue; }
+			if ( is_wp_error( $att_id ) ) {
+				$t['failed']++;
+				@unlink( $tmp );
+				continue;
+			}
 			/* Pin the slug so reruns find it. */
 			wp_update_post( [ 'ID' => $att_id, 'post_name' => $slug ] );
 			$map[ $slug ] = (int) $att_id;
@@ -216,33 +315,51 @@ class TG_Importer {
 		}
 		foreach ( self::products() as $sku => $data ) {
 			$product_id = function_exists( 'wc_get_product_id_by_sku' ) ? wc_get_product_id_by_sku( $sku ) : 0;
+			$ids = [];
+			foreach ( $data['cats'] as $slug ) {
+				if ( isset( $cat_ids[ $slug ] ) ) { $ids[] = $cat_ids[ $slug ]; }
+			}
 			if ( $product_id ) {
+				/* Existing product: adopt it into demo management if it
+				 * isn't flagged yet (e.g. imported by an older version),
+				 * then refresh the importer's "voice" fields. Commercial
+				 * fields (name, description, prices) are NEVER touched
+				 * here — a merchant's edits survive reruns. Only the
+				 * separate, explicit reset action restores demo values. */
 				$product = wc_get_product( $product_id );
+				if ( ! $product ) { $t['failed']++; continue; }
+				if ( ! get_post_meta( $product_id, '_tg_demo_managed', true ) ) {
+					update_post_meta( $product_id, '_tg_demo_managed', '1' );
+				}
+				$product->update_meta_data( '_tg_tagline', $data['tagline'] );
+				$product->update_meta_data( '_tg_badge', $data['badge'] );
+				if ( $ids ) { $product->set_category_ids( $ids ); }
+				if ( isset( $media_map[ $data['image'] ] ) && ! $product->get_image_id() ) {
+					$product->set_image_id( $media_map[ $data['image'] ] );
+				}
+				$product->save();
 				$t['updated']++;
 			} else {
 				$product = new WC_Product_Simple();
 				$product->set_sku( $sku );
 				$product->set_status( 'publish' );
 				$product->set_catalog_visibility( 'visible' );
-				$t['created']++;
+				$product->set_name( $data['name'] );
+				$product->set_description( $data['description'] );
+				$product->set_short_description( $data['tagline'] );
+				$product->set_regular_price( (string) $data['price'] );
+				$product->set_sale_price( $data['sale'] ? (string) $data['sale'] : '' );
+				$product->set_price( $data['sale'] ? (string) $data['sale'] : (string) $data['price'] );
+				if ( $ids ) { $product->set_category_ids( $ids ); }
+				if ( isset( $media_map[ $data['image'] ] ) ) {
+					$product->set_image_id( $media_map[ $data['image'] ] );
+				}
+				$product->update_meta_data( '_tg_tagline', $data['tagline'] );
+				$product->update_meta_data( '_tg_badge', $data['badge'] );
+				$product->update_meta_data( '_tg_demo_managed', '1' );
+				$id = $product->save();
+				if ( ! $id ) { $t['failed']++; } else { $t['created']++; }
 			}
-			$product->set_name( $data['name'] );
-			$product->set_description( $data['description'] );
-			$product->set_short_description( $data['tagline'] );
-			$product->set_regular_price( (string) $data['price'] );
-			$product->set_sale_price( $data['sale'] ? (string) $data['sale'] : '' );
-			$product->set_price( $data['sale'] ? (string) $data['sale'] : (string) $data['price'] );
-			$ids = [];
-			foreach ( $data['cats'] as $slug ) {
-				if ( isset( $cat_ids[ $slug ] ) ) { $ids[] = $cat_ids[ $slug ]; }
-			}
-			if ( $ids ) { $product->set_category_ids( $ids ); }
-			if ( isset( $media_map[ $data['image'] ] ) ) {
-				$product->set_image_id( $media_map[ $data['image'] ] );
-			}
-			$product->update_meta_data( '_tg_tagline', $data['tagline'] );
-			$product->update_meta_data( '_tg_badge', $data['badge'] );
-			$product->save();
 		}
 		return $t;
 	}
@@ -262,8 +379,8 @@ class TG_Importer {
 		$coupon->set_discount_type( 'percent' );
 		$coupon->set_amount( 20 );
 		$coupon->set_description( __( 'Fresh Cut Friday — 20% off, for the irony.', 'touchgrass-core' ) );
-		$coupon->save();
-		$t['created']++;
+		$id = $coupon->save();
+		if ( ! $id ) { $t['failed']++; } else { $t['created']++; }
 		return $t;
 	}
 
@@ -281,15 +398,18 @@ class TG_Importer {
 				continue;
 			}
 			$post_id = wp_insert_post( [
-				'post_type'   => 'tg_faq',
-				'post_title'  => $faq[0],
-				'post_name'   => $slug,
+				'post_type'    => 'tg_faq',
+				'post_title'   => $faq[0],
+				'post_name'    => $slug,
 				'post_content' => $faq[1],
-				'post_status' => 'publish',
+				'post_status'  => 'publish',
 			] );
 			if ( $post_id && ! is_wp_error( $post_id ) ) {
 				update_post_meta( $post_id, '_tg_faq_order', $order );
+				update_post_meta( $post_id, '_tg_demo_content', '1' );
 				$t['created']++;
+			} else {
+				$t['failed']++;
 			}
 		}
 		return $t;
@@ -316,7 +436,10 @@ class TG_Importer {
 			if ( $post_id && ! is_wp_error( $post_id ) ) {
 				update_post_meta( $post_id, '_tg_role', $tm[1] );
 				update_post_meta( $post_id, '_tg_rating', $tm[2] );
+				update_post_meta( $post_id, '_tg_demo_content', '1' );
 				$t['created']++;
+			} else {
+				$t['failed']++;
 			}
 		}
 		return $t;
@@ -329,16 +452,19 @@ class TG_Importer {
 		$menu = wp_get_nav_menu_object( 'Primary' );
 		if ( ! $menu ) {
 			$menu_id = wp_create_nav_menu( 'Primary' );
-			if ( is_wp_error( $menu_id ) ) { return $t; }
+			if ( is_wp_error( $menu_id ) ) { $t['failed']++; return $t; }
 		} else {
 			$menu_id = $menu->term_id;
 			$t['skipped']++;
 		}
+		$shop_url = function_exists( 'wc_get_page_id' ) && wc_get_page_id( 'shop' ) > 0
+			? get_permalink( wc_get_page_id( 'shop' ) )
+			: home_url( '/shop/' );
 		$items = [
-			[ __( 'Shop', 'touchgrass-core' ), 'shop' ],
-			[ __( 'Why grass?', 'touchgrass-core' ), '#how' ],
-			[ __( 'Reviews', 'touchgrass-core' ), '#proof' ],
-			[ __( 'FAQ', 'touchgrass-core' ), '#faq' ],
+			[ __( 'Shop', 'touchgrass-core' ), $shop_url ],
+			[ __( 'Why grass?', 'touchgrass-core' ), home_url( '/#how' ) ],
+			[ __( 'Reviews', 'touchgrass-core' ), home_url( '/#proof' ) ],
+			[ __( 'FAQ', 'touchgrass-core' ), home_url( '/#faq' ) ],
 		];
 		$existing_titles = [];
 		$menu_items = wp_get_nav_menu_items( $menu_id );
@@ -353,14 +479,13 @@ class TG_Importer {
 				$t['skipped']++;
 				continue;
 			}
-			$url = ( $entry[1] === 'shop' ) ? home_url( '/shop/' ) : home_url( '/' . $entry[1] );
-			wp_update_nav_menu_item( $menu_id, 0, [
+			$result = wp_update_nav_menu_item( $menu_id, 0, [
 				'menu-item-title'    => $entry[0],
-				'menu-item-url'      => $url,
+				'menu-item-url'      => $entry[1],
 				'menu-item-status'   => 'publish',
 				'menu-item-position' => $position++,
 			] );
-			$t['created']++;
+			if ( is_wp_error( $result ) || ! $result ) { $t['failed']++; } else { $t['created']++; }
 		}
 		/* Assign to the primary location only if nothing is assigned yet. */
 		$locations = get_nav_menu_locations();

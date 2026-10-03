@@ -1,18 +1,18 @@
-/* Touch Grass admin: one-click demo import. */
+/* Touch Grass admin: one-click demo import + explicit demo reset. */
 (function () {
 	'use strict';
-	var btn = document.getElementById('tg-import-btn');
-	if (!btn || typeof tgAdmin === 'undefined') { return; }
+	if (typeof tgAdmin === 'undefined') { return; }
 
-	btn.addEventListener('click', function () {
+	function run(action, btn, resultId, confirmMsg) {
+		if (confirmMsg && !window.confirm(confirmMsg)) { return; }
 		btn.disabled = true;
 		var original = btn.textContent;
-		btn.textContent = tgAdmin.i18n.importing;
-		var result = document.getElementById('tg-import-result');
+		btn.textContent = action === 'tg_reset_products' ? tgAdmin.i18n.resetting : tgAdmin.i18n.importing;
+		var result = document.getElementById(resultId);
 		result.innerHTML = '';
 
 		var body = new FormData();
-		body.append('action', 'tg_import_demo');
+		body.append('action', action);
 		body.append('nonce', tgAdmin.nonce);
 
 		fetch(tgAdmin.ajaxurl, { method: 'POST', body: body, credentials: 'same-origin' })
@@ -37,5 +37,19 @@
 				btn.disabled = false;
 				btn.textContent = original;
 			});
-	});
+	}
+
+	var importBtn = document.getElementById('tg-import-btn');
+	if (importBtn) {
+		importBtn.addEventListener('click', function () {
+			run('tg_import_demo', importBtn, 'tg-import-result');
+		});
+	}
+
+	var resetBtn = document.getElementById('tg-reset-btn');
+	if (resetBtn) {
+		resetBtn.addEventListener('click', function () {
+			run('tg_reset_products', resetBtn, 'tg-reset-result', tgAdmin.i18n.resetConfirm);
+		});
+	}
 })();
