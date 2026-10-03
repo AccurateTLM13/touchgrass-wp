@@ -145,6 +145,7 @@ class TG_Importer {
 		$report['faqs']         = self::import_faqs();
 		$report['testimonials'] = self::import_testimonials();
 		$report['menu']         = self::import_menu();
+		$report['stats']        = self::import_demo_stats();
 
 		/* Store visibility is reported, never changed: importing demo content
 		 * must not publish the store or touch payment configuration. */
@@ -215,6 +216,40 @@ class TG_Importer {
 			}
 			$result = wp_insert_term( $name, 'product_cat', [ 'slug' => $slug ] );
 			if ( is_wp_error( $result ) ) { $t['failed']++; } else { $t['created']++; }
+		}
+		return $t;
+	}
+
+	/**
+	 * Demo proof stats for the homepage "reviews" section.
+	 *
+	 * The theme ships with empty stat defaults (no fictional claims on a fresh
+	 * install). The demo importer fills them in as clearly-marked demo
+	 * material — but only when the merchant hasn't customized them, so reruns
+	 * preserve merchant edits.
+	 *
+	 * @return array
+	 */
+	protected static function import_demo_stats() {
+		$t = self::tally();
+		$demo_stats = [
+			'tg_proof_title'  => __( '8,600 indoor humans.<br>Zero walks taken.', 'touchgrass-core' ),
+			'tg_stat_1_value' => __( '8,600+', 'touchgrass-core' ),
+			'tg_stat_1_label' => __( 'verified reviews', 'touchgrass-core' ),
+			'tg_stat_2_value' => __( '4.9', 'touchgrass-core' ),
+			'tg_stat_2_label' => __( 'average rating', 'touchgrass-core' ),
+		];
+		foreach ( $demo_stats as $mod => $value ) {
+			if ( '' !== trim( (string) get_theme_mod( $mod, '' ) ) ) {
+				$t['skipped']++;
+				continue;
+			}
+			set_theme_mod( $mod, $value );
+			$t['created']++;
+		}
+		if ( $t['created'] > 0 ) {
+			/* Flag so the dashboard can identify these as demo material. */
+			update_option( 'tg_demo_stats_set', current_time( 'mysql' ) );
 		}
 		return $t;
 	}

@@ -14,11 +14,10 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-$pass = 0; $fail = 0;
+$GLOBALS['tg_pass'] = 0; $GLOBALS['tg_fail'] = 0;
 function t( $name, $cond, $detail = '' ) {
-	global $pass, $fail;
-	if ( $cond ) { $pass++; echo "PASS: $name\n"; }
-	else { $fail++; echo "FAIL: $name" . ( $detail ? " — $detail" : '' ) . "\n"; }
+	if ( $cond ) { $GLOBALS['tg_pass']++; echo "PASS: $name\n"; }
+	else { $GLOBALS['tg_fail']++; echo "FAIL: $name" . ( $detail ? " — $detail" : '' ) . "\n"; }
 }
 
 /* ---------- 1. demo-mode isolation ---------- */
@@ -122,5 +121,68 @@ update_option( 'woocommerce_coming_soon', 'no' );
 TG_Importer::run();
 t( 'importer preserves coming-soon=no', 'no' === get_option( 'woocommerce_coming_soon' ) );
 
-echo "\n$pass passed, $fail failed\n";
-exit( $fail > 0 ? 1 : 0 );
+/* ---------- 11. RC2: Customizer image controls store attachment IDs ---------- */
+require_once ABSPATH . WPINC . '/class-wp-customize-manager.php';
+require_once ABSPATH . WPINC . '/class-wp-customize-control.php';
+require_once ABSPATH . WPINC . '/customize/class-wp-customize-media-control.php';
+require_once ABSPATH . WPINC . '/customize/class-wp-customize-upload-control.php';
+require_once ABSPATH . WPINC . '/customize/class-wp-customize-image-control.php';
+global $wp_customize;
+$wp_customize = new WP_Customize_Manager();
+do_action( 'customize_register', $wp_customize );
+$hero_control = $wp_customize->get_control( 'tg_hero_image' );
+$how_control  = $wp_customize->get_control( 'tg_how_image' );
+t(
+	'hero image control is Media_Control (ID storage), not Image_Control (URL storage)',
+	$hero_control instanceof WP_Customize_Media_Control && ! $hero_control instanceof WP_Customize_Image_Control,
+	is_object( $hero_control ) ? get_class( $hero_control ) : 'missing'
+);
+t(
+	'how-it-works image control is Media_Control (ID storage)',
+	$how_control instanceof WP_Customize_Media_Control && ! $how_control instanceof WP_Customize_Image_Control,
+	is_object( $how_control ) ? get_class( $how_control ) : 'missing'
+);
+t( 'rating sanitizer keeps half-stars', 4.5 === tg_sanitize_rating( '4.7' ) );
+t( 'rating sanitizer clamps to 0–5', 5 == tg_sanitize_rating( 9 ) && 0 == tg_sanitize_rating( -2 ) );
+
+/* ---------- 12. RC2: trust-row stars match the number shown ---------- */
+$daily_id = wc_get_product_id_by_sku( 'TG-DAILY' );
+update_post_meta( $daily_id, '_wc_average_rating', '4.0' );
+update_post_meta( $daily_id, '_wc_review_count', '10' );
+$live = tg_live_rating_data();
+t(
+	'live rating aggregate returns real avg + count',
+	is_array( $live ) && abs( $live['avg'] - 4.0 ) < 0.01 && 10 === $live['count'],
+	wp_json_encode( $live )
+);
+t( 'live rating text uses real numbers', false !== strpos( tg_live_rating_text(), '4.0' ), tg_live_rating_text() );
+t( 'stars render fractional ratings honestly', '★★★★⯪' === wp_strip_all_tags( tg_stars( 4.5 ) ), wp_strip_all_tags( tg_stars( 4.5 ) ) );
+delete_post_meta( $daily_id, '_wc_average_rating' );
+delete_post_meta( $daily_id, '_wc_review_count' );
+t( 'live rating is empty with no reviews', null === tg_live_rating_data() && '' === tg_live_rating_text() );
+
+/* ---------- 13. RC2: no forced newsletter tags (free-plan safe) ---------- */
+t( 'newsletter sends no tags by default', [] === apply_filters( 'tg_newsletter_tags', [] ) );
+$tg_tag_filter = function () { return [ 'vip' ]; };
+add_filter( 'tg_newsletter_tags', $tg_tag_filter );
+t( 'newsletter tags are opt-in via filter', [ 'vip' ] === apply_filters( 'tg_newsletter_tags', [] ) );
+remove_filter( 'tg_newsletter_tags', $tg_tag_filter );
+
+/* ---------- 14. RC2: stats have no fictional defaults; importer fills them as demo ---------- */
+$fields = tg_brand_fields();
+t( 'stat 1 default is empty (no fictional reviews claim)', '' === $fields['tg_stat_1_value']['default'] );
+t( 'stat 2 default is empty (no fictional rating claim)', '' === $fields['tg_stat_2_value']['default'] );
+remove_theme_mod( 'tg_stat_1_value' );
+remove_theme_mod( 'tg_stat_2_value' );
+remove_theme_mod( 'tg_proof_title' );
+TG_Importer::run();
+t( 'importer fills empty stats as demo material', '8,600+' === get_theme_mod( 'tg_stat_1_value' ), get_theme_mod( 'tg_stat_1_value' ) );
+t( 'importer flags demo stats as set', (bool) get_option( 'tg_demo_stats_set' ) );
+set_theme_mod( 'tg_stat_1_value', 'Merchant stat' );
+TG_Importer::run();
+t( 'importer rerun preserves merchant stat edits', 'Merchant stat' === get_theme_mod( 'tg_stat_1_value' ), get_theme_mod( 'tg_stat_1_value' ) );
+remove_theme_mod( 'tg_stat_1_value' ); /* restore demo state */
+TG_Importer::run();
+
+echo "\n" . $GLOBALS['tg_pass'] . " passed, " . $GLOBALS['tg_fail'] . " failed\n";
+exit( $GLOBALS['tg_fail'] > 0 ? 1 : 0 );

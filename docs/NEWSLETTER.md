@@ -12,8 +12,12 @@ links.
 3. In wp-admin, go to **Touch Grass → Touch Grass Setup**, paste the key into
    **Buttondown API key**, and save.
 4. The signup section appears on the homepage. Test it with your own address
-   and confirm you land in **Buttondown → Subscribers** (tag
-   `touch-grass-site`).
+   and confirm you land in **Buttondown → Subscribers**.
+
+   Tags are *not* sent by default: Buttondown rejects unknown tags on plans
+   without tag support (e.g. free), so forcing one would break signups for
+   free accounts. If your plan supports tags and you want them, hook
+   `tg_newsletter_tags` and return your tag list.
 
 **Until a key is saved, the signup section is hidden** — visitors never see a
 form that goes nowhere.

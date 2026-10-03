@@ -54,3 +54,36 @@
   live test order.
 - **Email delivery:** order/customer emails were not sent to a real inbox in
   the playground.
+
+## RC2 correction pass (2026-10-03, v2.1.1)
+
+An independent source review of the branch found five release-candidate
+defects; all were fixed and covered by new regression tests.
+
+1. **Customizer image controls stored URLs, code expected IDs.** Both image
+   settings (`tg_hero_image`, `tg_how_image`) used `WP_Customize_Image_Control`
+   (stores a URL) with an `absint` sanitizer (destroyed the URL → always 0).
+   Switched to `WP_Customize_Media_Control` (`mime_type=image`), which stores
+   the attachment ID the theme already expects. New integration tests assert
+   the registered control class for both settings, and a half-star rating
+   sanitizer (`tg_sanitize_rating`, 0–5 in 0.5 steps) was added with unit
+   coverage.
+2. **Forced Buttondown tag broke free-plan signups.** The subscribe payload
+   always sent `tags: ['touch-grass-site']`; Buttondown rejects unknown tags
+   with 403 on plans without tag support. Tags are now opt-in via the
+   `tg_newsletter_tags` filter (default: none). NEWSLETTER.md documents this.
+3. **Trust row always rendered five stars.** The live aggregate now returns
+   `{avg, count}` (`tg_live_rating_data()`); the trust row renders
+   `tg_stars($avg, $count)` for live data, or a new merchant-set
+   `tg_trust_rating_stars` value for manual override text.
+4. **Fictional review stats as production defaults.** `tg_stat_1_value`
+   (`8,600+`) and `tg_stat_2_value` (`4.9`) now default to empty and are
+   hidden when empty; the importer fills them as flagged demo material
+   (`tg_demo_stats_set` option) only when the merchant hasn't customized
+   them — reruns preserve merchant edits.
+5. **CI workflow missing from the branch.** `.github/workflows/ci.yml`
+   existed locally but never reached the branch; it is now committed and
+   pushed.
+
+**Results after RC2:** `tests/integration.php` **36/36 PASS** (21 original +
+15 new), `tests/http-tests.sh` **17/17 PASS**, all PHP files pass `php -l`.

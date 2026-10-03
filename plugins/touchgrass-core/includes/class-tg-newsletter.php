@@ -134,7 +134,10 @@ class TG_Newsletter {
 			],
 			'body' => wp_json_encode( [
 				'email_address' => $email,
-				'tags'          => [ 'touch-grass-site' ],
+				/* No forced tags: Buttondown rejects unknown tags with 403 on
+				 * plans without tag support (e.g. free). Merchants on tag-capable
+				 * plans can opt in via the tg_newsletter_tags filter. */
+				'tags'          => apply_filters( 'tg_newsletter_tags', [] ),
 				'metadata'      => [ 'source' => $source ],
 				'ip_address'    => $ip,
 				'referrer_url'  => home_url( '/' ),

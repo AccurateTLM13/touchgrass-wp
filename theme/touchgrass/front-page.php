@@ -21,10 +21,21 @@ $hero_image_id = (int) tg_brand( 'tg_hero_image' );
 $hero_cta_primary_url = tg_brand( 'tg_hero_cta_primary_url' ) ?: tg_shop_url();
 $hero_cta_secondary_url = tg_brand( 'tg_hero_cta_secondary_url' ) ?: '#how';
 
-/* Trust row: manual override → live review data → hidden when no reviews. */
+/* Trust row: manual override → live review data → hidden when no reviews.
+ * Stars always match the number shown: the live average for live data,
+ * or the merchant's manual star setting for manual text. */
 $trust_rating = tg_brand( 'tg_trust_rating_text' );
+$trust_avg = 5.0;
+$trust_count = 0;
 if ( '' === $trust_rating ) {
-	$trust_rating = tg_live_rating_text();
+	$live = function_exists( 'tg_live_rating_data' ) ? tg_live_rating_data() : null;
+	if ( $live ) {
+		$trust_avg    = $live['avg'];
+		$trust_count  = $live['count'];
+		$trust_rating = tg_live_rating_text();
+	}
+} else {
+	$trust_avg = (float) tg_brand( 'tg_trust_rating_stars' );
 }
 
 $testimonials = tg_get_testimonials();
@@ -44,7 +55,7 @@ $newsletter_on = tg_brand( 'tg_section_news' ) && function_exists( 'tg_newslette
 			</div>
 			<div class="trust reveal">
 				<?php if ( $trust_rating ) : ?>
-				<span><?php echo tg_stars( 5 ); ?> <?php echo esc_html( $trust_rating ); ?></span>
+				<span><?php echo tg_stars( $trust_avg, $trust_count ); ?> <?php echo esc_html( $trust_rating ); ?></span>
 				<span class="dot" aria-hidden="true">·</span>
 				<?php endif; ?>
 				<span><?php echo esc_html( tg_brand( 'tg_guarantee_2_title' ) ); ?></span>
@@ -181,11 +192,24 @@ $newsletter_on = tg_brand( 'tg_section_news' ) && function_exists( 'tg_newslette
 			</figure>
 			<?php endforeach; ?>
 		</div>
+		<?php
+		/* Stats with empty values are hidden — no fictional defaults. The demo
+		 * importer fills these in as clearly-marked demo material. */
+		$stats = [];
+		for ( $i = 1; $i <= 3; $i++ ) {
+			$value = trim( (string) tg_brand( "tg_stat_{$i}_value" ) );
+			if ( '' !== $value ) {
+				$stats[] = [ $value, tg_brand( "tg_stat_{$i}_label" ) ];
+			}
+		}
+		?>
+		<?php if ( $stats ) : ?>
 		<div class="stats reveal">
-			<?php for ( $i = 1; $i <= 3; $i++ ) : ?>
-			<div class="stat"><div class="v"><?php echo esc_html( tg_brand( "tg_stat_{$i}_value" ) ); ?></div><div class="l"><?php echo esc_html( tg_brand( "tg_stat_{$i}_label" ) ); ?></div></div>
-			<?php endfor; ?>
+			<?php foreach ( $stats as $stat ) : ?>
+			<div class="stat"><div class="v"><?php echo esc_html( $stat[0] ); ?></div><div class="l"><?php echo esc_html( $stat[1] ); ?></div></div>
+			<?php endforeach; ?>
 		</div>
+		<?php endif; ?>
 		<figure class="desk-fig reveal">
 			<img src="<?php echo esc_url( get_template_directory_uri() . '/assets/img/desk.webp' ); ?>" alt="<?php esc_attr_e( 'A Touch Grass plot on a desk next to a laptop', 'touchgrass' ); ?>" loading="lazy">
 			<figcaption><?php esc_html_e( 'The Daily Driver, at work.', 'touchgrass' ); ?></figcaption>

@@ -116,13 +116,12 @@ function tg_product_rating_html( $product ) {
 }
 
 /**
- * Trust-row rating text computed from live product reviews, e.g.
- * "4.9 from 8,600+ reviews". Returns '' when there are no reviews yet.
+ * Live review aggregate computed from published product reviews.
  *
- * @return string
+ * @return array|null [ 'avg' => float, 'count' => int ] or null when there are no reviews yet.
  */
-function tg_live_rating_text() {
-	if ( ! function_exists( 'wc_get_products' ) ) { return ''; }
+function tg_live_rating_data() {
+	if ( ! function_exists( 'wc_get_products' ) ) { return null; }
 	$products = wc_get_products( [ 'limit' => -1, 'status' => 'publish' ] );
 	$total = 0; $weighted = 0.0;
 	foreach ( $products as $product ) {
@@ -132,13 +131,24 @@ function tg_live_rating_text() {
 			$weighted += (float) $product->get_average_rating() * $count;
 		}
 	}
-	if ( $total <= 0 ) { return ''; }
-	$avg = $weighted / $total;
+	if ( $total <= 0 ) { return null; }
+	return [ 'avg' => $weighted / $total, 'count' => $total ];
+}
+
+/**
+ * Trust-row rating text computed from live product reviews, e.g.
+ * "4.9 from 8,600+ reviews". Returns '' when there are no reviews yet.
+ *
+ * @return string
+ */
+function tg_live_rating_text() {
+	$data = tg_live_rating_data();
+	if ( ! $data ) { return ''; }
 	return sprintf(
 		/* translators: 1: average rating, 2: review count */
 		__( '%1$s from %2$s reviews', 'touchgrass' ),
-		number_format_i18n( $avg, 1 ),
-		number_format_i18n( $total )
+		number_format_i18n( $data['avg'], 1 ),
+		number_format_i18n( $data['count'] )
 	);
 }
 

@@ -90,6 +90,15 @@ function tg_brand_fields() {
 			'section' => 'tg_hero',
 			'description' => __( 'Empty = computed live from product reviews; hidden when there are no reviews yet.', 'touchgrass' ),
 		],
+		'tg_trust_rating_stars' => [
+			'label'   => __( 'Trust row: star rating', 'touchgrass' ),
+			'default' => 5,
+			'type'    => 'number',
+			'section' => 'tg_hero',
+			'sanitize' => 'tg_sanitize_rating',
+			'input_attrs' => [ 'min' => 0, 'max' => 5, 'step' => 0.5 ],
+			'description' => __( 'Stars shown next to the manual rating text above. Ignored when the text is empty — live review data supplies the stars then.', 'touchgrass' ),
+		],
 		/* Confession */
 		'tg_confession_title' => [
 			'label'   => __( 'Confession headline', 'touchgrass' ),
@@ -151,7 +160,7 @@ function tg_brand_fields() {
 		/* Reviews */
 		'tg_proof_title' => [
 			'label'   => __( 'Reviews heading', 'touchgrass' ),
-			'default' => __( '8,600 indoor humans.<br>Zero walks taken.', 'touchgrass' ),
+			'default' => __( 'Indoor humans.<br>Zero walks taken.', 'touchgrass' ),
 			'type'    => 'textarea',
 			'section' => 'tg_proof',
 		],
@@ -161,9 +170,9 @@ function tg_brand_fields() {
 			'type'    => 'text',
 			'section' => 'tg_proof',
 		],
-		'tg_stat_1_value' => [ 'label' => __( 'Stat 1 value', 'touchgrass' ), 'default' => __( '8,600+', 'touchgrass' ), 'type' => 'text', 'section' => 'tg_proof' ],
+		'tg_stat_1_value' => [ 'label' => __( 'Stat 1 value', 'touchgrass' ), 'default' => '', 'type' => 'text', 'section' => 'tg_proof', 'description' => __( 'Empty = this stat is hidden. The demo importer fills these in as demo material.', 'touchgrass' ) ],
 		'tg_stat_1_label' => [ 'label' => __( 'Stat 1 label', 'touchgrass' ), 'default' => __( 'verified reviews', 'touchgrass' ), 'type' => 'text', 'section' => 'tg_proof' ],
-		'tg_stat_2_value' => [ 'label' => __( 'Stat 2 value', 'touchgrass' ), 'default' => __( '4.9', 'touchgrass' ), 'type' => 'text', 'section' => 'tg_proof' ],
+		'tg_stat_2_value' => [ 'label' => __( 'Stat 2 value', 'touchgrass' ), 'default' => '', 'type' => 'text', 'section' => 'tg_proof' ],
 		'tg_stat_2_label' => [ 'label' => __( 'Stat 2 label', 'touchgrass' ), 'default' => __( 'average rating', 'touchgrass' ), 'type' => 'text', 'section' => 'tg_proof' ],
 		'tg_stat_3_value' => [ 'label' => __( 'Stat 3 value', 'touchgrass' ), 'default' => __( '0', 'touchgrass' ), 'type' => 'text', 'section' => 'tg_proof' ],
 		'tg_stat_3_label' => [ 'label' => __( 'Stat 3 label', 'touchgrass' ), 'default' => __( 'walks taken', 'touchgrass' ), 'type' => 'text', 'section' => 'tg_proof' ],
@@ -254,7 +263,7 @@ function tg_customize_register( $wp_customize ) {
 				$setting_args['sanitize_callback'] = 'esc_url_raw';
 				break;
 			case 'number':
-				$setting_args['sanitize_callback'] = 'absint';
+				$setting_args['sanitize_callback'] = isset( $args['sanitize'] ) ? $args['sanitize'] : 'absint';
 				break;
 			case 'image':
 				$setting_args['sanitize_callback'] = 'absint';
@@ -273,13 +282,16 @@ function tg_customize_register( $wp_customize ) {
 			$control_args['type'] = 'checkbox';
 			$wp_customize->add_control( $key, $control_args );
 		} elseif ( 'image' === $type ) {
-			$wp_customize->add_control( new WP_Customize_Image_Control( $wp_customize, $key, $control_args ) );
+			/* Media_Control stores the attachment ID (Image_Control stores a
+			 * URL, which absint would destroy). Matches the absint sanitizer. */
+			$control_args['mime_type'] = 'image';
+			$wp_customize->add_control( new WP_Customize_Media_Control( $wp_customize, $key, $control_args ) );
 		} elseif ( 'url' === $type ) {
 			$control_args['type'] = 'url';
 			$wp_customize->add_control( $key, $control_args );
 		} elseif ( 'number' === $type ) {
 			$control_args['type'] = 'number';
-			$control_args['input_attrs'] = [ 'min' => 1, 'max' => 48, 'step' => 1 ];
+			$control_args['input_attrs'] = isset( $args['input_attrs'] ) ? $args['input_attrs'] : [ 'min' => 1, 'max' => 48, 'step' => 1 ];
 			$wp_customize->add_control( $key, $control_args );
 		} else {
 			$control_args['type'] = $type;
@@ -291,6 +303,17 @@ add_action( 'customize_register', 'tg_customize_register' );
 
 function tg_sanitize_checkbox( $value ) {
 	return $value ? true : false;
+}
+
+/**
+ * Sanitize a 0–5 star rating in half-star steps.
+ *
+ * @param mixed $value
+ * @return float
+ */
+function tg_sanitize_rating( $value ) {
+	$value = (float) $value;
+	return max( 0, min( 5, round( $value * 2 ) / 2 ) );
 }
 
 /**

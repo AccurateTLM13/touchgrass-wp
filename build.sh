@@ -2,7 +2,7 @@
 # Build reproducible installable ZIPs from the reviewed source.
 #
 # Usage: ./build.sh [output-dir]
-# Produces: touchgrass-theme-2.1.0.zip, touchgrass-core-2.1.0.zip
+# Produces: touchgrass-theme-2.1.1.zip, touchgrass-core-2.1.1.zip
 #
 # Reproducible: fixed file order (sorted), fixed permissions, no timestamps
 # beyond the embedded version. Requires: zip.
@@ -10,7 +10,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")" && pwd)"
 OUT="${1:-$ROOT/dist}"
-VERSION="2.1.0"
+VERSION="2.1.1"
 
 command -v zip >/dev/null || { echo "zip is required"; exit 1; }
 
