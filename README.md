@@ -34,6 +34,10 @@ Build the ZIPs reproducibly with `./build.sh` (outputs to `dist/`).
   `wp eval-file tests/integration.php`
 - HTTP-level tests: `tests/http-tests.sh` (playground-oriented).
 - CI (`.github/workflows/ci.yml`): PHP lint, JS syntax check, ZIP build.
+  (The workflow file ships in the repo; GitHub's API token used for pushes
+  lacks the `workflow` scope needed to create files under
+  `.github/workflows/`, so add it once via the web UI or a
+  workflow-scoped checkout.)
 
 ## Brand voice
 

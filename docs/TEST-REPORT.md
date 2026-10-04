@@ -81,9 +81,16 @@ defects; all were fixed and covered by new regression tests.
    hidden when empty; the importer fills them as flagged demo material
    (`tg_demo_stats_set` option) only when the merchant hasn't customized
    them — reruns preserve merchant edits.
-5. **CI workflow missing from the branch.** `.github/workflows/ci.yml`
-   existed locally but never reached the branch; it is now committed and
-   pushed.
+5. **CI workflow missing from the branch.** `.github/workflows/ci.yml` existed
+   in the source tree but never reached the branch — and the API token in
+   use cannot create files under `.github/workflows/` (GitHub requires the
+   `workflow` scope for that path; both the git-data and contents APIs
+   return 404 without it). The workflow file ships in the repo; it needs
+   one manual step: add `.github/workflows/ci.yml` via the GitHub web UI
+   (branch `production-quality` → Add file → copy the file contents), or
+   push it from a checkout authenticated with `workflow` scope. Until then,
+   the honest description is: test suite exists and runs green locally;
+   CI is designed but not yet installed.
 
 **Results after RC2:** `tests/integration.php` **36/36 PASS** (21 original +
 15 new), `tests/http-tests.sh` **17/17 PASS**, all PHP files pass `php -l`.
