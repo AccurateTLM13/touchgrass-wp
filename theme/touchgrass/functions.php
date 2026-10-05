@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
 require_once get_template_directory() . '/inc/customizer.php';
 require_once get_template_directory() . '/inc/template-tags.php';
 
-define( 'TG_VERSION', '2.1.0' );
+define( 'TG_VERSION', '2.2.0' );
 
 /* WooCommerce is optional; nudge admins (not visitors) if it's missing. */
 add_action( 'admin_notices', function () {
@@ -121,17 +121,56 @@ add_filter( 'render_block', function ( $block_content, $block ) {
 	return tg_demo_notice_html() . $block_content;
 }, 10, 2 );
 
-/* Coupon hint on cart: only in demo mode, and only when the coupon exists. */
-add_filter( 'gettext', function ( $translated, $text, $domain ) {
-	if ( 'woocommerce' === $domain && 'Coupon code' === $text ) {
-		if ( function_exists( 'tg_demo_mode' ) && tg_demo_mode()
-			&& function_exists( 'wc_get_coupon_id_by_code' )
-			&& wc_get_coupon_id_by_code( 'GOOUTSIDE' ) ) {
-			return __( 'Promo code (try GOOUTSIDE)', 'touchgrass' );
-		}
+/* Coupon field label + demo hint live in the core plugin (TG_Microcopy::wire):
+ * the plugin checks demo mode for the GOOUTSIDE hint and otherwise pulls the
+ * merchant-editable "Bribe code" label from the microcopy map. */
+
+/* PDP spine (P4): the tabs/upsells/related callbacks normally printed by
+ * woocommerce_after_single_product_summary are replaced by the custom
+ * content-single-product.php flow — "Complete the Ritual" cross-sells,
+ * accordions, reviews, trust block. */
+remove_action( 'woocommerce_after_single_product_summary', 'woocommerce_output_product_data_tabs', 10 );
+remove_action( 'woocommerce_after_single_product_summary', 'woocommerce_upsell_display', 15 );
+remove_action( 'woocommerce_after_single_product_summary', 'woocommerce_related_products', 20 );
+
+/* PDP accordions: Shipping & Returns and How It Ships join the product
+ * tabs API (Description is core, The Deed comes from the plugin). The
+ * reviews tab is unset here — reviews render as their own section after
+ * the accordions. */
+function tg_product_tab_shipping() {
+	echo '<p>' . esc_html__( 'Orders leave the greenhouse within 48 hours. Shipping is calculated at checkout like a responsible adult.', 'touchgrass' ) . '</p>';
+	echo '<p>' . esc_html__( 'Returns: 30 days, no interrogation. If your grass dies within 30 days, we replace it.', 'touchgrass' ) . '</p>';
+}
+function tg_product_tab_how_it_ships() {
+	echo '<p>' . esc_html__( 'Your grass arrives in the Deed Box: a deed-styled box with a tiny brass plaque bearing your plot’s name. The plaque is real brass. The deed is legally meaningless.', 'touchgrass' ) . '</p>';
+}
+add_filter( 'woocommerce_product_tabs', function ( $tabs ) {
+	unset( $tabs['reviews'] );
+	$tabs['tg_shipping'] = [
+		'title'    => __( 'Shipping & Returns', 'touchgrass' ),
+		'priority' => 30,
+		'callback' => 'tg_product_tab_shipping',
+	];
+	$tabs['tg_how_it_ships'] = [
+		'title'    => __( 'How It Ships', 'touchgrass' ),
+		'priority' => 35,
+		'callback' => 'tg_product_tab_how_it_ships',
+	];
+	return $tabs;
+} );
+
+/* Trust block (compact) after the cart. Uses the_content so it renders for
+ * both the classic shortcode cart and the block cart. */
+add_filter( 'the_content', function ( $content ) {
+	if ( function_exists( 'is_cart' ) && is_cart()
+		&& is_main_query() && in_the_loop()
+		&& function_exists( 'tg_trust_block' ) ) {
+		ob_start();
+		tg_trust_block( 'compact' );
+		$content .= ob_get_clean();
 	}
-	return $translated;
-}, 10, 3 );
+	return $content;
+} );
 
 /* WooCommerce content wrappers (replaces woocommerce.php so template overrides work). */
 add_action( 'woocommerce_before_main_content', function () {

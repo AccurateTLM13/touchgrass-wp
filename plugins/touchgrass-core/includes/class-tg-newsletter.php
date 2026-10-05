@@ -65,7 +65,7 @@ class TG_Newsletter {
 		$honeypot = isset( $_POST['tg_company'] ) ? trim( sanitize_text_field( wp_unslash( $_POST['tg_company'] ) ) ) : '';
 		if ( '' !== $honeypot ) {
 			/* Pretend success — no reason to tell a bot it was caught. */
-			wp_send_json_success( [ 'message' => __( 'You are on the list. The first invoice is being prepared.', 'touchgrass-core' ) ] );
+			wp_send_json_success( [ 'message' => function_exists( 'tg_microcopy' ) ? tg_microcopy( 'newsletter_success' ) : __( 'You are on the list. The first invoice is being prepared.', 'touchgrass-core' ) ] );
 		}
 
 		if ( self::rate_limited() ) {
@@ -92,7 +92,7 @@ class TG_Newsletter {
 		if ( 'subscribed' === $result['status'] ) {
 			self::record_local( $email, $slug, $result['id'] );
 			wp_send_json_success( [
-				'message' => __( 'You are on the list. The first invoice is being prepared.', 'touchgrass-core' ),
+				'message' => function_exists( 'tg_microcopy' ) ? tg_microcopy( 'newsletter_success' ) : __( 'You are on the list. The first invoice is being prepared.', 'touchgrass-core' ),
 			] );
 		}
 

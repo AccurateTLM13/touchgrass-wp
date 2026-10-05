@@ -108,13 +108,14 @@ class TG_Importer {
 
 	public static function faqs() {
 		return [
-			[ 'Is the grass real?', 'Yes. This is our most common question and, frankly, the most insulting. It is real grass, grown in a real greenhouse, by people with dirt under their nails.' ],
+			[ 'Is the grass real?', 'Certified 100% real grass. *Grass.' ],
+			[ 'Is this a joke?', 'Going outside is free. This is the paid alternative.' ],
+			[ 'What if my grass dies?', 'Then it lived a short, beautiful, indoor life. 30-day replacement, no interrogation.' ],
 			[ 'How often do I water it?', 'A light mist every two to three days. The Mister exists for exactly this ritual.' ],
-			[ 'Will it survive my apartment?', 'If you survive your apartment, the grass will. It asks less of you than your houseplants did.' ],
-			[ 'How fast is shipping?', 'Orders leave the greenhouse within 48 hours. The grass travels better than you do.' ],
-			[ 'What if my grass dies?', 'Then it lived a short, beautiful, indoor life. The 30-day regrow guarantee means a replacement ships free. No interrogation.' ],
-			[ "Isn't going outside free?", "Yes. And yet here you are. We're not judging. We're invoicing." ],
-			[ 'Is this a joke?', 'The grass is real. The price is real. Your refusal to go outside is real. Which part sounds like a joke?' ],
+			[ 'Can I eat it?', 'You can do anything once.' ],
+			[ 'Do you ship internationally?', 'Currently the US only. The grass is patriotic, but we\'re working on it.' ],
+			[ 'What\'s the difference between the plots?', 'Size, species, and attitude. The Daily Driver is the all-rounder; the Night Shift tolerates your cave.' ],
+			[ 'Why does checkout say "Invoice"?', 'Because we\'re not judging. We\'re invoicing.' ],
 		];
 	}
 
@@ -123,6 +124,48 @@ class TG_Importer {
 			[ 'Devon K.', 'Backend dev · The Daily Driver', 5, 'I bought it as a joke for our hackathon team. It is now the most important object in the office. Our standups are 40% calmer.' ],
 			[ 'Priya S.', 'ML engineer · The Pro Max', 5, 'My therapist asked what changed. I said grass. She wrote it down.' ],
 			[ 'Marcus T.', 'Frontend dev · The Night Shift', 5, 'It sits next to my monitor. I have named it. We are close.' ],
+		];
+	}
+
+	/**
+	 * SKUs that are grass plots (as opposed to accessories). Plots get a
+	 * harvest batch and cross-sells; accessories don't.
+	 *
+	 * @return string[]
+	 */
+	public static function plot_skus() {
+		return [ 'TG-DAILY', 'TG-COMMUTER', 'TG-STANDUP', 'TG-PROMAX', 'TG-PAIR', 'TG-STARTER', 'TG-NIGHT' ];
+	}
+
+	/**
+	 * Per-product "Deed" spec overrides. Fields not listed fall back to the
+	 * house defaults in TG_Product_Meta::deed_defaults().
+	 *
+	 * @return array SKU => [ field => value ]
+	 */
+	public static function deed_overrides() {
+		return [
+			'TG-DAILY'    => [ 'provenance' => __( 'Plot 7, Surrey Grassworks', 'touchgrass-core' ) ],
+			'TG-COMMUTER' => [ 'provenance' => __( 'Plot 12, Surrey Grassworks — travel division', 'touchgrass-core' ) ],
+			'TG-STANDUP'  => [ 'provenance' => __( 'Plot 3, Surrey Grassworks', 'touchgrass-core' ) ],
+			'TG-PROMAX'   => [ 'provenance' => __( 'Plot 1, Surrey Grassworks — championship row', 'touchgrass-core' ) ],
+			'TG-PAIR'     => [ 'provenance' => __( 'Plots 9 & 10, Surrey Grassworks', 'touchgrass-core' ) ],
+			'TG-STARTER'  => [ 'provenance' => __( 'Seed vault, Surrey Grassworks', 'touchgrass-core' ) ],
+			'TG-NIGHT'    => [ 'provenance' => __( 'Plot 13, Surrey Grassworks — low-light ward', 'touchgrass-core' ) ],
+			'TG-GNOME'    => [
+				'provenance' => __( 'Kiln 2, Stoke Ceramics', 'touchgrass-core' ),
+				'blades'     => __( '0 — ceramic', 'touchgrass-core' ),
+				'sunlight'   => __( 'Thrives in darkness. Like your hobbies.', 'touchgrass-core' ),
+				'watering'   => __( 'Never. He judges.', 'touchgrass-core' ),
+				'warranty'   => __( 'Lifetime. He is eternal.', 'touchgrass-core' ),
+			],
+			'TG-MISTER'   => [
+				'provenance' => __( 'Brassworks, Birmingham', 'touchgrass-core' ),
+				'blades'     => __( '0 — brass', 'touchgrass-core' ),
+				'sunlight'   => __( 'Not applicable.', 'touchgrass-core' ),
+				'watering'   => __( 'Contains water. Do not water the mister.', 'touchgrass-core' ),
+				'warranty'   => __( 'Refillable, endlessly.', 'touchgrass-core' ),
+			],
 		];
 	}
 
@@ -198,7 +241,7 @@ class TG_Importer {
 	}
 
 	protected static function tally() {
-		return [ 'created' => 0, 'updated' => 0, 'skipped' => 0, 'failed' => 0 ];
+		return [ 'created' => 0, 'updated' => 0, 'skipped' => 0, 'deleted' => 0, 'failed' => 0 ];
 	}
 
 	/* ---------- categories ---------- */
@@ -313,12 +356,27 @@ class TG_Importer {
 			$term = get_term_by( 'slug', $slug, 'product_cat' );
 			if ( $term ) { $cat_ids[ $slug ] = (int) $term->term_id; }
 		}
+		$deed_overrides = self::deed_overrides();
+		$plot_skus      = self::plot_skus();
 		foreach ( self::products() as $sku => $data ) {
 			$product_id = function_exists( 'wc_get_product_id_by_sku' ) ? wc_get_product_id_by_sku( $sku ) : 0;
 			$ids = [];
 			foreach ( $data['cats'] as $slug ) {
 				if ( isset( $cat_ids[ $slug ] ) ) { $ids[] = $cat_ids[ $slug ]; }
 			}
+			/* Voice fields: refreshed on every run, never commercial. */
+			$voice = function ( $product ) use ( $data, $sku, $deed_overrides, $plot_skus ) {
+				$product->update_meta_data( '_tg_tagline', $data['tagline'] );
+				$product->update_meta_data( '_tg_badge', $data['badge'] );
+				if ( in_array( $sku, $plot_skus, true ) ) {
+					$product->update_meta_data( '_tg_batch', __( 'Batch No. 7', 'touchgrass-core' ) );
+				}
+				if ( isset( $deed_overrides[ $sku ] ) ) {
+					foreach ( $deed_overrides[ $sku ] as $field => $value ) {
+						$product->update_meta_data( '_tg_deed_' . $field, $value );
+					}
+				}
+			};
 			if ( $product_id ) {
 				/* Existing product: adopt it into demo management if it
 				 * isn't flagged yet (e.g. imported by an older version),
@@ -331,8 +389,7 @@ class TG_Importer {
 				if ( ! get_post_meta( $product_id, '_tg_demo_managed', true ) ) {
 					update_post_meta( $product_id, '_tg_demo_managed', '1' );
 				}
-				$product->update_meta_data( '_tg_tagline', $data['tagline'] );
-				$product->update_meta_data( '_tg_badge', $data['badge'] );
+				$voice( $product );
 				if ( $ids ) { $product->set_category_ids( $ids ); }
 				if ( isset( $media_map[ $data['image'] ] ) && ! $product->get_image_id() ) {
 					$product->set_image_id( $media_map[ $data['image'] ] );
@@ -354,11 +411,27 @@ class TG_Importer {
 				if ( isset( $media_map[ $data['image'] ] ) ) {
 					$product->set_image_id( $media_map[ $data['image'] ] );
 				}
-				$product->update_meta_data( '_tg_tagline', $data['tagline'] );
-				$product->update_meta_data( '_tg_badge', $data['badge'] );
+				$voice( $product );
 				$product->update_meta_data( '_tg_demo_managed', '1' );
 				$id = $product->save();
 				if ( ! $id ) { $t['failed']++; } else { $t['created']++; }
+			}
+		}
+		/* Cross-sells: The Mister + Tiny Gnome on every plot ("Complete the
+		 * Ritual"). Set on create; on rerun only when the merchant hasn't
+		 * customized cross-sells yet. */
+		$mister_id = function_exists( 'wc_get_product_id_by_sku' ) ? wc_get_product_id_by_sku( 'TG-MISTER' ) : 0;
+		$gnome_id  = function_exists( 'wc_get_product_id_by_sku' ) ? wc_get_product_id_by_sku( 'TG-GNOME' ) : 0;
+		$xs = array_values( array_filter( [ (int) $mister_id, (int) $gnome_id ] ) );
+		if ( $xs ) {
+			foreach ( self::plot_skus() as $sku ) {
+				$pid = function_exists( 'wc_get_product_id_by_sku' ) ? wc_get_product_id_by_sku( $sku ) : 0;
+				if ( ! $pid ) { continue; }
+				$product = wc_get_product( $pid );
+				if ( ! $product ) { continue; }
+				if ( ! empty( $product->get_cross_sell_ids() ) ) { continue; }
+				$product->set_cross_sell_ids( array_diff( $xs, [ $pid ] ) );
+				$product->save();
 			}
 		}
 		return $t;
@@ -386,15 +459,39 @@ class TG_Importer {
 
 	/* ---------- FAQs ---------- */
 
+	/**
+	 * FAQs retired by the 7 → 8 migration (v2.2.0). Deleted on import only
+	 * when both title AND content still match the old demo copy — a merchant
+	 * who rewrote one keeps their version.
+	 *
+	 * @return array [ title, content ][]
+	 */
+	public static function retired_faqs() {
+		return [
+			[ 'Will it survive my apartment?', 'If you survive your apartment, the grass will. It asks less of you than your houseplants did.' ],
+			[ 'How fast is shipping?', 'Orders leave the greenhouse within 48 hours. The grass travels better than you do.' ],
+			[ "Isn't going outside free?", "Yes. And yet here you are. We're not judging. We're invoicing." ],
+		];
+	}
+
 	protected static function import_faqs() {
 		$t = self::tally();
 		$order = 0;
+		$live_slugs = [];
 		foreach ( self::faqs() as $faq ) {
 			$order += 10;
 			$slug = sanitize_title( $faq[0] );
+			$live_slugs[] = $slug;
 			$existing = get_page_by_path( $slug, OBJECT, 'tg_faq' );
 			if ( $existing ) {
-				$t['skipped']++;
+				/* Voice field: refresh answer + order on rerun, like the
+				 * product taglines. */
+				wp_update_post( [
+					'ID'           => $existing->ID,
+					'post_content' => $faq[1],
+				] );
+				update_post_meta( $existing->ID, '_tg_faq_order', $order );
+				$t['updated']++;
 				continue;
 			}
 			$post_id = wp_insert_post( [
@@ -410,6 +507,39 @@ class TG_Importer {
 				$t['created']++;
 			} else {
 				$t['failed']++;
+			}
+		}
+		/* Remove stale demo FAQs (e.g. retired questions from an older demo
+		 * set). Only demo-flagged posts are eligible; merchant-created FAQs
+		 * are never touched. */
+		$stale = get_posts( [
+			'post_type'   => 'tg_faq',
+			'post_status' => 'any',
+			'numberposts' => -1,
+			'meta_key'    => '_tg_demo_content',
+			'meta_value'  => '1',
+			'fields'      => 'ids',
+		] );
+		foreach ( $stale as $post_id ) {
+			$post = get_post( $post_id );
+			if ( $post && ! in_array( $post->post_name, $live_slugs, true ) ) {
+				wp_delete_post( $post_id, true );
+				$t['deleted']++;
+			}
+		}
+		/* One-time retirement of pre-flag demo FAQs: match on exact old
+		 * title + content so merchant rewrites are never removed. */
+		foreach ( self::retired_faqs() as $retired ) {
+			$slug = sanitize_title( $retired[0] );
+			if ( in_array( $slug, $live_slugs, true ) ) {
+				continue;
+			}
+			$post = get_page_by_path( $slug, OBJECT, 'tg_faq' );
+			if ( $post && trim( $post->post_content ) === $retired[1]
+				&& '' === get_post_meta( $post->ID, '_tg_demo_content', true ) ) {
+				/* Unflagged but byte-identical to old demo copy: safe to retire. */
+				wp_delete_post( $post->ID, true );
+				$t['deleted']++;
 			}
 		}
 		return $t;

@@ -1,6 +1,8 @@
 <?php
 /**
- * Front page: hero, confession, shop, how it works, reviews, FAQ, newsletter.
+ * Front page: announcement → hero → estates grid → trust strip →
+ * confession → Deed teaser → Grass Club → how it works → reviews →
+ * FAQ → newsletter.
  *
  * All business copy is editable in the Customizer (Touch Grass panel):
  * brand strings, images, CTA links, section visibility, stats, guarantees.
@@ -41,6 +43,7 @@ if ( '' === $trust_rating ) {
 $testimonials = tg_get_testimonials();
 $faqs = tg_get_faqs();
 $newsletter_on = tg_brand( 'tg_section_news' ) && function_exists( 'tg_newsletter_configured' ) && tg_newsletter_configured();
+$club_on = tg_brand( 'tg_section_club' ) && function_exists( 'tg_newsletter_configured' ) && tg_newsletter_configured();
 ?>
 
 <section class="hero">
@@ -78,32 +81,6 @@ $newsletter_on = tg_brand( 'tg_section_news' ) && function_exists( 'tg_newslette
 	</div>
 </section>
 
-<?php if ( tg_brand( 'tg_section_confession' ) ) : ?>
-<section class="confess" aria-labelledby="confess-title">
-	<div class="wrap confess-in">
-		<div class="eyebrow reveal"><?php esc_html_e( 'A moment of honesty', 'touchgrass' ); ?></div>
-		<h2 class="sec reveal" id="confess-title"><?php echo esc_html( tg_brand( 'tg_confession_title' ) ); ?></h2>
-		<p class="body reveal"><?php echo wp_kses_post( tg_brand( 'tg_confession_copy' ) ); ?></p>
-		<div class="vs reveal" role="table" aria-label="<?php esc_attr_e( 'Outside versus Touch Grass', 'touchgrass' ); ?>">
-			<div class="vs-row head" role="row"><span role="columnheader"></span><span role="columnheader"><?php esc_html_e( 'Outside', 'touchgrass' ); ?></span><span role="columnheader"><?php esc_html_e( 'Touch Grass', 'touchgrass' ); ?></span></div>
-			<?php
-			$rows = [
-				[ __( 'Price', 'touchgrass' ), __( 'Free', 'touchgrass' ), tg_brand( 'tg_confession_price' ) ],
-				[ __( 'Weather', 'touchgrass' ), __( 'Yes', 'touchgrass' ), __( 'No', 'touchgrass' ) ],
-				[ __( 'Bugs', 'touchgrass' ), __( 'So many', 'touchgrass' ), __( 'Zero', 'touchgrass' ) ],
-				[ __( 'Pants', 'touchgrass' ), __( 'Required', 'touchgrass' ), __( 'Optional', 'touchgrass' ) ],
-				[ __( 'Other people', 'touchgrass' ), __( 'Inevitable', 'touchgrass' ), __( 'None', 'touchgrass' ) ],
-				[ __( 'Effort', 'touchgrass' ), __( 'Walking', 'touchgrass' ), __( 'None', 'touchgrass' ) ],
-			];
-			foreach ( $rows as $r ) {
-				echo '<div class="vs-row" role="row"><span class="k" role="cell">' . esc_html( $r[0] ) . '</span><span class="w" role="cell">' . esc_html( $r[1] ) . '</span><span class="u" role="cell">' . esc_html( $r[2] ) . '</span></div>';
-			}
-			?>
-		</div>
-	</div>
-</section>
-<?php endif; ?>
-
 <?php if ( tg_brand( 'tg_section_shop' ) ) : ?>
 <section class="shop" id="shop" aria-labelledby="shop-title">
 	<div class="wrap">
@@ -137,6 +114,62 @@ $newsletter_on = tg_brand( 'tg_section_news' ) && function_exists( 'tg_newslette
 		<?php else : ?>
 		<p class="sec-sub"><?php esc_html_e( 'The greenhouse is being stocked. Check back shortly.', 'touchgrass' ); ?></p>
 		<?php endif; ?>
+	</div>
+</section>
+<?php endif; ?>
+
+<?php
+/* Trust strip (compact): guarantee card + fictional press + certification.
+ * Reviews live further down in the proof section. */
+if ( function_exists( 'tg_trust_block' ) ) {
+	tg_trust_block( 'compact' );
+}
+?>
+
+<?php if ( tg_brand( 'tg_section_confession' ) ) : ?>
+<section class="confess" aria-labelledby="confess-title">
+	<div class="wrap confess-in">
+		<div class="eyebrow reveal"><?php esc_html_e( 'A moment of honesty', 'touchgrass' ); ?></div>
+		<h2 class="sec reveal" id="confess-title"><?php echo esc_html( tg_brand( 'tg_confession_title' ) ); ?></h2>
+		<p class="body reveal"><?php echo wp_kses_post( tg_brand( 'tg_confession_copy' ) ); ?></p>
+		<div class="vs reveal" role="table" aria-label="<?php esc_attr_e( 'Outside versus Touch Grass', 'touchgrass' ); ?>">
+			<div class="vs-row head" role="row"><span role="columnheader"></span><span role="columnheader"><?php esc_html_e( 'Outside', 'touchgrass' ); ?></span><span role="columnheader"><?php esc_html_e( 'Touch Grass', 'touchgrass' ); ?></span></div>
+			<?php
+			$rows = [
+				[ __( 'Price', 'touchgrass' ), __( 'Free', 'touchgrass' ), tg_brand( 'tg_confession_price' ) ],
+				[ __( 'Weather', 'touchgrass' ), __( 'Yes', 'touchgrass' ), __( 'No', 'touchgrass' ) ],
+				[ __( 'Bugs', 'touchgrass' ), __( 'So many', 'touchgrass' ), __( 'Zero', 'touchgrass' ) ],
+				[ __( 'Pants', 'touchgrass' ), __( 'Required', 'touchgrass' ), __( 'Optional', 'touchgrass' ) ],
+				[ __( 'Other people', 'touchgrass' ), __( 'Inevitable', 'touchgrass' ), __( 'None', 'touchgrass' ) ],
+				[ __( 'Effort', 'touchgrass' ), __( 'Walking', 'touchgrass' ), __( 'None', 'touchgrass' ) ],
+			];
+			foreach ( $rows as $r ) {
+				echo '<div class="vs-row" role="row"><span class="k" role="cell">' . esc_html( $r[0] ) . '</span><span class="w" role="cell">' . esc_html( $r[1] ) . '</span><span class="u" role="cell">' . esc_html( $r[2] ) . '</span></div>';
+			}
+			?>
+		</div>
+	</div>
+</section>
+<?php endif; ?>
+
+<section class="deed-teaser" aria-labelledby="deed-teaser-title">
+	<div class="wrap">
+		<div class="eyebrow reveal"><?php esc_html_e( 'The paperwork', 'touchgrass' ); ?></div>
+		<h2 class="reveal" id="deed-teaser-title"><?php esc_html_e( 'Every plot ships with The Deed.', 'touchgrass' ); ?></h2>
+		<p class="reveal"><?php esc_html_e( 'Provenance. Blade count. Sunlight requirements. Warranty. Recorded on heavyweight paper, stamped, sealed — and legally meaningless. The brass plaque is real, though.', 'touchgrass' ); ?></p>
+		<a class="btn btn-secondary reveal" href="<?php echo esc_url( tg_shop_url() ); ?>"><?php esc_html_e( 'Inspect a plot', 'touchgrass' ); ?></a>
+	</div>
+</section>
+
+<?php if ( $club_on ) : ?>
+<section class="club" id="club" aria-labelledby="club-title">
+	<div class="wrap">
+		<div class="club-panel reveal">
+			<div class="eyebrow"><?php esc_html_e( 'Membership has its privileges', 'touchgrass' ); ?></div>
+			<h2 id="club-title"><?php esc_html_e( 'The Grass Club.', 'touchgrass' ); ?></h2>
+			<p><?php esc_html_e( 'Members get rare (but invoiced) emails, first cut of limited batches, and absolutely no additional going outside.', 'touchgrass' ); ?></p>
+			<?php tg_newsletter_form( 'club' ); ?>
+		</div>
 	</div>
 </section>
 <?php endif; ?>
@@ -233,6 +266,12 @@ $newsletter_on = tg_brand( 'tg_section_news' ) && function_exists( 'tg_newslette
 		<?php endforeach; ?>
 	</div>
 </section>
+<?php
+/* FAQPage structured data for the FAQ engine. */
+if ( function_exists( 'tg_faq_json_ld' ) ) {
+	tg_faq_json_ld();
+}
+?>
 <?php endif; ?>
 
 <?php if ( $newsletter_on ) : ?>
@@ -242,16 +281,7 @@ $newsletter_on = tg_brand( 'tg_section_news' ) && function_exists( 'tg_newslette
 			<div class="eyebrow"><?php esc_html_e( 'Field notes', 'touchgrass' ); ?></div>
 			<h2 id="news-title"><?php esc_html_e( 'Join the touched.', 'touchgrass' ); ?></h2>
 			<p><?php esc_html_e( 'One email a month. Occasionally about grass. Mostly about new ways to separate you from your money. Unsubscribe whenever; the grass will not take it personally.', 'touchgrass' ); ?></p>
-			<form class="news-form" id="newsForm" method="post" action="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>">
-				<?php wp_nonce_field( 'tg_newsletter', 'tg_newsletter_nonce' ); ?>
-				<label class="screen-reader-text" for="newsEmail"><?php esc_html_e( 'Email address', 'touchgrass' ); ?></label>
-				<input type="email" id="newsEmail" name="email" placeholder="you@indoors.dev" autocomplete="email" required>
-				<input type="text" name="tg_company" value="" tabindex="-1" autocomplete="off" aria-hidden="true" class="tg-honeypot">
-				<button type="submit"><?php esc_html_e( 'Subscribe', 'touchgrass' ); ?></button>
-			</form>
-			<div class="news-fine" id="newsFine"><?php esc_html_e( 'No spam. The grass insists.', 'touchgrass' ); ?></div>
-			<div class="news-done" id="newsDone" role="status"></div>
-			<div class="news-error" id="newsError" role="alert"></div>
+			<?php tg_newsletter_form(); ?>
 		</div>
 	</div>
 </section>

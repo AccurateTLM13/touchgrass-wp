@@ -315,3 +315,97 @@ h2.sec{font-family:var(--serif);font-weight:500;font-size:40px;letter-spacing:-.
   .single-product .product{margin-top:1.5rem}
   .woocommerce div.product div.summary .product_title{font-size:34px}
 }
+
+/* ---------- Gag-commerce patterns (v2.2.0) ---------- */
+
+/* Trust block: guarantee card + press strip + certification. */
+.tg-trust{padding:4.5rem 0;border-top:1px solid var(--line)}
+.tg-trust--compact{padding:3.5rem 0}
+.tg-guarantee-card{max-width:640px;margin:0 auto 3rem;text-align:center;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:2.5rem 2rem;box-shadow:var(--shadow-sm)}
+.tg-guarantee-title{font-family:var(--serif);font-size:26px;font-weight:600;margin-bottom:.6rem}
+.tg-guarantee-text{color:var(--muted);margin-bottom:.6rem}
+.tg-guarantee-line{font-style:italic;color:var(--green-deep);font-weight:500}
+.tg-press{max-width:900px;margin:0 auto 2.5rem;text-align:center}
+.tg-press-kicker{font-size:12px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--faint);margin-bottom:1.5rem}
+.tg-press-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:2rem}
+.tg-press-list blockquote{font-family:var(--serif);font-size:19px;font-style:italic;margin-bottom:.5rem}
+.tg-press-list cite{font-style:normal;font-size:13px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.tg-cert{text-align:center;font-size:14px;color:var(--muted)}
+.tg-cert-footnote{font-size:12px;color:var(--faint)}
+
+/* PDP spine. */
+.tg-pdp-badge{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--green-deep);background:var(--green-tint);border-radius:999px;padding:.35rem 1rem;margin-bottom:1rem}
+.tg-pdp-batch{font-size:14px;color:var(--muted);font-style:italic;margin:-.5rem 0 1rem}
+.tg-pdp-tagline{font-family:var(--serif);font-size:21px;font-style:italic;color:var(--green-deep);margin:-.25rem 0 1.25rem}
+.tg-per-blade{font-size:13.5px;color:var(--faint);margin:-.75rem 0 1.25rem}
+.woocommerce div.product .tg-per-blade{margin-top:-.9rem}
+
+/* Sticky add-to-cart: mobile only, JS-gated. */
+.tg-sticky-atc{position:fixed;left:0;right:0;bottom:0;z-index:70;background:rgba(250,247,242,.96);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-top:1px solid var(--line);transform:translateY(110%);transition:transform .32s ease;padding:.7rem 1rem calc(.7rem + env(safe-area-inset-bottom))}
+.tg-sticky-atc.is-visible{transform:none}
+.tg-sticky-atc-inner{max-width:640px;margin:0 auto;display:flex;align-items:center;gap:.9rem}
+.tg-sticky-atc-thumb img{width:52px;height:52px;object-fit:cover;border-radius:8px}
+.tg-sticky-atc-info{flex:1;min-width:0}
+.tg-sticky-atc-info strong{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tg-sticky-atc-price{font-size:13px;color:var(--muted)}
+.tg-sticky-atc-btn{background:var(--green);color:#fff;border:0;border-radius:10px;padding:.8rem 1.4rem;font-size:15px;font-weight:600;font-family:var(--sans);cursor:pointer;white-space:nowrap}
+.tg-sticky-atc-btn:hover{background:var(--green-deep)}
+@media(min-width:769px){.tg-sticky-atc{display:none}}
+
+/* Complete the Ritual cross-sells. */
+.tg-ritual{margin:4rem 0}
+.tg-ritual h2{font-family:var(--serif);font-size:32px;font-weight:600;margin-bottom:1.75rem;text-align:center}
+.tg-ritual-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,max-content));gap:1.5rem;justify-content:center}
+.tg-ritual-grid .pcard{max-width:300px}
+
+/* Product accordions. */
+.tg-accordions{max-width:760px;margin:0 auto 4rem;border-top:1px solid var(--line)}
+.tg-accordion{border-bottom:1px solid var(--line)}
+.tg-accordion summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:1.4rem .25rem;font-family:var(--serif);font-size:20px;font-weight:600}
+.tg-accordion summary::-webkit-details-marker{display:none}
+.tg-accordion summary::after{content:'+';font-family:var(--sans);font-size:24px;font-weight:400;color:var(--green);transition:transform .2s}
+.tg-accordion[open] summary::after{transform:rotate(45deg)}
+.tg-accordion summary:hover{color:var(--green-deep)}
+.tg-accordion-body{padding:0 .25rem 1.75rem;color:var(--muted)}
+.tg-accordion-body p{margin-bottom:1rem}
+.tg-accordion-body p:last-child{margin-bottom:0}
+
+/* The Deed tab spec sheet. */
+.tg-deed-lede{font-style:italic;margin-bottom:1.5rem}
+.tg-deed dl{margin:0}
+.tg-deed-row{display:grid;grid-template-columns:200px 1fr;gap:1.5rem;padding:.9rem 0;border-top:1px solid var(--line)}
+.tg-deed-row:last-child{border-bottom:1px solid var(--line)}
+.tg-deed-row dt{font-weight:600;color:var(--ink);font-size:14px;letter-spacing:.04em;text-transform:uppercase}
+.tg-deed-row dd{margin:0;font-family:var(--serif);font-size:18px}
+
+/* Deed teaser (homepage). */
+.deed-teaser{padding:5rem 0;background:var(--ink);color:#EDE8DB;text-align:center}
+.deed-teaser .eyebrow{color:var(--gold)}
+.deed-teaser h2{font-family:var(--serif);font-size:clamp(32px,4vw,48px);font-weight:600;margin-bottom:1.25rem}
+.deed-teaser p{max-width:620px;margin:0 auto 2rem;color:#B9BFAF;font-size:18px}
+.deed-teaser .btn-secondary{color:#EDE8DB;border-color:#4a554c}
+.deed-teaser .btn-secondary:hover{border-color:#EDE8DB}
+
+/* Grass Club (homepage). */
+.club{padding:5rem 0;border-top:1px solid var(--line)}
+.club-panel{max-width:680px;margin:0 auto;text-align:center;background:var(--green-tint);border-radius:calc(var(--r) * 1.5);padding:3.5rem 2.5rem}
+.club-panel h2{font-family:var(--serif);font-size:clamp(30px,3.6vw,42px);font-weight:600;margin-bottom:1rem}
+.club-panel p{color:var(--muted);margin-bottom:2rem}
+.club-panel .news-form{max-width:440px;margin:0 auto}
+.club-panel .news-fine{margin-top:1rem}
+
+/* Thank-you invoice banner + stock notices. */
+.tg-invoice-banner{background:var(--green-tint);border:1px solid var(--green);border-radius:var(--r);padding:1.5rem 1.75rem;margin-bottom:2rem;font-size:18px}
+.tg-invoice-banner strong{font-family:var(--serif);font-size:22px}
+.tg-low-stock{color:var(--err);font-weight:600}
+
+@media(max-width:768px){
+  .tg-press-list{grid-template-columns:1fr;gap:1.5rem}
+  .tg-deed-row{grid-template-columns:1fr;gap:.25rem}
+  .tg-ritual-grid{grid-template-columns:1fr 1fr}
+  .club-panel{padding:2.5rem 1.5rem}
+}
+@media(max-width:600px){
+  .tg-ritual-grid{grid-template-columns:1fr}
+  .tg-ritual-grid .pcard{max-width:none}
+}

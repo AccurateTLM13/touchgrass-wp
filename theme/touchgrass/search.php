@@ -10,7 +10,7 @@
 			<?php the_excerpt(); ?>
 		</article>
 	<?php endwhile; the_posts_pagination(); else : ?>
-		<p><?php _e( 'No results. Try "grass".', 'touchgrass' ); ?></p>
+		<p><?php echo esc_html( function_exists( 'tg_microcopy' ) ? tg_microcopy( 'empty_search' ) : __( 'No results. Try "grass".', 'touchgrass' ) ); ?></p>
 	<?php endif; ?>
 </div>
 <?php get_footer(); ?>

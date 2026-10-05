@@ -94,3 +94,61 @@ defects; all were fixed and covered by new regression tests.
 
 **Results after RC2:** `tests/integration.php` **36/36 PASS** (21 original +
 15 new), `tests/http-tests.sh` **17/17 PASS**, all PHP files pass `php -l`.
+
+## v2.2.0 — Gag-commerce patterns pass (2026-10-04)
+
+All 10 "professional gag commerce" patterns implemented (theme = presentation,
+plugin = functionality). Demo mode stays OFF; importer stays idempotent,
+admin-only, non-publishing, merchant-edit-preserving.
+
+### Automated
+
+- `tests/integration.php`: **57/57 PASS** (36 pre-existing + 21 new).
+  New coverage: microcopy defaults (12 keys) + merchant override + empty-override
+  fallback; checkout button and processing-email heading wired to the map;
+  "The Deed" tab registered with 5 spec rows and house defaults; per-blade
+  line computes from live price; importer converges to exactly 8 FAQs across
+  reruns (stale demo FAQs retired, merchant FAQs untouched); `_tg_batch`
+  set on plots (empty on accessories); Mister + Gnome cross-sells on every plot.
+- `tests/http-tests.sh`: **31/31 PASS** (17 pre-existing + 14 new).
+  New coverage: PDP renders with no fatal (plugin on and off); Deed tab,
+  "Complete the Ritual" cross-sells, sticky ATC markup, per-blade line, batch
+  line, "How It Ships" accordion, trust block, fictional press strip, and
+  microcopy ATC text all present; homepage has Deed teaser + FAQ JSON-LD;
+  coupon label resolves to "Bribe code" through the map.
+- `php -l`: every changed PHP file passes. `node --check`: main.js passes.
+- `.pot` files regenerated for both text domains (new strings included).
+
+### Manual / runtime (screenshot-verified)
+
+- **Homepage (1440px + 390px):** announcement → hero → estates grid (9 products)
+  → trust strip (guarantee card + fictional press + "Certified 100% Real Grass*
+  *grass") → confession → "The Deed" teaser (dark) → how-it-works → reviews →
+  FAQ (8 items) → footer. Grass Club + newsletter sections correctly hidden
+  (newsletter unconfigured in playground); both gated on `tg_section_club` /
+  `tg_section_news` + `tg_newsletter_configured()`.
+- **PDP (1440px + 390px):** badge → H1 → "Harvest Batch No. 7 — cut this
+  morning, invoiced this afternoon." → tagline → $29.00 + "≈ $0.001 per blade"
+  → "Claim Your Plot" ATC → Complete the Ritual (Mister + Gnome) →
+  accordions (Description / The Deed / Shipping & Returns / How It Ships) →
+  reviews → trust block (compact).
+- **Sticky ATC (390px, scrolled):** appears after scrolling past the main form;
+  thumbnail + title + price + "Claim Your Plot" button (triggers the real form).
+  Hidden on desktop via media query; `aria-hidden` toggles with visibility.
+- **Cart:** empty message reads "Nothing here. Like your step count." (classic
+  filter + block-cart `render_block` swap of the default text only); trust block
+  (compact) appended via `the_content` so it renders for both cart types.
+- **Checkout:** empty cart redirects to cart (standard WooCommerce behavior);
+  "Complete Invoice" button text verified through the
+  `woocommerce_order_button_text` filter.
+
+### Known limitations
+
+- **Block-based checkout button:** `woocommerce_order_button_text` covers the
+  classic checkout; the block checkout renders its button label via JS. Same
+  applies to the block cart's coupon placeholder (the PHP gettext filter covers
+  the classic cart; the map value was verified through the filter directly).
+- **Live newsletter subscribe / real gateway / email delivery:** still not
+  exercised (no API keys) — unchanged from v2.1.1.
+- **`.github/workflows/ci.yml`:** still needs the one manual web-UI add
+  (API token lacks `workflow` scope).
