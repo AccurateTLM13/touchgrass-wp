@@ -64,4 +64,26 @@ $WP option update tg_demo_mode 0 --quiet 2>/dev/null
 CART_HTML=$(curl -s --max-time 20 "$CART_URL")
 echo "$CART_HTML" | grep -q "tg-demo-note" && no "H6 demo notice gone when demo off" "still present" || ok "H6 demo notice gone when demo off"
 
+# H8: v2.2.0 gag patterns — homepage sections, PDP spine, trust block
+PDP_URL=$($WP eval "echo get_permalink(wc_get_product_id_by_sku('TG-DAILY'));" 2>/dev/null | tail -1)
+PDP_HTML=$(curl -s --max-time 20 "$PDP_URL")
+echo "$PDP_HTML" | grep -qi "fatal error\|call to undefined" && no "H8 PDP no fatal" "fatal text found" || ok "H8 PDP no fatal"
+echo "$PDP_HTML" | grep -q "The Deed" && ok "H8 PDP has Deed tab" || no "H8 PDP has Deed tab" "missing"
+echo "$PDP_HTML" | grep -q "Complete the Ritual" && ok "H8 PDP has ritual cross-sells" || no "H8 PDP has ritual cross-sells" "missing"
+echo "$PDP_HTML" | grep -q "tg-sticky-atc" && ok "H8 PDP has sticky ATC" || no "H8 PDP has sticky ATC" "missing"
+echo "$PDP_HTML" | grep -q "per blade" && ok "H8 PDP has per-blade line" || no "H8 PDP has per-blade line" "missing"
+echo "$PDP_HTML" | grep -q "Batch No. 7" && ok "H8 PDP shows batch" || no "H8 PDP shows batch" "missing"
+echo "$PDP_HTML" | grep -q "How It Ships" && ok "H8 PDP has How It Ships accordion" || no "H8 PDP has How It Ships accordion" "missing"
+echo "$PDP_HTML" | grep -q "30-Day Photosynthesis Promise" && ok "H8 PDP has trust block" || no "H8 PDP has trust block" "missing"
+echo "$PDP_HTML" | grep -q "Screen Time Weekly" && ok "H8 PDP press strip fictional" || no "H8 PDP press strip fictional" "missing"
+echo "$PDP_HTML" | grep -q "Claim Your Plot" && ok "H8 PDP ATC uses microcopy" || no "H8 PDP ATC uses microcopy" "missing"
+NEWS_CFG=$($WP eval "echo function_exists('tg_newsletter_configured') && tg_newsletter_configured() ? 'yes' : 'no';" 2>/dev/null | tail -1)
+if [ "$NEWS_CFG" = "yes" ]; then echo "$HOME_HTML" | grep -q "The Grass Club" && ok "H8 homepage has Grass Club" || no "H8 homepage has Grass Club" "missing"; else ok "H8 Grass Club skipped (newsletter unconfigured)"; fi
+echo "$HOME_HTML" | grep -q "Every plot ships with The Deed" && ok "H8 homepage has Deed teaser" || no "H8 homepage has Deed teaser" "missing"
+echo "$HOME_HTML" | grep -q "application/ld+json" && ok "H8 homepage has FAQ JSON-LD" || no "H8 homepage has FAQ JSON-LD" "missing"
+# Note: the playground cart page uses WooCommerce blocks (JS-rendered), so the
+# PHP gettext filter applies to the classic cart path. Verify the mechanism.
+COUPON_LABEL=$($WP eval "echo apply_filters('gettext', 'Coupon code', 'Coupon code', 'woocommerce');" 2>/dev/null | tail -1)
+[ "$COUPON_LABEL" = "Bribe code" ] && ok "H8 coupon label from microcopy map" || no "H8 coupon label from microcopy map" "got: $COUPON_LABEL"
+
 echo ""; echo "$PASS passed, $FAIL failed"

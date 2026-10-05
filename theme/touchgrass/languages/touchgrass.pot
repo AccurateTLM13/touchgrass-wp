@@ -2,24 +2,24 @@
 # This file is distributed under the GNU General Public License v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Touch Grass 2.1.1\n"
+"Project-Id-Version: Touch Grass 2.2.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/touchgrass\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-03T21:41:40+00:00\n"
+"POT-Creation-Date: 2026-10-05T02:58:05+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: touchgrass\n"
 
 #. Theme Name of the theme
 #: style.css
-#: front-page.php:69
-#: front-page.php:88
-#: inc/customizer.php:238
-#: inc/template-tags.php:189
+#: front-page.php:72
+#: front-page.php:136
+#: inc/customizer.php:239
+#: inc/template-tags.php:190
 msgid "Touch Grass"
 msgstr ""
 
@@ -87,7 +87,7 @@ msgstr ""
 
 #: footer.php:31
 #: header.php:38
-#: inc/customizer.php:229
+#: inc/customizer.php:230
 msgid "Reviews"
 msgstr ""
 
@@ -118,161 +118,177 @@ msgstr ""
 msgid "© %1$s %2$s. %3$s"
 msgstr ""
 
-#: front-page.php:73
+#: front-page.php:76
 msgid "A tray of lush green grass photographed in a studio"
 msgstr ""
 
-#: front-page.php:76
+#: front-page.php:79
 msgid "The Daily Driver, photographed like it matters."
 msgstr ""
 
-#: front-page.php:84
-msgid "A moment of honesty"
-msgstr ""
-
-#: front-page.php:87
-msgid "Outside versus Touch Grass"
-msgstr ""
-
-#: front-page.php:88
-msgid "Outside"
-msgstr ""
-
-#: front-page.php:91
-msgid "Price"
-msgstr ""
-
-#: front-page.php:91
-msgid "Free"
-msgstr ""
-
-#: front-page.php:92
-msgid "Weather"
-msgstr ""
-
-#: front-page.php:92
-msgid "Yes"
-msgstr ""
-
-#: front-page.php:92
-msgid "No"
-msgstr ""
-
-#: front-page.php:93
-msgid "Bugs"
-msgstr ""
-
-#: front-page.php:93
-msgid "So many"
-msgstr ""
-
-#: front-page.php:93
-msgid "Zero"
-msgstr ""
-
-#: front-page.php:94
-msgid "Pants"
-msgstr ""
-
-#: front-page.php:94
-msgid "Required"
-msgstr ""
-
-#: front-page.php:94
-msgid "Optional"
-msgstr ""
-
-#: front-page.php:95
-msgid "Other people"
-msgstr ""
-
-#: front-page.php:95
-msgid "Inevitable"
-msgstr ""
-
-#: front-page.php:95
-#: front-page.php:96
-msgid "None"
-msgstr ""
-
-#: front-page.php:96
-msgid "Effort"
-msgstr ""
-
-#: front-page.php:96
-msgid "Walking"
-msgstr ""
-
-#: front-page.php:112
+#: front-page.php:89
 msgid "The lineup"
 msgstr ""
 
-#: front-page.php:138
+#: front-page.php:115
 msgid "The greenhouse is being stocked. Check back shortly."
 msgstr ""
 
-#: front-page.php:148
-msgid "The program"
+#: front-page.php:132
+msgid "A moment of honesty"
 msgstr ""
 
-#: front-page.php:149
-msgid "Three steps."
+#: front-page.php:135
+msgid "Outside versus Touch Grass"
 msgstr ""
 
-#: front-page.php:149
-msgid "Zero going outside."
+#: front-page.php:136
+msgid "Outside"
 msgstr ""
 
-#: front-page.php:166
-msgid "How Touch Grass works"
+#: front-page.php:139
+msgid "Price"
+msgstr ""
+
+#: front-page.php:139
+msgid "Free"
+msgstr ""
+
+#: front-page.php:140
+msgid "Weather"
+msgstr ""
+
+#: front-page.php:140
+msgid "Yes"
+msgstr ""
+
+#: front-page.php:140
+msgid "No"
+msgstr ""
+
+#: front-page.php:141
+msgid "Bugs"
+msgstr ""
+
+#: front-page.php:141
+msgid "So many"
+msgstr ""
+
+#: front-page.php:141
+msgid "Zero"
+msgstr ""
+
+#: front-page.php:142
+msgid "Pants"
+msgstr ""
+
+#: front-page.php:142
+msgid "Required"
+msgstr ""
+
+#: front-page.php:142
+msgid "Optional"
+msgstr ""
+
+#: front-page.php:143
+msgid "Other people"
+msgstr ""
+
+#: front-page.php:143
+msgid "Inevitable"
+msgstr ""
+
+#: front-page.php:143
+#: front-page.php:144
+msgid "None"
+msgstr ""
+
+#: front-page.php:144
+msgid "Effort"
+msgstr ""
+
+#: front-page.php:144
+msgid "Walking"
+msgstr ""
+
+#: front-page.php:157
+msgid "The paperwork"
+msgstr ""
+
+#: front-page.php:158
+msgid "Every plot ships with The Deed."
+msgstr ""
+
+#: front-page.php:159
+msgid "Provenance. Blade count. Sunlight requirements. Warranty. Recorded on heavyweight paper, stamped, sealed — and legally meaningless. The brass plaque is real, though."
+msgstr ""
+
+#: front-page.php:160
+msgid "Inspect a plot"
+msgstr ""
+
+#: front-page.php:168
+msgid "Membership has its privileges"
 msgstr ""
 
 #: front-page.php:169
-msgid "Hands gently touching a tray of grass"
+msgid "The Grass Club."
+msgstr ""
+
+#: front-page.php:170
+msgid "Members get rare (but invoiced) emails, first cut of limited batches, and absolutely no additional going outside."
+msgstr ""
+
+#: front-page.php:181
+msgid "The program"
 msgstr ""
 
 #: front-page.php:182
-msgid "The touched"
+msgid "Three steps."
 msgstr ""
 
-#: front-page.php:214
-msgid "A Touch Grass plot on a desk next to a laptop"
+#: front-page.php:182
+msgid "Zero going outside."
+msgstr ""
+
+#: front-page.php:199
+msgid "How Touch Grass works"
+msgstr ""
+
+#: front-page.php:202
+msgid "Hands gently touching a tray of grass"
 msgstr ""
 
 #: front-page.php:215
-msgid "The Daily Driver, at work."
-msgstr ""
-
-#: front-page.php:225
-msgid "Objections"
-msgstr ""
-
-#: front-page.php:226
-msgid "Overruled."
-msgstr ""
-
-#: front-page.php:242
-msgid "Field notes"
-msgstr ""
-
-#: front-page.php:243
-msgid "Join the touched."
-msgstr ""
-
-#: front-page.php:244
-msgid "One email a month. Occasionally about grass. Mostly about new ways to separate you from your money. Unsubscribe whenever; the grass will not take it personally."
+msgid "The touched"
 msgstr ""
 
 #: front-page.php:247
-msgid "Email address"
+msgid "A Touch Grass plot on a desk next to a laptop"
 msgstr ""
 
-#: front-page.php:250
-msgid "Subscribe"
+#: front-page.php:248
+msgid "The Daily Driver, at work."
 msgstr ""
 
-#: front-page.php:252
-msgid "No spam. The grass insists."
+#: front-page.php:258
+msgid "Objections"
+msgstr ""
+
+#: front-page.php:259
+msgid "Overruled."
+msgstr ""
+
+#: front-page.php:281
+msgid "Field notes"
+msgstr ""
+
+#: front-page.php:282
+msgid "Join the touched."
+msgstr ""
+
+#: front-page.php:283
+msgid "One email a month. Occasionally about grass. Mostly about new ways to separate you from your money. Unsubscribe whenever; the grass will not take it personally."
 msgstr ""
 
 #: functions.php:21
@@ -315,8 +331,24 @@ msgstr ""
 msgid "Checkout is a mock — no card is charged, no grass is actually shipped. Yet."
 msgstr ""
 
-#: functions.php:130
-msgid "Promo code (try GOOUTSIDE)"
+#: functions.php:141
+msgid "Orders leave the greenhouse within 48 hours. Shipping is calculated at checkout like a responsible adult."
+msgstr ""
+
+#: functions.php:142
+msgid "Returns: 30 days, no interrogation. If your grass dies within 30 days, we replace it."
+msgstr ""
+
+#: functions.php:145
+msgid "Your grass arrives in the Deed Box: a deed-styled box with a tiny brass plaque bearing your plot’s name. The plaque is real brass. The deed is legally meaningless."
+msgstr ""
+
+#: functions.php:150
+msgid "Shipping & Returns"
+msgstr ""
+
+#: functions.php:155
+msgid "How It Ships"
 msgstr ""
 
 #: header.php:12
@@ -400,7 +432,7 @@ msgid "Hero secondary button label"
 msgstr ""
 
 #: inc/customizer.php:76
-#: inc/customizer.php:228
+#: inc/customizer.php:229
 msgid "How it works"
 msgstr ""
 
@@ -676,39 +708,43 @@ msgstr ""
 msgid "Show newsletter section"
 msgstr ""
 
-#: inc/customizer.php:213
+#: inc/customizer.php:211
+msgid "Show “Grass Club” section"
+msgstr ""
+
+#: inc/customizer.php:214
 msgid "Promo code (displayed in announcements)"
 msgstr ""
 
-#: inc/customizer.php:217
+#: inc/customizer.php:218
 msgid "Display only. The actual discount lives in WooCommerce → Coupons."
 msgstr ""
 
-#: inc/customizer.php:224
+#: inc/customizer.php:225
 msgid "Announcement bar"
 msgstr ""
 
-#: inc/customizer.php:225
+#: inc/customizer.php:226
 msgid "Homepage hero"
 msgstr ""
 
-#: inc/customizer.php:226
+#: inc/customizer.php:227
 msgid "Honesty section"
 msgstr ""
 
-#: inc/customizer.php:227
+#: inc/customizer.php:228
 msgid "Shop section"
 msgstr ""
 
-#: inc/customizer.php:230
+#: inc/customizer.php:231
 msgid "Guarantees"
 msgstr ""
 
-#: inc/customizer.php:231
+#: inc/customizer.php:232
 msgid "Footer"
 msgstr ""
 
-#: inc/customizer.php:232
+#: inc/customizer.php:233
 msgid "Section visibility"
 msgstr ""
 
@@ -717,85 +753,159 @@ msgid "Is the grass real?"
 msgstr ""
 
 #: inc/template-tags.php:22
-msgid "Yes. This is our most common question and, frankly, the most insulting. It is real grass, grown in a real greenhouse, by people with dirt under their nails."
+msgid "Certified 100% real grass. *Grass."
 msgstr ""
 
 #: inc/template-tags.php:23
-msgid "How often do I water it?"
-msgstr ""
-
-#: inc/template-tags.php:23
-msgid "A light mist every two to three days. The Mister exists for exactly this ritual."
-msgstr ""
-
-#: inc/template-tags.php:24
-msgid "Will it survive my apartment?"
-msgstr ""
-
-#: inc/template-tags.php:24
-msgid "If you survive your apartment, the grass will. It asks less of you than your houseplants did."
-msgstr ""
-
-#: inc/template-tags.php:25
-msgid "How fast is shipping?"
-msgstr ""
-
-#: inc/template-tags.php:25
-msgid "Orders leave the greenhouse within 48 hours. The grass travels better than you do."
-msgstr ""
-
-#: inc/template-tags.php:26
-msgid "What if my grass dies?"
-msgstr ""
-
-#: inc/template-tags.php:26
-msgid "Then it lived a short, beautiful, indoor life. The 30-day regrow guarantee means a replacement ships free. No interrogation."
-msgstr ""
-
-#: inc/template-tags.php:27
-msgid "Isn't going outside free?"
-msgstr ""
-
-#: inc/template-tags.php:27
-msgid "Yes. And yet here you are. We're not judging. We're invoicing."
-msgstr ""
-
-#: inc/template-tags.php:28
 msgid "Is this a joke?"
 msgstr ""
 
-#: inc/template-tags.php:28
-msgid "The grass is real. The price is real. Your refusal to go outside is real. Which part sounds like a joke?"
+#: inc/template-tags.php:23
+msgid "Going outside is free. This is the paid alternative."
 msgstr ""
 
-#: inc/template-tags.php:65
+#: inc/template-tags.php:24
+msgid "What if my grass dies?"
+msgstr ""
+
+#: inc/template-tags.php:24
+msgid "Then it lived a short, beautiful, indoor life. 30-day replacement, no interrogation."
+msgstr ""
+
+#: inc/template-tags.php:25
+msgid "How often do I water it?"
+msgstr ""
+
+#: inc/template-tags.php:25
+msgid "A light mist every two to three days. The Mister exists for exactly this ritual."
+msgstr ""
+
+#: inc/template-tags.php:26
+msgid "Can I eat it?"
+msgstr ""
+
+#: inc/template-tags.php:26
+msgid "You can do anything once."
+msgstr ""
+
+#: inc/template-tags.php:27
+msgid "Do you ship internationally?"
+msgstr ""
+
+#: inc/template-tags.php:27
+msgid "Currently the US only. The grass is patriotic, but we're working on it."
+msgstr ""
+
+#: inc/template-tags.php:28
+msgid "What's the difference between the plots?"
+msgstr ""
+
+#: inc/template-tags.php:28
+msgid "Size, species, and attitude. The Daily Driver is the all-rounder; the Night Shift tolerates your cave."
+msgstr ""
+
+#: inc/template-tags.php:29
+msgid "Why does checkout say \"Invoice\"?"
+msgstr ""
+
+#: inc/template-tags.php:29
+msgid "Because we're not judging. We're invoicing."
+msgstr ""
+
+#: inc/template-tags.php:66
 msgid "\"I bought it as a joke for our hackathon team. It is now the most important object in the office. Our standups are 40% calmer.\""
 msgstr ""
 
-#: inc/template-tags.php:65
+#: inc/template-tags.php:66
 msgid "Backend dev · The Daily Driver"
 msgstr ""
 
-#: inc/template-tags.php:66
+#: inc/template-tags.php:67
 msgid "\"My therapist asked what changed. I said grass. She wrote it down.\""
 msgstr ""
 
-#: inc/template-tags.php:66
+#: inc/template-tags.php:67
 msgid "ML engineer · The Pro Max"
 msgstr ""
 
-#: inc/template-tags.php:67
+#: inc/template-tags.php:68
 msgid "\"It sits next to my monitor. I have named it. We are close.\""
 msgstr ""
 
-#: inc/template-tags.php:67
+#: inc/template-tags.php:68
 msgid "Frontend dev · The Night Shift"
 msgstr ""
 
 #. translators: 1: average rating, 2: review count
-#: inc/template-tags.php:149
+#: inc/template-tags.php:150
 #, php-format
 msgid "%1$s from %2$s reviews"
+msgstr ""
+
+#: inc/template-tags.php:203
+msgid "Why trust Touch Grass"
+msgstr ""
+
+#: inc/template-tags.php:210
+msgid "Certified 100% Real Grass*"
+msgstr ""
+
+#: inc/template-tags.php:210
+msgid "*grass"
+msgstr ""
+
+#: inc/template-tags.php:218
+msgid "The future of touching grass."
+msgstr ""
+
+#: inc/template-tags.php:219
+msgid "We reviewed it between naps. Five naps."
+msgstr ""
+
+#: inc/template-tags.php:220
+msgid "Real grass, real invoice. Journalism."
+msgstr ""
+
+#: inc/template-tags.php:223
+msgid "Press"
+msgstr ""
+
+#: inc/template-tags.php:224
+msgid "As reviewed by publications that definitely exist"
+msgstr ""
+
+#: inc/template-tags.php:254
+#, php-format
+msgid "≈ $%s per blade"
+msgstr ""
+
+#: inc/template-tags.php:291
+msgid "Your money is safe. For now."
+msgstr ""
+
+#: inc/template-tags.php:294
+msgid "30-Day Photosynthesis Promise"
+msgstr ""
+
+#: inc/template-tags.php:295
+msgid "If your grass dies within 30 days, we replace it. No interrogation."
+msgstr ""
+
+#: inc/template-tags.php:327
+#: inc/template-tags.php:328
+msgid "Complete the Ritual"
+msgstr ""
+
+#: inc/template-tags.php:398
+msgid "No spam. The grass insists."
+msgstr ""
+
+#: inc/template-tags.php:403
+msgid "Email address"
+msgstr ""
+
+#: inc/template-tags.php:406
+msgid "Subscribe"
 msgstr ""
 
 #: search.php:3
@@ -821,4 +931,14 @@ msgstr ""
 
 #: woocommerce/content-product.php:22
 msgid "Sale"
+msgstr ""
+
+#. translators: %s: batch label, e.g. "Batch No. 7"
+#: woocommerce/content-single-product.php:48
+#, php-format
+msgid "Harvest %s — cut this morning, invoiced this afternoon."
+msgstr ""
+
+#: woocommerce/content-single-product.php:90
+msgid "Add to cart"
 msgstr ""

@@ -208,6 +208,7 @@ function tg_brand_fields() {
 		'tg_section_proof'      => [ 'label' => __( 'Show reviews section', 'touchgrass' ), 'default' => true, 'type' => 'checkbox', 'section' => 'tg_sections' ],
 		'tg_section_faq'        => [ 'label' => __( 'Show FAQ section', 'touchgrass' ), 'default' => true, 'type' => 'checkbox', 'section' => 'tg_sections' ],
 		'tg_section_news'       => [ 'label' => __( 'Show newsletter section', 'touchgrass' ), 'default' => true, 'type' => 'checkbox', 'section' => 'tg_sections' ],
+		'tg_section_club'       => [ 'label' => __( 'Show “Grass Club” section', 'touchgrass' ), 'default' => true, 'type' => 'checkbox', 'section' => 'tg_sections' ],
 		/* Legacy keys kept for backward compatibility */
 		'tg_promo_code' => [
 			'label'   => __( 'Promo code (displayed in announcements)', 'touchgrass' ),

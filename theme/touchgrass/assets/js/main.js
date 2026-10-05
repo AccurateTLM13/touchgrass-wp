@@ -39,17 +39,20 @@
 	});
 
 	// Newsletter: real AJAX subscribe. No fake success.
-	var form = document.getElementById('newsForm');
-	if (form) {
+	// Form-scoped: every .tg-news-form on the page (footer newsletter,
+	// Grass Club) gets its own handler bound to its own status elements.
+	document.querySelectorAll('.tg-news-form').forEach(function (form) {
+		var wrap = form.closest('.tg-news-wrap') || document;
 		form.addEventListener('submit', function (ev) {
 			ev.preventDefault();
 			submitNewsletter(false);
 		});
 
 		function submitNewsletter(retried) {
-			var email = document.getElementById('newsEmail');
-			var done = document.getElementById('newsDone');
-			var errBox = document.getElementById('newsError');
+			var email = form.querySelector('input[type="email"]');
+			var done = wrap.querySelector('.news-done');
+			var errBox = wrap.querySelector('.news-error');
+			var fine = wrap.querySelector('.news-fine');
 			var btn = form.querySelector('button[type="submit"]');
 			if (errBox) { errBox.style.display = 'none'; errBox.textContent = ''; }
 			if (!email || email.value.indexOf('@') < 0) { if (email) email.focus(); return; }
@@ -61,7 +64,7 @@
 				.then(function (json) {
 					if (json && json.success) {
 						form.style.display = 'none';
-						document.getElementById('newsFine').style.display = 'none';
+						if (fine) { fine.style.display = 'none'; }
 						if (done) { done.textContent = json.data.message; done.style.display = 'block'; }
 					} else if (json && json.data && json.data.code === 'expired_nonce' && !retried) {
 						/* Long-cached page: fetch a fresh nonce and retry once, silently. */
@@ -96,7 +99,7 @@
 				})
 				.catch(fail);
 		}
-	}
+	});
 	// Mobile nav toggle.
 	var toggle = document.querySelector('.nav-toggle');
 	var nav = document.getElementById('primary-nav');
@@ -118,5 +121,33 @@
 				toggle.focus();
 			}
 		});
+	}
+
+	// Sticky add-to-cart (PDP, mobile): appears after scrolling past the
+	// main add-to-cart form. The sticky button triggers the real form's
+	// button so validation and extensions keep working.
+	var sticky = document.querySelector('.tg-sticky-atc');
+	var mainForm = document.querySelector('.summary form.cart');
+	if (sticky && mainForm) {
+		var stickyBtn = sticky.querySelector('.tg-sticky-atc-btn');
+		var realBtn = mainForm.querySelector('.single_add_to_cart_button');
+		function setSticky(visible) {
+			sticky.classList.toggle('is-visible', visible);
+			sticky.setAttribute('aria-hidden', visible ? 'false' : 'true');
+		}
+		if ('IntersectionObserver' in window) {
+			var io = new IntersectionObserver(function (entries) {
+				entries.forEach(function (entry) {
+					setSticky(!entry.isIntersecting && entry.boundingClientRect.top < 0);
+				});
+			}, { threshold: 0 });
+			io.observe(mainForm);
+		}
+		if (stickyBtn) {
+			stickyBtn.addEventListener('click', function () {
+				if (realBtn) { realBtn.click(); }
+				else { mainForm.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+			});
+		}
 	}
 })();

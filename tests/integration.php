@@ -184,5 +184,50 @@ t( 'importer rerun preserves merchant stat edits', 'Merchant stat' === get_theme
 remove_theme_mod( 'tg_stat_1_value' ); /* restore demo state */
 TG_Importer::run();
 
+/* ---------- 15. v2.2.0: microcopy map defaults + override ---------- */
+t( 'microcopy default add_to_cart', 'Claim Your Plot' === tg_microcopy( 'add_to_cart' ), tg_microcopy( 'add_to_cart' ) );
+t( 'microcopy default empty_cart', 'Nothing here. Like your step count.' === tg_microcopy( 'empty_cart' ) );
+t( 'microcopy default checkout_button', 'Complete Invoice' === tg_microcopy( 'checkout_button' ) );
+t( 'microcopy default order_received_title', 'Invoice paid. Grass dispatched.' === tg_microcopy( 'order_received_title' ) );
+t( 'microcopy unknown key returns empty', '' === tg_microcopy( 'nope_not_a_key' ) );
+update_option( 'tg_microcopy_coupon_label', 'Merchant bribe label' );
+t( 'microcopy override wins', 'Merchant bribe label' === tg_microcopy( 'coupon_label' ), tg_microcopy( 'coupon_label' ) );
+update_option( 'tg_microcopy_coupon_label', '' );
+t( 'microcopy empty override falls back to default', 'Bribe code' === tg_microcopy( 'coupon_label' ) );
+delete_option( 'tg_microcopy_coupon_label' );
+
+/* ---------- 16. v2.2.0: checkout button + email heading wired to map ---------- */
+t( 'checkout button uses microcopy map', 'Complete Invoice' === apply_filters( 'woocommerce_order_button_text', 'Place order' ) );
+t( 'processing email heading is the deed', 'Deed of Grass Conveyance' === apply_filters( 'woocommerce_email_heading_customer_processing_order', 'Thank you' ) );
+
+/* ---------- 17. v2.2.0: deed tab + deed data ---------- */
+$deed_tabs = apply_filters( 'woocommerce_product_tabs', [] );
+t( 'deed tab registered', isset( $deed_tabs['tg_deed'] ) && 'The Deed' === $deed_tabs['tg_deed']['title'] );
+$deed_rows = tg_deed_data( $daily_id );
+$deed_map = [];
+foreach ( $deed_rows as $row ) { $deed_map[ $row[0] ] = $row[1]; }
+t( 'deed has five spec rows', 5 === count( $deed_rows ), count( $deed_rows ) );
+t( 'deed provenance default', 'Plot 7, Surrey Grassworks' === $deed_map['Provenance'], $deed_map['Provenance'] ?? '' );
+t( 'deed warranty default', 'Photosynthesis guaranteed for 30 days.' === $deed_map['Warranty'] );
+$gnome_id = wc_get_product_id_by_sku( 'TG-GNOME' );
+$gnome_deed = tg_deed_data( $gnome_id );
+$gnome_map = [];
+foreach ( $gnome_deed as $row ) { $gnome_map[ $row[0] ] = $row[1]; }
+t( 'gnome deed is ceramic, not grass', '0 — ceramic' === $gnome_map['Blade count'], $gnome_map['Blade count'] ?? '' );
+t( 'per-blade line computes from price', 0 === strpos( tg_per_blade_line( wc_get_product( $daily_id ) ), '≈ $' ), tg_per_blade_line( wc_get_product( $daily_id ) ) );
+
+/* ---------- 18. v2.2.0: importer sets 8 FAQs, batch meta, cross-sells ---------- */
+$faq_count = count( get_posts( [ 'post_type' => 'tg_faq', 'post_status' => 'publish', 'numberposts' => -1 ] ) );
+t( 'importer maintains 8 FAQs', 8 === $faq_count, $faq_count );
+TG_Importer::run();
+$faq_count2 = count( get_posts( [ 'post_type' => 'tg_faq', 'post_status' => 'publish', 'numberposts' => -1 ] ) );
+t( 'FAQ count stable across reruns', 8 === $faq_count2, $faq_count2 );
+t( 'batch meta set on plots', 'Batch No. 7' === tg_product_batch( $daily_id ), tg_product_batch( $daily_id ) );
+t( 'batch meta empty on accessories', '' === tg_product_batch( $gnome_id ) );
+$daily_xs = wc_get_product( $daily_id )->get_cross_sell_ids();
+$mister_id = wc_get_product_id_by_sku( 'TG-MISTER' );
+t( 'plots cross-sell the mister', in_array( $mister_id, array_map( 'intval', $daily_xs ), true ) );
+t( 'plots cross-sell the gnome', in_array( (int) $gnome_id, array_map( 'intval', $daily_xs ), true ) );
+
 echo "\n" . $GLOBALS['tg_pass'] . " passed, " . $GLOBALS['tg_fail'] . " failed\n";
 exit( $GLOBALS['tg_fail'] > 0 ? 1 : 0 );
