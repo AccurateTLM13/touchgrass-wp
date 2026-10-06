@@ -26,7 +26,7 @@ add_filter( 'wp_get_loading_optimization_attributes', function ( $attrs, $tag_na
 	return $attrs;
 }, 10, 3 );
 
-define( 'TG_VERSION', '2.5.0' );
+define( 'TG_VERSION', '2.5.1' );
 
 /* WooCommerce is optional; nudge admins (not visitors) if it's missing. */
 add_action( 'admin_notices', function () {

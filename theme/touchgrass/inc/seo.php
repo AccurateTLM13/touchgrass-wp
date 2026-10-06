@@ -119,11 +119,29 @@ function tg_product_schema() {
 			'url'           => $product->get_permalink(),
 			'priceCurrency' => get_woocommerce_currency(),
 			'price'         => $product->get_price(),
-			'availability'  => $product->is_in_stock()
-				? 'https://schema.org/InStock'
-				: 'https://schema.org/OutOfStock',
+			'availability'  => tg_stock_availability( $product ),
 		],
 	];
+}
+
+/**
+ * Map WooCommerce stock status to schema.org availability.
+ *
+ * is_in_stock() is true for both instock and onbackorder, so map the raw
+ * status explicitly — backordered products must not claim InStock.
+ *
+ * @param WC_Product $product Product.
+ * @return string Schema.org availability URL.
+ */
+function tg_stock_availability( $product ) {
+	$status = $product->get_stock_status();
+	if ( 'onbackorder' === $status ) {
+		return 'https://schema.org/BackOrder';
+	}
+	if ( 'outofstock' === $status ) {
+		return 'https://schema.org/OutOfStock';
+	}
+	return 'https://schema.org/InStock';
 }
 
 /**
@@ -173,17 +191,20 @@ function tg_seo_jsonld() {
 add_action( 'wp_head', 'tg_seo_jsonld', 6 );
 
 /**
- * Keep exactly one og:image and og:description per page.
+ * Keep exactly one description, og:image, og:description, and twitter:image
+ * per page.
  *
- * The theme emits both tags unconditionally (with richer data: real image
+ * The theme emits all four tags unconditionally (with richer data: real image
  * dimensions, alt text, sensible defaults). Yoast SEO also emits them on
  * pages where it has data (observed v28.6: product pages get og:image with
  * dimensions and og:description from the short description), producing
- * duplicate tags. Remove Yoast's Open Graph image/description presenters so
- * the theme is the single source of truth for these two tags; Yoast keeps
- * emitting everything else (og:title, og:type, og:url, og:site_name,
- * og:locale, twitter:card, canonical). If Yoast is ever deactivated this
- * filter never fires and the theme's tags stand alone.
+ * duplicate tags — and a merchant-configured Yoast meta description or X
+ * image would compete with the theme's via Yoast's separate Description and
+ * Twitter Image presenters. Remove those four Yoast presenters so the theme
+ * is the single source of truth; Yoast keeps emitting everything else
+ * (og:title, og:type, og:url, og:site_name, og:locale, twitter:card,
+ * canonical). If Yoast is ever deactivated this filter never fires and the
+ * theme's tags stand alone.
  */
 add_filter( 'wpseo_frontend_presenters', 'tg_dedupe_yoast_og_presenters' );
 function tg_dedupe_yoast_og_presenters( $presenters ) {
@@ -193,6 +214,8 @@ function tg_dedupe_yoast_og_presenters( $presenters ) {
 	$drop = [
 		'Yoast\WP\SEO\Presenters\Open_Graph\Image_Presenter',
 		'Yoast\WP\SEO\Presenters\Open_Graph\Description_Presenter',
+		'Yoast\WP\SEO\Presenters\Description_Presenter',
+		'Yoast\WP\SEO\Presenters\Twitter\Image_Presenter',
 	];
 	foreach ( $presenters as $i => $presenter ) {
 		if ( is_object( $presenter ) && in_array( get_class( $presenter ), $drop, true ) ) {

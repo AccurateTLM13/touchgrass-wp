@@ -267,21 +267,37 @@ t( 'conveyance title default', 'Official Notice of Conveyance' === tg_microcopy(
 t( 'conveyance text has placeholders', false !== strpos( tg_microcopy( 'conveyance_text' ), '{registry}' ) && false !== strpos( tg_microcopy( 'conveyance_text' ), '{name}' ) );
 t( 'email conveyance has placeholders', false !== strpos( tg_microcopy( 'email_conveyance' ), '{registry}' ) && false !== strpos( tg_microcopy( 'email_conveyance' ), '{division}' ) );
 
-/* Thank-you conveyance block renders with registry + name. */
+/* Thank-you conveyance block renders with registry + name — paid orders only. */
 $conv_order = wc_create_order();
 $conv_order->set_billing_first_name( 'Testy' );
 $conv_order->set_billing_last_name( 'McTest' );
 $conv_order->add_product( wc_get_product( $daily_id ), 1 );
 $conv_order->calculate_totals();
+$conv_order->set_status( 'processing' );
+$conv_order->set_date_paid( time() );
 $conv_order->save();
 $conv_id = $conv_order->get_id();
 ob_start();
 do_action( 'woocommerce_thankyou', $conv_id );
 $conv_html = ob_get_clean();
-t( 'thankyou shows conveyance title', false !== strpos( $conv_html, 'Official Notice of Conveyance' ) );
-t( 'thankyou shows registry number', false !== strpos( $conv_html, tg_plot_registry_number( $conv_id ) ), tg_plot_registry_number( $conv_id ) );
-t( 'thankyou names the owner', false !== strpos( $conv_html, 'Testy McTest' ) );
-wp_delete_post( $conv_id, true );
+t( 'thankyou shows conveyance title when paid', false !== strpos( $conv_html, 'Official Notice of Conveyance' ) );
+t( 'thankyou shows registry number when paid', false !== strpos( $conv_html, tg_plot_registry_number( $conv_id ) ), tg_plot_registry_number( $conv_id ) );
+t( 'thankyou names the owner when paid', false !== strpos( $conv_html, 'Testy McTest' ) );
+$conv_order->delete( true );
+
+/* Unpaid orders convey nothing: pending, failed, on-hold, cancelled. */
+foreach ( [ 'pending', 'failed', 'on-hold', 'cancelled' ] as $unpaid_status ) {
+	$u_order = wc_create_order();
+	$u_order->add_product( wc_get_product( $daily_id ), 1 );
+	$u_order->calculate_totals();
+	$u_order->set_status( $unpaid_status );
+	$u_order->save();
+	ob_start();
+	do_action( 'woocommerce_thankyou', $u_order->get_id() );
+	$u_html = ob_get_clean();
+	t( "thankyou hides conveyance when {$unpaid_status}", false === strpos( $u_html, 'Official Notice of Conveyance' ) );
+	$u_order->delete( true );
+}
 
 /* Email conveyance hook is registered for the processing email. */
 t( 'email conveyance hook registered', false !== has_action( 'woocommerce_email_after_order_table' ) );
@@ -319,13 +335,22 @@ t( 'one completed order is sod', 'sod' === tg_grass_club_tier( $club_uid )['slug
 $estate_oids = [ $sod_oid ];
 for ( $i = 0; $i < 4; $i++ ) { $estate_oids[] = $make_order( $club_uid, 'TG-DAILY', 1 ); }
 t( 'five completed orders is estate', 'estate' === tg_grass_club_tier( $club_uid )['slug'] );
-foreach ( $estate_oids as $oid ) { wp_delete_post( $oid, true ); }
+foreach ( $estate_oids as $oid ) { $o = wc_get_order( $oid ); if ( $o ) { $o->delete( true ); } }
 
 /* Estate by spend: 4 x $59 = $236 with only four orders. */
 $spend_oids = [];
 for ( $i = 0; $i < 4; $i++ ) { $spend_oids[] = $make_order( $club_uid, 'TG-PROMAX', 1 ); }
 t( 'high spend is estate', 'estate' === tg_grass_club_tier( $club_uid )['slug'] );
-foreach ( $spend_oids as $oid ) { wp_delete_post( $oid, true ); }
+
+/* Partial refund drops net spend back below the Estate bar. */
+$refund = new WC_Order_Refund();
+$refund->set_parent_id( $spend_oids[0] );
+$refund->set_amount( 100 );
+$refund->save();
+t( 'refund recorded', 100.0 === (float) wc_get_order( $spend_oids[0] )->get_total_refunded() );
+t( 'partial refund drops tier below estate', 'sod' === tg_grass_club_tier( $club_uid )['slug'], tg_grass_club_tier( $club_uid )['slug'] );
+$refund->delete( true );
+foreach ( $spend_oids as $oid ) { $o = wc_get_order( $oid ); if ( $o ) { $o->delete( true ); } }
 
 /* Back to seedling once orders are gone. */
 t( 'tier drops back to seedling', 'seedling' === tg_grass_club_tier( $club_uid )['slug'] );
@@ -358,7 +383,19 @@ t( 'product meta description within ~160 chars', mb_strlen( $seo_desc ) <= 165, 
 $schema = tg_product_schema();
 t( 'product schema has name', ( $schema['name'] ?? '' ) === $seo_prod->get_name() );
 t( 'product schema offers price matches', (string) ( $schema['offers']['price'] ?? '' ) === (string) $seo_prod->get_price(), (string) ( $schema['offers']['price'] ?? '?' ) );
-t( 'product schema availability honest', in_array( $schema['offers']['availability'] ?? '', [ 'https://schema.org/InStock', 'https://schema.org/OutOfStock' ], true ) );
+t( 'product schema availability honest', in_array( $schema['offers']['availability'] ?? '', [ 'https://schema.org/InStock', 'https://schema.org/OutOfStock', 'https://schema.org/BackOrder' ], true ) );
+
+/* Explicit stock-status mapping: backorders must not claim InStock. */
+$tg_map_prod = wc_get_product( $daily_id );
+$tg_map_prod->set_manage_stock( true );
+$tg_map_prod->set_stock_status( 'instock' );
+t( 'instock maps to InStock', 'https://schema.org/InStock' === tg_stock_availability( $tg_map_prod ) );
+$tg_map_prod->set_stock_status( 'outofstock' );
+t( 'outofstock maps to OutOfStock', 'https://schema.org/OutOfStock' === tg_stock_availability( $tg_map_prod ) );
+$tg_map_prod->set_stock_status( 'onbackorder' );
+t( 'onbackorder maps to BackOrder', 'https://schema.org/BackOrder' === tg_stock_availability( $tg_map_prod ) );
+$tg_map_prod->set_stock_status( 'instock' );
+$tg_map_prod->save();
 t( 'product schema brand is Surrey Grassworks', ( $schema['brand']['name'] ?? '' ) === 'Surrey Grassworks' );
 t( 'product schema JSON-encodes', null !== json_decode( wp_json_encode( $schema ) ) );
 
@@ -372,6 +409,10 @@ t( 'head does NOT duplicate og:title', false === strpos( $seo_head, 'property="o
 t( 'head does NOT duplicate twitter:card', false === strpos( $seo_head, 'name="twitter:card"' ) );
 
 /* Yoast OG dedupe: theme stays the single source for og:image/og:description. */
+/* Yoast dedupe: theme stays the single source for description, og:image,
+ * og:description, and twitter:image. */
+/* Yoast dedupe: theme stays the single source for description, og:image,
+ * og:description, and twitter:image. */
 t( 'yoast dedupe filter registered', false !== has_filter( 'wpseo_frontend_presenters', 'tg_dedupe_yoast_og_presenters' ) );
 foreach ( [ 'Image_Presenter', 'Description_Presenter', 'Title_Presenter' ] as $tg_cls ) {
 	$tg_fqcn = 'Yoast\\WP\\SEO\\Presenters\\Open_Graph\\' . $tg_cls;
@@ -379,17 +420,28 @@ foreach ( [ 'Image_Presenter', 'Description_Presenter', 'Title_Presenter' ] as $
 		eval( "namespace Yoast\\WP\\SEO\\Presenters\\Open_Graph; class {$tg_cls} {}" );
 	}
 }
+foreach ( [ 'Yoast\\WP\\SEO\\Presenters\\Description_Presenter', 'Yoast\\WP\\SEO\\Presenters\\Twitter\\Image_Presenter' ] as $tg_fqcn2 ) {
+	if ( ! class_exists( $tg_fqcn2 ) ) {
+		$tg_ns2 = substr( $tg_fqcn2, 0, strrpos( $tg_fqcn2, '\\' ) );
+		$tg_cls2 = substr( $tg_fqcn2, strrpos( $tg_fqcn2, '\\' ) + 1 );
+		eval( "namespace {$tg_ns2}; class {$tg_cls2} {}" );
+	}
+}
 $tg_fake_presenters = [
 	new \Yoast\WP\SEO\Presenters\Open_Graph\Image_Presenter(),
 	new \Yoast\WP\SEO\Presenters\Open_Graph\Description_Presenter(),
+	new \Yoast\WP\SEO\Presenters\Description_Presenter(),
+	new \Yoast\WP\SEO\Presenters\Twitter\Image_Presenter(),
 	new \Yoast\WP\SEO\Presenters\Open_Graph\Title_Presenter(),
 	new \stdClass(),
 ];
 $tg_deduped = tg_dedupe_yoast_og_presenters( $tg_fake_presenters );
 $tg_dedupe_classes = array_map( 'get_class', array_filter( $tg_deduped, 'is_object' ) );
-t( 'yoast og:image presenter removed', ! in_array( 'Yoast\WP\SEO\Presenters\Open_Graph\Image_Presenter', $tg_dedupe_classes, true ) );
-t( 'yoast og:description presenter removed', ! in_array( 'Yoast\WP\SEO\Presenters\Open_Graph\Description_Presenter', $tg_dedupe_classes, true ) );
-t( 'other yoast presenters kept', in_array( 'Yoast\WP\SEO\Presenters\Open_Graph\Title_Presenter', $tg_dedupe_classes, true ) );
+t( 'yoast og:image presenter removed', ! in_array( 'Yoast\\WP\\SEO\\Presenters\\Open_Graph\\Image_Presenter', $tg_dedupe_classes, true ) );
+t( 'yoast og:description presenter removed', ! in_array( 'Yoast\\WP\\SEO\\Presenters\\Open_Graph\\Description_Presenter', $tg_dedupe_classes, true ) );
+t( 'yoast meta description presenter removed', ! in_array( 'Yoast\\WP\\SEO\\Presenters\\Description_Presenter', $tg_dedupe_classes, true ) );
+t( 'yoast twitter:image presenter removed', ! in_array( 'Yoast\\WP\\SEO\\Presenters\\Twitter\\Image_Presenter', $tg_dedupe_classes, true ) );
+t( 'other yoast presenters kept', in_array( 'Yoast\\WP\\SEO\\Presenters\\Open_Graph\\Title_Presenter', $tg_dedupe_classes, true ) );
 t( 'non-presenter entries kept', 2 === count( $tg_deduped ) );
 t( 'non-array input passes through', null === tg_dedupe_yoast_og_presenters( null ) );
 

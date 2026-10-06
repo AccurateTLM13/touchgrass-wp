@@ -174,10 +174,12 @@ class TG_Microcopy {
 		}, 5 );
 
 		/* Conveyance block: the order becomes a deed transfer. After the
-		 * invoice banner so the transaction voice lands first. */
+		 * invoice banner so the transaction voice lands first.
+		 * Paid orders only — a failed or pending payment conveys nothing. */
 		add_action( 'woocommerce_thankyou', function ( $order_id ) {
 			$order = wc_get_order( $order_id );
 			if ( ! $order instanceof WC_Order ) { return; }
+			if ( ! $order->is_paid() ) { return; }
 			$registry = tg_plot_registry_number( $order_id );
 			$name     = trim( $order->get_billing_first_name() . ' ' . $order->get_billing_last_name() );
 			$text     = str_replace(

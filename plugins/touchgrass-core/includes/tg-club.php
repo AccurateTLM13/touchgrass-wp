@@ -77,7 +77,8 @@ function tg_grass_club_tier( $user_id ) {
 		$order = wc_get_order( $order_id );
 		if ( ! $order instanceof WC_Order ) { continue; }
 		$count++;
-		$spent += (float) $order->get_total();
+		/* Net retained spend: partial refunds move the member back down. */
+		$spent += (float) $order->get_total() - (float) $order->get_total_refunded();
 	}
 
 	if ( $count >= 5 || $spent >= 200 ) {

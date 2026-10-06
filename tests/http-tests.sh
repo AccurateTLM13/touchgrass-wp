@@ -108,11 +108,11 @@ CONV_HTML=$($WP eval "
 \$o->set_billing_first_name('Holly');
 \$o->set_billing_last_name('Hock');
 \$o->add_product(wc_get_product(wc_get_product_id_by_sku('TG-DAILY')), 1);
-\$o->calculate_totals(); \$o->save();
+\$o->calculate_totals(); \$o->set_status('processing'); \$o->save();
 \$id = \$o->get_id();
 ob_start(); do_action('woocommerce_thankyou', \$id); \$h = ob_get_clean();
 echo \$h;
-wp_delete_post(\$id, true);
+\$o->delete(true);
 " 2>/dev/null | tail -5)
 echo "$CONV_HTML" | grep -q "Official Notice of Conveyance" && ok "H9 conveyance block renders" || no "H9 conveyance block renders" "missing"
 echo "$CONV_HTML" | grep -q "TG-00" && ok "H9 conveyance has registry number" || no "H9 conveyance has registry number" "missing"
