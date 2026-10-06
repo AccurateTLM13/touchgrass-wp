@@ -164,10 +164,26 @@ if ( function_exists( 'tg_trust_block' ) ) {
 <?php if ( $club_on ) : ?>
 <section class="club" id="club" aria-labelledby="club-title">
 	<div class="wrap">
-		<div class="club-panel reveal">
-			<div class="eyebrow"><?php esc_html_e( 'Membership has its privileges', 'touchgrass' ); ?></div>
-			<h2 id="club-title"><?php esc_html_e( 'The Grass Club.', 'touchgrass' ); ?></h2>
-			<p><?php esc_html_e( 'Members get rare (but invoiced) emails, first cut of limited batches, and absolutely no additional going outside.', 'touchgrass' ); ?></p>
+		<div class="eyebrow reveal"><?php esc_html_e( 'Membership has its privileges', 'touchgrass' ); ?></div>
+		<h2 id="club-title" class="reveal"><?php esc_html_e( 'The Grass Club.', 'touchgrass' ); ?></h2>
+		<p class="sec-sub reveal"><?php esc_html_e( 'Four tiers of belonging. The grass keeps score.', 'touchgrass' ); ?></p>
+		<?php
+		$club_tiers = function_exists( 'tg_club_tiers' ) ? tg_club_tiers() : [];
+		$standing   = ( function_exists( 'tg_grass_club_tier' ) && is_user_logged_in() ) ? tg_grass_club_tier( get_current_user_id() ) : null;
+		?>
+		<div class="tier-grid">
+			<?php foreach ( $club_tiers as $slug => $tier ) : ?>
+				<div class="tier-card reveal<?php echo ( $standing && $standing['slug'] === $slug ) ? ' tier-current' : ''; ?>">
+					<h3><?php echo esc_html( $tier['name'] ); ?></h3>
+					<p><?php echo esc_html( $tier['benefit'] ); ?></p>
+				</div>
+			<?php endforeach; ?>
+		</div>
+		<?php if ( $standing ) : ?>
+			<p class="tier-standing reveal"><?php echo wp_kses( sprintf( __( 'Your standing: <strong>%s</strong>.', 'touchgrass' ), esc_html( $standing['name'] ) ), tg_brand_kses() ); ?></p>
+		<?php endif; ?>
+		<div class="club-cta reveal">
+			<p><?php esc_html_e( 'Enter as a Seedling. Rare (but invoiced) emails, first cut of limited batches.', 'touchgrass' ); ?></p>
 			<?php tg_newsletter_form( 'club' ); ?>
 		</div>
 	</div>

@@ -86,4 +86,38 @@ echo "$HOME_HTML" | grep -q "application/ld+json" && ok "H8 homepage has FAQ JSO
 COUPON_LABEL=$($WP eval "echo apply_filters('gettext', 'Coupon code', 'Coupon code', 'woocommerce');" 2>/dev/null | tail -1)
 [ "$COUPON_LABEL" = "Bribe code" ] && ok "H8 coupon label from microcopy map" || no "H8 coupon label from microcopy map" "got: $COUPON_LABEL"
 
+# H9: v2.3.0 Grassworks Institution — deed hierarchy, club tiers, conveyance
+echo "$PDP_HTML" | grep -q "Surrey Grassworks" && ok "H9 PDP shows corporation" || no "H9 PDP shows corporation" "missing"
+echo "$PDP_HTML" | grep -q "North Greenhouse Division" && ok "H9 PDP shows division" || no "H9 PDP shows division" "missing"
+echo "$PDP_HTML" | grep -q "Indoor Recreation Commodity Program" && ok "H9 PDP shows program" || no "H9 PDP shows program" "missing"
+echo "$PDP_HTML" | grep -q "Plot 184-C" && ok "H9 PDP shows plot number" || no "H9 PDP shows plot number" "missing"
+echo "$PDP_HTML" | grep -q "Executive Desk Grade" && ok "H9 PDP shows classification" || no "H9 PDP shows classification" "missing"
+echo "$PDP_HTML" | grep -q "Deed of Grass" && ok "H9 PDP deed certificate masthead" || no "H9 PDP deed certificate masthead" "missing"
+# Club section is gated on newsletter configuration: enable a dummy key for the render check, then remove it.
+$WP option update tg_buttondown_api_key tg_test_dummy --quiet 2>/dev/null
+HOME_CLUB_HTML=$(curl -s --max-time 20 "$BASE/")
+$WP option delete tg_buttondown_api_key --quiet 2>/dev/null
+echo "$HOME_CLUB_HTML" | grep -q "The grass keeps score" && ok "H9 homepage club tagline" || no "H9 homepage club tagline" "missing"
+for tier in Prospect Seedling Sod Estate; do
+  echo "$HOME_CLUB_HTML" | grep -q ">$tier<" && ok "H9 homepage shows $tier tier" || no "H9 homepage shows $tier tier" "missing"
+done
+echo "$HOME_CLUB_HTML" | grep -q "Annual inspection waived" && ok "H9 homepage estate benefit" || no "H9 homepage estate benefit" "missing"
+# Conveyance block: render the thankyou action for a scratch order via WP-CLI.
+CONV_HTML=$($WP eval "
+\$o = wc_create_order();
+\$o->set_billing_first_name('Holly');
+\$o->set_billing_last_name('Hock');
+\$o->add_product(wc_get_product(wc_get_product_id_by_sku('TG-DAILY')), 1);
+\$o->calculate_totals(); \$o->save();
+\$id = \$o->get_id();
+ob_start(); do_action('woocommerce_thankyou', \$id); \$h = ob_get_clean();
+echo \$h;
+wp_delete_post(\$id, true);
+" 2>/dev/null | tail -5)
+echo "$CONV_HTML" | grep -q "Official Notice of Conveyance" && ok "H9 conveyance block renders" || no "H9 conveyance block renders" "missing"
+echo "$CONV_HTML" | grep -q "TG-00" && ok "H9 conveyance has registry number" || no "H9 conveyance has registry number" "missing"
+echo "$CONV_HTML" | grep -q "Holly Hock" && ok "H9 conveyance names owner" || no "H9 conveyance names owner" "missing"
+REG_FMT=$($WP eval "echo tg_plot_registry_number(42);" 2>/dev/null | tail -1)
+[ "$REG_FMT" = "TG-00042" ] && ok "H9 registry number format" || no "H9 registry number format" "got: $REG_FMT"
+
 echo ""; echo "$PASS passed, $FAIL failed"

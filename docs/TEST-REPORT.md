@@ -152,3 +152,64 @@ admin-only, non-publishing, merchant-edit-preserving.
   exercised (no API keys) — unchanged from v2.1.1.
 - **`.github/workflows/ci.yml`:** still needs the one manual web-UI add
   (API token lacks `workflow` scope).
+
+## v2.3.0 — The Grassworks Institution (Phase A)
+
+Worldbuilding over punchlines: the Surrey Grassworks becomes a fake global
+grass corporation treated with total seriousness. Three systems:
+
+- **A1. Institutional Deed hierarchy.** New product meta (corporation,
+  division, program, harvest, plot, classification, authorization) with house
+  defaults; importer assigns deterministic per-product values (Plot 184-C,
+  Subterranean Division for Night Shift, Hydration Apparatus Division for the
+  Mister, Ornamental Division + Unit 3-C for the Gnome). The Deed tab now
+  renders as a certificate: "Surrey Grassworks" serif masthead, "Deed of
+  Grass" letterspaced title, hierarchy rows, spec rows, "Authorized Indoor
+  Use Only". Empty plot numbers fall back to deterministic Plot {id}-A.
+- **A2. Ownership transfer.** `tg_plot_registry_number()` (order 42 →
+  TG-00042). Thank-you page gains an "Official Notice of Conveyance" block
+  (new microcopy map keys, {registry}/{name} placeholders). The processing
+  email keeps its "Deed of Grass Conveyance" heading and appends an official
+  notice with registry number, division, and classification (plain-text safe).
+- **A3. Grass Club tiers.** `tg_grass_club_tier()` computes Prospect /
+  Seedling / Sod / Estate honestly from completed orders, lifetime spend,
+  and the local newsletter subscriber record. Homepage club section rebuilt
+  around the four tiers (name + benefit each), "Your standing: X." for
+  logged-in members, newsletter form as the Seedling CTA.
+
+### Automated (playground)
+
+- `tests/integration.php`: **91 passed, 0 failed** (57 carried + 34 new:
+  hierarchy defaults and per-product importer values, plot fallback,
+  registry format, conveyance microcopy keys, thank-you block render with
+  registry + owner name, email hook registration, tier transitions
+  prospect → seedling → sod → estate-by-count → estate-by-spend → back,
+  with fabricated orders/users/subscribers cleaned up after).
+- `tests/http-tests.sh`: **47 passed, 0 failed** (31 carried + 16 new:
+  deed hierarchy on PDP, club tiers on homepage with dummy newsletter key,
+  conveyance block via scratch order, registry format).
+- `php -l`: every changed PHP file passes. `.pot` files regenerated for
+  both text domains (new strings included).
+
+### Manual / runtime (screenshot-verified)
+
+- **PDP deed (1440px + 390px):** certificate masthead "Surrey Grassworks" /
+  "Deed of Grass", full hierarchy (Division → Program → Harvest 07 →
+  Plot 184-C → Fescue Classification: Executive Desk Grade), spec rows,
+  "Authorized Indoor Use Only", legally-meaningless lede. Mobile stacks
+  label-above-value cleanly.
+- **Homepage club (1440px + 390px):** four tier cards (Prospect / Seedling /
+  Sod / Estate with benefits), "Enter as a Seedling" newsletter CTA;
+  4-column grid collapses to 1 column on mobile.
+- **Thank-you page (1440px):** invoice banner followed by the conveyance
+  block — "Plot No. TG-00180 has been entered in the Surrey Grassworks
+  Plot Registry in the name of Holly Hock. The grass is now yours. The
+  responsibility is also yours."
+
+### Known limitations (carried)
+
+- Block-based checkout button label and block-cart coupon placeholder render
+  via JS (PHP filters cover classic paths only).
+- Live Buttondown subscribe, real gateway checkout/refund, and actual email
+  delivery remain untested (no keys).
+- `.github/workflows/ci.yml` still needs the one manual web-UI add.

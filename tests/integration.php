@@ -229,5 +229,108 @@ $mister_id = wc_get_product_id_by_sku( 'TG-MISTER' );
 t( 'plots cross-sell the mister', in_array( $mister_id, array_map( 'intval', $daily_xs ), true ) );
 t( 'plots cross-sell the gnome', in_array( (int) $gnome_id, array_map( 'intval', $daily_xs ), true ) );
 
+/* ---------- 19. v2.3.0: deed institutional hierarchy ---------- */
+$hier = tg_deed_hierarchy( $daily_id );
+t( 'deed corporation default', 'Surrey Grassworks' === $hier['corporation'][1], $hier['corporation'][1] ?? '' );
+t( 'deed division default', 'North Greenhouse Division' === $hier['division'][1], $hier['division'][1] ?? '' );
+t( 'deed program default', 'Indoor Recreation Commodity Program' === $hier['program'][1], $hier['program'][1] ?? '' );
+t( 'deed harvest default', 'Harvest 07' === $hier['harvest'][1], $hier['harvest'][1] ?? '' );
+t( 'deed authorization default', 'Authorized Indoor Use Only' === $hier['authorization'][1], $hier['authorization'][1] ?? '' );
+t( 'deed classification default', 'Fescue Classification: Executive Desk Grade' === $hier['classification'][1], $hier['classification'][1] ?? '' );
+t( 'daily plot assigned by importer', 'Plot 184-C' === $hier['plot'][1], $hier['plot'][1] ?? '' );
+
+$night_id = wc_get_product_id_by_sku( 'TG-NIGHT' );
+$night_hier = tg_deed_hierarchy( $night_id );
+t( 'night shift gets subterranean division', 'Subterranean Division' === $night_hier['division'][1], $night_hier['division'][1] ?? '' );
+t( 'night shift plot 13-D', 'Plot 13-D' === $night_hier['plot'][1], $night_hier['plot'][1] ?? '' );
+t( 'night shift cave dweller classification', 'Shade-Tolerance Classification: Cave Dweller Grade' === $night_hier['classification'][1] );
+
+$gnome_hier = tg_deed_hierarchy( $gnome_id );
+t( 'gnome ornamental division', 'Ornamental Division' === $gnome_hier['division'][1], $gnome_hier['division'][1] ?? '' );
+t( 'gnome lot not harvest', 'Lot 3' === $gnome_hier['harvest'][1], $gnome_hier['harvest'][1] ?? '' );
+t( 'gnome unit 3-C', 'Unit 3-C' === $gnome_hier['plot'][1], $gnome_hier['plot'][1] ?? '' );
+t( 'gnome ceramic classification', 'Ceramic Classification: Ornamental' === $gnome_hier['classification'][1] );
+
+$mister_hier = tg_deed_hierarchy( $mister_id );
+t( 'mister hydration division', 'Hydration Apparatus Division' === $mister_hier['division'][1], $mister_hier['division'][1] ?? '' );
+
+/* Plot fallback: a product with no plot meta gets deterministic Plot {id}-A. */
+$fallback_id = wp_insert_post( [ 'post_title' => 'TG Test Fallback', 'post_type' => 'product', 'post_status' => 'draft' ] );
+$fallback_hier = tg_deed_hierarchy( $fallback_id );
+t( 'plot fallback is deterministic', 'Plot ' . $fallback_id . '-A' === $fallback_hier['plot'][1], $fallback_hier['plot'][1] ?? '' );
+wp_delete_post( $fallback_id, true );
+
+/* ---------- 20. v2.3.0: registry numbers + conveyance microcopy ---------- */
+t( 'registry pads to five digits', 'TG-00042' === tg_plot_registry_number( 42 ), tg_plot_registry_number( 42 ) );
+t( 'registry single digit', 'TG-00007' === tg_plot_registry_number( 7 ) );
+t( 'conveyance title default', 'Official Notice of Conveyance' === tg_microcopy( 'conveyance_title' ) );
+t( 'conveyance text has placeholders', false !== strpos( tg_microcopy( 'conveyance_text' ), '{registry}' ) && false !== strpos( tg_microcopy( 'conveyance_text' ), '{name}' ) );
+t( 'email conveyance has placeholders', false !== strpos( tg_microcopy( 'email_conveyance' ), '{registry}' ) && false !== strpos( tg_microcopy( 'email_conveyance' ), '{division}' ) );
+
+/* Thank-you conveyance block renders with registry + name. */
+$conv_order = wc_create_order();
+$conv_order->set_billing_first_name( 'Testy' );
+$conv_order->set_billing_last_name( 'McTest' );
+$conv_order->add_product( wc_get_product( $daily_id ), 1 );
+$conv_order->calculate_totals();
+$conv_order->save();
+$conv_id = $conv_order->get_id();
+ob_start();
+do_action( 'woocommerce_thankyou', $conv_id );
+$conv_html = ob_get_clean();
+t( 'thankyou shows conveyance title', false !== strpos( $conv_html, 'Official Notice of Conveyance' ) );
+t( 'thankyou shows registry number', false !== strpos( $conv_html, tg_plot_registry_number( $conv_id ) ), tg_plot_registry_number( $conv_id ) );
+t( 'thankyou names the owner', false !== strpos( $conv_html, 'Testy McTest' ) );
+wp_delete_post( $conv_id, true );
+
+/* Email conveyance hook is registered for the processing email. */
+t( 'email conveyance hook registered', false !== has_action( 'woocommerce_email_after_order_table' ) );
+
+/* ---------- 21. v2.3.0: grass club tiers ---------- */
+$tiers = tg_club_tiers();
+t( 'four tiers defined', 4 === count( $tiers ) && isset( $tiers['prospect'], $tiers['seedling'], $tiers['sod'], $tiers['estate'] ) );
+t( 'unknown user is prospect', 'prospect' === tg_grass_club_tier( 0 )['slug'] );
+t( 'nonexistent user is prospect', 'prospect' === tg_grass_club_tier( 999999 )['slug'] );
+
+$club_uid = wp_insert_user( [ 'user_login' => 'tg_club_test', 'user_email' => 'tgclubtest@example.com', 'user_pass' => wp_generate_password() ] );
+t( 'fresh account is prospect', 'prospect' === tg_grass_club_tier( $club_uid )['slug'], tg_grass_club_tier( $club_uid )['slug'] );
+
+/* Seedling: subscriber record, zero orders. */
+$sub_slug = 'sub-' . md5( 'tgclubtest@example.com' );
+$sub_id = wp_insert_post( [ 'post_title' => 'tgclubtest@example.com', 'post_name' => $sub_slug, 'post_type' => 'tg_subscriber', 'post_status' => 'publish' ] );
+t( 'subscriber with no orders is seedling', 'seedling' === tg_grass_club_tier( $club_uid )['slug'] );
+
+$make_order = function ( $uid, $sku, $qty ) {
+	$order = wc_create_order();
+	$order->set_customer_id( $uid );
+	$order->set_billing_email( 'tgclubtest@example.com' );
+	$order->add_product( wc_get_product( wc_get_product_id_by_sku( $sku ) ), $qty );
+	$order->calculate_totals();
+	$order->set_status( 'completed' );
+	$order->save();
+	return $order->get_id();
+};
+
+/* Sod: one completed order. */
+$sod_oid = $make_order( $club_uid, 'TG-DAILY', 1 );
+t( 'one completed order is sod', 'sod' === tg_grass_club_tier( $club_uid )['slug'] );
+
+/* Estate by count: five completed orders (5 x $29 = $145, under the spend bar). */
+$estate_oids = [ $sod_oid ];
+for ( $i = 0; $i < 4; $i++ ) { $estate_oids[] = $make_order( $club_uid, 'TG-DAILY', 1 ); }
+t( 'five completed orders is estate', 'estate' === tg_grass_club_tier( $club_uid )['slug'] );
+foreach ( $estate_oids as $oid ) { wp_delete_post( $oid, true ); }
+
+/* Estate by spend: 4 x $59 = $236 with only four orders. */
+$spend_oids = [];
+for ( $i = 0; $i < 4; $i++ ) { $spend_oids[] = $make_order( $club_uid, 'TG-PROMAX', 1 ); }
+t( 'high spend is estate', 'estate' === tg_grass_club_tier( $club_uid )['slug'] );
+foreach ( $spend_oids as $oid ) { wp_delete_post( $oid, true ); }
+
+/* Back to seedling once orders are gone. */
+t( 'tier drops back to seedling', 'seedling' === tg_grass_club_tier( $club_uid )['slug'] );
+wp_delete_post( $sub_id, true );
+wp_delete_user( $club_uid );
+
 echo "\n" . $GLOBALS['tg_pass'] . " passed, " . $GLOBALS['tg_fail'] . " failed\n";
 exit( $GLOBALS['tg_fail'] > 0 ? 1 : 0 );

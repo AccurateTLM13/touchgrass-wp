@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
 require_once get_template_directory() . '/inc/customizer.php';
 require_once get_template_directory() . '/inc/template-tags.php';
 
-define( 'TG_VERSION', '2.2.0' );
+define( 'TG_VERSION', '2.3.0' );
 
 /* WooCommerce is optional; nudge admins (not visitors) if it's missing. */
 add_action( 'admin_notices', function () {

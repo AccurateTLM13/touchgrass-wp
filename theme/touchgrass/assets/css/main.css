@@ -370,13 +370,35 @@ h2.sec{font-family:var(--serif);font-weight:500;font-size:40px;letter-spacing:-.
 .tg-accordion-body p{margin-bottom:1rem}
 .tg-accordion-body p:last-child{margin-bottom:0}
 
-/* The Deed tab spec sheet. */
+/* The Deed tab: an official document. Certificate treatment — centered
+ * serif masthead, ruled rows, restrained. No clip-art seals. */
 .tg-deed-lede{font-style:italic;margin-bottom:1.5rem}
 .tg-deed dl{margin:0}
+.tg-deed-corp{font-family:var(--serif);font-size:clamp(30px,4vw,44px);font-weight:600;text-align:center;margin:0 0 .25rem}
+.tg-deed-doctitle{text-align:center;text-transform:uppercase;letter-spacing:.4em;font-size:13px;color:var(--muted);margin:0 0 2rem}
+.tg-deed-hier{margin-bottom:2.5rem}
+.tg-deed-auth{text-align:center;font-style:italic;margin:2rem 0 .75rem}
 .tg-deed-row{display:grid;grid-template-columns:200px 1fr;gap:1.5rem;padding:.9rem 0;border-top:1px solid var(--line)}
 .tg-deed-row:last-child{border-bottom:1px solid var(--line)}
 .tg-deed-row dt{font-weight:600;color:var(--ink);font-size:14px;letter-spacing:.04em;text-transform:uppercase}
 .tg-deed-row dd{margin:0;font-family:var(--serif);font-size:18px}
+
+/* Conveyance notice on the thank-you page. */
+.tg-conveyance{max-width:760px;margin:0 auto 2rem;border:1px solid var(--line);background:var(--paper-deep);padding:1.5rem 1.75rem;border-radius:var(--r)}
+.tg-conveyance strong{text-transform:uppercase;letter-spacing:.12em;font-size:13px}
+
+/* Grass Club tiers. */
+.tier-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.25rem;margin:2.5rem 0}
+.tier-card{border:1px solid var(--line);border-radius:var(--r);padding:1.75rem 1.5rem;background:var(--paper)}
+.tier-card h3{font-family:var(--serif);font-size:24px;margin:0 0 .5rem}
+.tier-card p{color:var(--muted);font-size:15px;margin:0}
+.tier-card.tier-current{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold)}
+.tier-card.tier-current h3::after{content:" — you";font-size:14px;font-style:italic;color:var(--muted);font-family:var(--sans)}
+.tier-standing{text-align:center;font-size:17px;margin-bottom:2rem}
+.club-cta{max-width:440px;margin:0 auto;text-align:center}
+.club-cta .news-form{margin-top:1rem}
+@media(max-width:900px){.tier-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.tier-grid{grid-template-columns:1fr}}
 
 /* Deed teaser (homepage). */
 .deed-teaser{padding:5rem 0;background:var(--ink);color:#EDE8DB;text-align:center}
