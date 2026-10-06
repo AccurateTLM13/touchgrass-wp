@@ -343,7 +343,7 @@ function tg_product_card( $product ) {
 	?>
 	<article class="pcard">
 		<a class="pcard-link" href="<?php echo esc_url( $product->get_permalink() ); ?>">
-			<div class="ph"><?php echo $product->get_image( 'woocommerce_thumbnail' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></div>
+			<div class="ph"><?php echo $product->get_image( 'woocommerce_thumbnail', [ 'loading' => 'lazy' ] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></div>
 			<div class="pb">
 				<span class="tag<?php echo $badge_label ? '' : ' tag-empty'; ?>"><?php echo $badge_label ? esc_html( $badge_label ) : '&nbsp;'; ?></span>
 				<h3><?php echo esc_html( $product->get_name() ); ?></h3>

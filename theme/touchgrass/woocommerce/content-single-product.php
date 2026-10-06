@@ -91,7 +91,7 @@ if ( post_password_required() ) {
 	?>
 	<div class="tg-sticky-atc" aria-hidden="true">
 		<div class="tg-sticky-atc-inner">
-			<span class="tg-sticky-atc-thumb"><?php echo $product->get_image( 'thumbnail' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
+			<span class="tg-sticky-atc-thumb"><?php echo $product->get_image( 'thumbnail', [ 'loading' => 'lazy' ] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
 			<span class="tg-sticky-atc-info">
 				<strong><?php the_title(); ?></strong>
 				<span class="tg-sticky-atc-price"><?php echo wp_kses_post( $product->get_price_html() ); ?></span>

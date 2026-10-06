@@ -69,7 +69,7 @@ $club_on = tg_brand( 'tg_section_club' ) && function_exists( 'tg_newsletter_conf
 		<figure class="hero-fig reveal">
 			<?php
 			if ( $hero_image_id ) {
-				echo wp_get_attachment_image( $hero_image_id, 'large', false, [ 'alt' => get_post_meta( $hero_image_id, '_wp_attachment_image_alt', true ) ?: __( 'Touch Grass', 'touchgrass' ) ] );
+				echo wp_get_attachment_image( $hero_image_id, 'large', false, [ 'alt' => get_post_meta( $hero_image_id, '_wp_attachment_image_alt', true ) ?: __( 'Touch Grass', 'touchgrass' ), 'fetchpriority' => 'high' ] );
 			} elseif ( ! empty( $products ) ) {
 				echo $products[0]->get_image( 'large' );
 			} else {
@@ -215,7 +215,7 @@ if ( function_exists( 'tg_trust_block' ) ) {
 				echo wp_get_attachment_image( $how_image_id, 'large', false, [ 'alt' => get_post_meta( $how_image_id, '_wp_attachment_image_alt', true ) ?: __( 'How Touch Grass works', 'touchgrass' ), 'loading' => 'lazy' ] );
 			} else {
 				?>
-				<img src="<?php echo esc_url( get_template_directory_uri() . '/assets/img/hands.webp' ); ?>" alt="<?php esc_attr_e( 'Hands gently touching a tray of grass', 'touchgrass' ); ?>" loading="lazy">
+				<img src="<?php echo esc_url( get_template_directory_uri() . '/assets/img/hands.webp' ); ?>" alt="<?php esc_attr_e( 'Hands gently touching a tray of grass', 'touchgrass' ); ?>" loading="lazy" width="1920" height="1280">
 				<?php
 			}
 			?>
@@ -260,7 +260,7 @@ if ( function_exists( 'tg_trust_block' ) ) {
 		</div>
 		<?php endif; ?>
 		<figure class="desk-fig reveal">
-			<img src="<?php echo esc_url( get_template_directory_uri() . '/assets/img/desk.webp' ); ?>" alt="<?php esc_attr_e( 'A Touch Grass plot on a desk next to a laptop', 'touchgrass' ); ?>" loading="lazy">
+			<img src="<?php echo esc_url( get_template_directory_uri() . '/assets/img/desk.webp' ); ?>" alt="<?php esc_attr_e( 'A Touch Grass plot on a desk next to a laptop', 'touchgrass' ); ?>" loading="lazy" width="1920" height="1280">
 			<figcaption><?php esc_html_e( 'The Daily Driver, at work.', 'touchgrass' ); ?></figcaption>
 		</figure>
 	</div>

@@ -332,5 +332,52 @@ t( 'tier drops back to seedling', 'seedling' === tg_grass_club_tier( $club_uid )
 wp_delete_post( $sub_id, true );
 wp_delete_user( $club_uid );
 
+/* ---------- v2.4.0: SEO + social ---------- */
+$og_default = tg_og_image_default();
+t( 'og default is absolute theme asset URL', 0 === strpos( $og_default, 'http' ) && 'og-default.jpg' === basename( strtok( $og_default, '?' ) ), $og_default );
+
+/* Simulate a product page for is_product()-gated helpers. */
+$seo_pid  = wc_get_product_id_by_sku( 'TG-DAILY' );
+$seo_prod = wc_get_product( $seo_pid );
+global $wp_query, $post;
+$seo_old_query = $wp_query;
+$seo_old_post  = $post ?? null;
+$wp_query = new WP_Query( [ 'post_type' => 'product', 'p' => $seo_pid ] );
+$wp_query->the_post();
+
+t( 'is_product true in simulated context', is_product() );
+
+$og_data = tg_og_image_data();
+t( 'product og image overrides default', false !== strpos( $og_data[0], 'uploads' ) && false === strpos( $og_data[0], 'og-default.jpg' ), $og_data[0] );
+t( 'product og image has dimensions', $og_data[1] > 0 && $og_data[2] > 0 );
+
+$seo_desc = tg_meta_description();
+t( 'product meta description non-empty', '' !== $seo_desc, substr( $seo_desc, 0, 60 ) );
+t( 'product meta description within ~160 chars', mb_strlen( $seo_desc ) <= 165, (string) mb_strlen( $seo_desc ) );
+
+$schema = tg_product_schema();
+t( 'product schema has name', ( $schema['name'] ?? '' ) === $seo_prod->get_name() );
+t( 'product schema offers price matches', (string) ( $schema['offers']['price'] ?? '' ) === (string) $seo_prod->get_price(), (string) ( $schema['offers']['price'] ?? '?' ) );
+t( 'product schema availability honest', in_array( $schema['offers']['availability'] ?? '', [ 'https://schema.org/InStock', 'https://schema.org/OutOfStock' ], true ) );
+t( 'product schema brand is Surrey Grassworks', ( $schema['brand']['name'] ?? '' ) === 'Surrey Grassworks' );
+t( 'product schema JSON-encodes', null !== json_decode( wp_json_encode( $schema ) ) );
+
+ob_start();
+tg_seo_head();
+$seo_head = ob_get_clean();
+t( 'head has og:image', false !== strpos( $seo_head, 'property="og:image"' ) );
+t( 'head has twitter:image', false !== strpos( $seo_head, 'name="twitter:image"' ) );
+t( 'head has meta description', false !== strpos( $seo_head, 'name="description"' ) );
+t( 'head does NOT duplicate og:title', false === strpos( $seo_head, 'property="og:title"' ) );
+t( 'head does NOT duplicate twitter:card', false === strpos( $seo_head, 'name="twitter:card"' ) );
+
+/* Restore query; homepage schema + fallback description need no product. */
+$wp_query = $seo_old_query;
+if ( $seo_old_post ) { $post = $seo_old_post; } else { unset( $post ); }
+wp_reset_postdata();
+
+$fallback_desc = tg_meta_description();
+t( 'meta description fallback non-empty', '' !== $fallback_desc );
+
 echo "\n" . $GLOBALS['tg_pass'] . " passed, " . $GLOBALS['tg_fail'] . " failed\n";
 exit( $GLOBALS['tg_fail'] > 0 ? 1 : 0 );

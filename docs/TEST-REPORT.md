@@ -213,3 +213,55 @@ grass corporation treated with total seriousness. Three systems:
 - Live Buttondown subscribe, real gateway checkout/refund, and actual email
   delivery remain untested (no keys).
 - `.github/workflows/ci.yml` still needs the one manual web-UI add.
+
+## v2.4.0 — SEO + Social + Speed (2026-10-06)
+
+Review-first release (not deployed, no PR): social sharing, meta/schema, and
+measured performance fixes. Full review in `docs/SEO-SOCIAL-SPEED-REVIEW.md`.
+
+- **Social.** Generated art-directed OG image `assets/img/og-default.jpg`
+  (1200×630, 81 KB): studio grass-rectangle photograph, "Touch Grass" serif
+  headline, "SURREY GRASSWORKS" mark, "Going outside is free. This is $29."
+  New `inc/seo.php` outputs `og:image` (+width/height/alt) and `twitter:image`:
+  theme default site-wide, product featured image (real dimensions) on PDPs.
+  Existing `og:title/type/url/site_name/locale` and `twitter:card` come from
+  a live-only source outside this codebase, so the theme deliberately does
+  not re-emit them (no duplicates).
+- **SEO.** `<meta name="description">` + `og:description` (product short
+  description → tagline → fallback, ~155 chars word-trimmed). Product JSON-LD
+  on PDPs (name, image, description, brand "Surrey Grassworks", offers with
+  price/currency/availability from real stock status — validated parseable).
+  Organization + WebSite JSON-LD on homepage. FAQPage JSON-LD unchanged.
+- **Speed.** `fetchpriority="high"` on the LCP hero image; `loading="lazy"`
+  on product-card, ritual cross-sell, and sticky-ATC thumbnails (required a
+  targeted `wp_get_loading_optimization_attributes` filter — WP 7.1's
+  optimizer strips an explicit `loading="lazy"` from `WC_Product::get_image()`
+  output); explicit `width`/`height` on hardcoded images (12/12 now).
+  `font-display: swap` was already present. jQuery left render-blocking
+  (deferring is not trivially safe with WooCommerce).
+
+### Automated (playground)
+
+- `tests/integration.php`: **108 passed, 0 failed** (91 carried + 17 new:
+  OG default URL, product OG override + dimensions, meta description length,
+  product schema name/price/availability/brand, schema JSON-encodes, head
+  output has og:image/twitter:image/description and does NOT duplicate
+  og:title or twitter:card).
+- `tests/http-tests.sh`: **59 passed, 0 failed** (47 carried + 12 new:
+  og:image/twitter:image/meta/og:description on homepage + PDP, PDP override
+  off the default, Organization + Product schema blocks, hero fetchpriority,
+  lazy images present).
+- `php -l`: every changed PHP file passes. `.pot` files regenerated for
+  both text domains.
+
+### Manual / runtime (screenshot-verified)
+
+- **Homepage (1440px + 390px):** no visual regressions; lineup, trust,
+  deed teaser, how-it-works all render as before.
+- **PDP (1440px):** no visual regressions; deed accordions, ritual
+  cross-sells, sticky ATC, trust block intact.
+- **Performance (wget mirror, home + PDP):** 11/12 homepage images lazy
+  (was 2/12); hero fetchpriority high; 12/12 with width+height. Top costs
+  unchanged: Inter fonts ~1.3 MB (4 weights — flagged, needs a design
+  decision before cutting), full-size webp in srcsets (gallery serves
+  sized variants).

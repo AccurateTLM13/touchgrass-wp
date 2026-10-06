@@ -120,4 +120,18 @@ echo "$CONV_HTML" | grep -q "Holly Hock" && ok "H9 conveyance names owner" || no
 REG_FMT=$($WP eval "echo tg_plot_registry_number(42);" 2>/dev/null | tail -1)
 [ "$REG_FMT" = "TG-00042" ] && ok "H9 registry number format" || no "H9 registry number format" "got: $REG_FMT"
 
+# H10: v2.4.0 SEO + social + speed
+echo "$HOME_HTML" | grep -q 'property="og:image"' && ok "H10 homepage has og:image" || no "H10 homepage has og:image" "missing"
+echo "$HOME_HTML" | grep -q 'name="twitter:image"' && ok "H10 homepage has twitter:image" || no "H10 homepage has twitter:image" "missing"
+echo "$HOME_HTML" | grep -q 'name="description"' && ok "H10 homepage has meta description" || no "H10 homepage has meta description" "missing"
+echo "$HOME_HTML" | grep -q 'property="og:description"' && ok "H10 homepage has og:description" || no "H10 homepage has og:description" "missing"
+echo "$HOME_HTML" | grep -q 'og-default.jpg' && ok "H10 homepage og:image is theme default" || no "H10 homepage og:image default" "missing"
+echo "$HOME_HTML" | grep -q '"@type":"Organization"' && ok "H10 homepage has Organization schema" || no "H10 homepage Organization schema" "missing"
+echo "$PDP_HTML" | grep -q 'property="og:image"' && ok "H10 PDP has og:image" || no "H10 PDP og:image" "missing"
+echo "$PDP_HTML" | grep -q 'og-default.jpg' && no "H10 PDP og:image overrides default" "still default" || ok "H10 PDP og:image overrides default"
+echo "$PDP_HTML" | grep -q '"@type":"Product"' && ok "H10 PDP has Product schema" || no "H10 PDP Product schema" "missing"
+echo "$PDP_HTML" | grep -q '"price"' && ok "H10 PDP schema has price" || no "H10 PDP schema price" "missing"
+echo "$HOME_HTML" | grep -q 'fetchpriority="high"' && ok "H10 hero image has fetchpriority" || no "H10 hero fetchpriority" "missing"
+echo "$HOME_HTML" | grep -o 'loading="lazy"' | wc -l | grep -q '[1-9]' && ok "H10 below-fold images lazy" || no "H10 lazy images" "none found"
+
 echo ""; echo "$PASS passed, $FAIL failed"

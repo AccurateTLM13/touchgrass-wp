@@ -18,7 +18,7 @@ $tagline = function_exists( 'tg_product_tagline' ) ? tg_product_tagline( $produc
 <li <?php wc_product_class( 'pcard', $product ); ?>>
 	<a class="pcard-link" href="<?php echo esc_url( $product->get_permalink() ); ?>" style="display:block;text-decoration:none;color:inherit">
 		<div class="ph">
-			<?php echo $product->get_image( 'woocommerce_thumbnail' ); ?>
+			<?php echo $product->get_image( 'woocommerce_thumbnail', [ 'loading' => 'lazy' ] ); ?>
 			<?php if ( $product->is_on_sale() ) { echo '<span class="onsale">' . esc_html__( 'Sale', 'touchgrass' ) . '</span>'; } ?>
 		</div>
 		<div class="pb">
