@@ -171,3 +171,33 @@ function tg_seo_jsonld() {
 	echo '<script type="application/ld+json">' . wp_json_encode( $schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) . '</script>' . "\n";
 }
 add_action( 'wp_head', 'tg_seo_jsonld', 6 );
+
+/**
+ * Keep exactly one og:image and og:description per page.
+ *
+ * The theme emits both tags unconditionally (with richer data: real image
+ * dimensions, alt text, sensible defaults). Yoast SEO also emits them on
+ * pages where it has data (observed v28.6: product pages get og:image with
+ * dimensions and og:description from the short description), producing
+ * duplicate tags. Remove Yoast's Open Graph image/description presenters so
+ * the theme is the single source of truth for these two tags; Yoast keeps
+ * emitting everything else (og:title, og:type, og:url, og:site_name,
+ * og:locale, twitter:card, canonical). If Yoast is ever deactivated this
+ * filter never fires and the theme's tags stand alone.
+ */
+add_filter( 'wpseo_frontend_presenters', 'tg_dedupe_yoast_og_presenters' );
+function tg_dedupe_yoast_og_presenters( $presenters ) {
+	if ( ! is_array( $presenters ) ) {
+		return $presenters;
+	}
+	$drop = [
+		'Yoast\WP\SEO\Presenters\Open_Graph\Image_Presenter',
+		'Yoast\WP\SEO\Presenters\Open_Graph\Description_Presenter',
+	];
+	foreach ( $presenters as $i => $presenter ) {
+		if ( is_object( $presenter ) && in_array( get_class( $presenter ), $drop, true ) ) {
+			unset( $presenters[ $i ] );
+		}
+	}
+	return array_values( $presenters );
+}

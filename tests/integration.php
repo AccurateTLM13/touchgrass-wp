@@ -371,6 +371,28 @@ t( 'head has meta description', false !== strpos( $seo_head, 'name="description"
 t( 'head does NOT duplicate og:title', false === strpos( $seo_head, 'property="og:title"' ) );
 t( 'head does NOT duplicate twitter:card', false === strpos( $seo_head, 'name="twitter:card"' ) );
 
+/* Yoast OG dedupe: theme stays the single source for og:image/og:description. */
+t( 'yoast dedupe filter registered', false !== has_filter( 'wpseo_frontend_presenters', 'tg_dedupe_yoast_og_presenters' ) );
+foreach ( [ 'Image_Presenter', 'Description_Presenter', 'Title_Presenter' ] as $tg_cls ) {
+	$tg_fqcn = 'Yoast\\WP\\SEO\\Presenters\\Open_Graph\\' . $tg_cls;
+	if ( ! class_exists( $tg_fqcn ) ) {
+		eval( "namespace Yoast\\WP\\SEO\\Presenters\\Open_Graph; class {$tg_cls} {}" );
+	}
+}
+$tg_fake_presenters = [
+	new \Yoast\WP\SEO\Presenters\Open_Graph\Image_Presenter(),
+	new \Yoast\WP\SEO\Presenters\Open_Graph\Description_Presenter(),
+	new \Yoast\WP\SEO\Presenters\Open_Graph\Title_Presenter(),
+	new \stdClass(),
+];
+$tg_deduped = tg_dedupe_yoast_og_presenters( $tg_fake_presenters );
+$tg_dedupe_classes = array_map( 'get_class', array_filter( $tg_deduped, 'is_object' ) );
+t( 'yoast og:image presenter removed', ! in_array( 'Yoast\WP\SEO\Presenters\Open_Graph\Image_Presenter', $tg_dedupe_classes, true ) );
+t( 'yoast og:description presenter removed', ! in_array( 'Yoast\WP\SEO\Presenters\Open_Graph\Description_Presenter', $tg_dedupe_classes, true ) );
+t( 'other yoast presenters kept', in_array( 'Yoast\WP\SEO\Presenters\Open_Graph\Title_Presenter', $tg_dedupe_classes, true ) );
+t( 'non-presenter entries kept', 2 === count( $tg_deduped ) );
+t( 'non-array input passes through', null === tg_dedupe_yoast_og_presenters( null ) );
+
 /* Restore query; homepage schema + fallback description need no product. */
 $wp_query = $seo_old_query;
 if ( $seo_old_post ) { $post = $seo_old_post; } else { unset( $post ); }
