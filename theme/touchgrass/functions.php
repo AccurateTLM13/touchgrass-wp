@@ -26,7 +26,7 @@ add_filter( 'wp_get_loading_optimization_attributes', function ( $attrs, $tag_na
 	return $attrs;
 }, 10, 3 );
 
-define( 'TG_VERSION', '2.4.1' );
+define( 'TG_VERSION', '2.5.0' );
 
 /* WooCommerce is optional; nudge admins (not visitors) if it's missing. */
 add_action( 'admin_notices', function () {
@@ -138,7 +138,7 @@ add_filter( 'render_block', function ( $block_content, $block ) {
 
 /* Coupon field label + demo hint live in the core plugin (TG_Microcopy::wire):
  * the plugin checks demo mode for the GOOUTSIDE hint and otherwise pulls the
- * merchant-editable "Bribe code" label from the microcopy map. */
+ * merchant-editable "Abatement code" label from the microcopy map. */
 
 /* PDP spine (P4): the tabs/upsells/related callbacks normally printed by
  * woocommerce_after_single_product_summary are replaced by the custom

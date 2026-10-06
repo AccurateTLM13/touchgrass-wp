@@ -497,7 +497,7 @@ class TG_Importer {
 		$coupon->set_code( $code );
 		$coupon->set_discount_type( 'percent' );
 		$coupon->set_amount( 20 );
-		$coupon->set_description( __( 'Fresh Cut Friday — 20% off, for the irony.', 'touchgrass-core' ) );
+		$coupon->set_description( __( 'Fresh Cut Friday — 20% abatement on all plots.', 'touchgrass-core' ) );
 		$id = $coupon->save();
 		if ( ! $id ) { $t['failed']++; } else { $t['created']++; }
 		return $t;

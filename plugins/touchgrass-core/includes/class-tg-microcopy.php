@@ -30,18 +30,18 @@ class TG_Microcopy {
 	public static function defaults() {
 		return [
 			'add_to_cart'       => __( 'Claim Your Plot', 'touchgrass-core' ),
-			'empty_cart'        => __( 'Nothing here. Like your step count.', 'touchgrass-core' ),
+			'empty_cart'        => __( 'The Registry shows no plots in your name.', 'touchgrass-core' ),
 			'cart_guarantee'    => __( 'Your money is safe. For now.', 'touchgrass-core' ),
-			'coupon_label'      => __( 'Bribe code', 'touchgrass-core' ),
+			'coupon_label'      => __( 'Abatement code', 'touchgrass-core' ),
 			'checkout_button'   => __( 'Complete Invoice', 'touchgrass-core' ),
 			'order_received_title' => __( 'Invoice paid. Grass dispatched.', 'touchgrass-core' ),
 			'order_received_text'  => __( "We're not judging. We're invoicing.", 'touchgrass-core' ),
 			'empty_search'      => __( "No grass found. Have you tried outside? It's free.", 'touchgrass-core' ),
 			/* {n} = live stock count at the low-stock threshold. */
-			'low_stock'         => __( 'Only {n} left. The grass is not infinite. Unlike your screen time.', 'touchgrass-core' ),
-			'newsletter_consent' => __( "Rare (but invoiced) emails. Unsubscribe anytime; we'll pretend it never happened.", 'touchgrass-core' ),
+			'low_stock'         => __( 'Only {n} remaining in this plot.', 'touchgrass-core' ),
+			'newsletter_consent' => __( 'Rare (but invoiced) dispatches. Unsubscribe anytime; your file will be closed without incident.', 'touchgrass-core' ),
 			'newsletter_success' => __( "You're on the list. The grass will write.", 'touchgrass-core' ),
-			'out_of_stock'      => __( 'Gone. The grass has left the building.', 'touchgrass-core' ),
+			'out_of_stock'      => __( 'This plot is fully claimed.', 'touchgrass-core' ),
 			/* Conveyance: the order becomes a deed transfer. {registry} = plot
 			 * registry number, {name} = billing name, {division} and
 			 * {classification} come from the first plot in the order. */

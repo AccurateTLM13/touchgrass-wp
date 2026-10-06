@@ -104,7 +104,7 @@ t( 'importer recovers deleted testimonials without duplicates', 3 === (int) wp_c
 set_theme_mod( 'tg_shop_title', 'Custom Shop Title' );
 t( 'theme mod read back through tg_brand()', 'Custom Shop Title' === tg_brand( 'tg_shop_title' ) );
 remove_theme_mod( 'tg_shop_title' );
-t( 'tg_brand() falls back to default after removal', 'Nine rectangles* of grass.' === tg_brand( 'tg_shop_title' ), tg_brand( 'tg_shop_title' ) );
+t( 'tg_brand() falls back to default after removal', 'Plots entered in the Registry.' === tg_brand( 'tg_shop_title' ), tg_brand( 'tg_shop_title' ) );
 
 /* ---------- 9. newsletter provider error paths (fake key) ---------- */
 update_option( 'tg_buttondown_api_key', 'tg_test_fake_key_123' );
@@ -186,14 +186,14 @@ TG_Importer::run();
 
 /* ---------- 15. v2.2.0: microcopy map defaults + override ---------- */
 t( 'microcopy default add_to_cart', 'Claim Your Plot' === tg_microcopy( 'add_to_cart' ), tg_microcopy( 'add_to_cart' ) );
-t( 'microcopy default empty_cart', 'Nothing here. Like your step count.' === tg_microcopy( 'empty_cart' ) );
+t( 'microcopy default empty_cart', 'The Registry shows no plots in your name.' === tg_microcopy( 'empty_cart' ) );
 t( 'microcopy default checkout_button', 'Complete Invoice' === tg_microcopy( 'checkout_button' ) );
 t( 'microcopy default order_received_title', 'Invoice paid. Grass dispatched.' === tg_microcopy( 'order_received_title' ) );
 t( 'microcopy unknown key returns empty', '' === tg_microcopy( 'nope_not_a_key' ) );
 update_option( 'tg_microcopy_coupon_label', 'Merchant bribe label' );
 t( 'microcopy override wins', 'Merchant bribe label' === tg_microcopy( 'coupon_label' ), tg_microcopy( 'coupon_label' ) );
 update_option( 'tg_microcopy_coupon_label', '' );
-t( 'microcopy empty override falls back to default', 'Bribe code' === tg_microcopy( 'coupon_label' ) );
+t( 'microcopy empty override falls back to default', 'Abatement code' === tg_microcopy( 'coupon_label' ) );
 delete_option( 'tg_microcopy_coupon_label' );
 
 /* ---------- 16. v2.2.0: checkout button + email heading wired to map ---------- */

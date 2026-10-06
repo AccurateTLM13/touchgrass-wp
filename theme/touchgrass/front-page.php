@@ -86,7 +86,7 @@ $club_on = tg_brand( 'tg_section_club' ) && function_exists( 'tg_newsletter_conf
 	<div class="wrap">
 		<div class="shop-head">
 			<div>
-				<div class="eyebrow reveal"><?php esc_html_e( 'The lineup', 'touchgrass' ); ?></div>
+				<div class="eyebrow reveal"><?php esc_html_e( 'The Plot Registry', 'touchgrass' ); ?></div>
 				<h2 class="sec reveal" id="shop-title"><?php echo esc_html( tg_brand( 'tg_shop_title' ) ); ?></h2>
 			</div>
 			<p class="sec-sub reveal"><?php echo esc_html( tg_brand( 'tg_shop_sub' ) ); ?></p>
@@ -101,6 +101,9 @@ $club_on = tg_brand( 'tg_section_club' ) && function_exists( 'tg_newsletter_conf
 						<?php $badge = function_exists( 'tg_product_badge' ) ? tg_product_badge( $product ) : ''; ?>
 						<span class="tag<?php echo $badge ? '' : ' tag-empty'; ?>"><?php echo $badge ? esc_html( $badge ) : '&nbsp;'; ?></span>
 						<h3><?php echo esc_html( $product->get_name() ); ?></h3>
+						<?php if ( function_exists( 'tg_deed_hierarchy' ) ) : $tg_hier = tg_deed_hierarchy( $product ); ?>
+						<div class="plot-no"><?php echo esc_html( $tg_hier['plot'][1] ); ?></div>
+						<?php endif; ?>
 						<div class="sub"><?php echo esc_html( function_exists( 'tg_product_tagline' ) ? tg_product_tagline( $product ) : '' ); ?></div>
 						<div class="row">
 							<span class="price"><?php echo $product->get_price_html(); // phpcs:ignore ?></span>
@@ -129,7 +132,7 @@ if ( function_exists( 'tg_trust_block' ) ) {
 <?php if ( tg_brand( 'tg_section_confession' ) ) : ?>
 <section class="confess" aria-labelledby="confess-title">
 	<div class="wrap confess-in">
-		<div class="eyebrow reveal"><?php esc_html_e( 'A moment of honesty', 'touchgrass' ); ?></div>
+		<div class="eyebrow reveal"><?php esc_html_e( 'Required disclosure', 'touchgrass' ); ?></div>
 		<h2 class="sec reveal" id="confess-title"><?php echo esc_html( tg_brand( 'tg_confession_title' ) ); ?></h2>
 		<p class="body reveal"><?php echo wp_kses_post( tg_brand( 'tg_confession_copy' ) ); ?></p>
 		<div class="vs reveal" role="table" aria-label="<?php esc_attr_e( 'Outside versus Touch Grass', 'touchgrass' ); ?>">
@@ -296,7 +299,7 @@ if ( function_exists( 'tg_faq_json_ld' ) ) {
 		<div class="news-panel reveal">
 			<div class="eyebrow"><?php esc_html_e( 'Field notes', 'touchgrass' ); ?></div>
 			<h2 id="news-title"><?php esc_html_e( 'Join the touched.', 'touchgrass' ); ?></h2>
-			<p><?php esc_html_e( 'One email a month. Occasionally about grass. Mostly about new ways to separate you from your money. Unsubscribe whenever; the grass will not take it personally.', 'touchgrass' ); ?></p>
+			<p><?php esc_html_e( 'One dispatch per month. Occasionally about grass. Unsubscribe at any time; your file will be closed without incident.', 'touchgrass' ); ?></p>
 			<?php tg_newsletter_form(); ?>
 		</div>
 	</div>

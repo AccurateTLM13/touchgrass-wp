@@ -84,7 +84,7 @@ echo "$HOME_HTML" | grep -q "application/ld+json" && ok "H8 homepage has FAQ JSO
 # Note: the playground cart page uses WooCommerce blocks (JS-rendered), so the
 # PHP gettext filter applies to the classic cart path. Verify the mechanism.
 COUPON_LABEL=$($WP eval "echo apply_filters('gettext', 'Coupon code', 'Coupon code', 'woocommerce');" 2>/dev/null | tail -1)
-[ "$COUPON_LABEL" = "Bribe code" ] && ok "H8 coupon label from microcopy map" || no "H8 coupon label from microcopy map" "got: $COUPON_LABEL"
+[ "$COUPON_LABEL" = "Abatement code" ] && ok "H8 coupon label from microcopy map" || no "H8 coupon label from microcopy map" "got: $COUPON_LABEL"
 
 # H9: v2.3.0 Grassworks Institution — deed hierarchy, club tiers, conveyance
 echo "$PDP_HTML" | grep -q "Surrey Grassworks" && ok "H9 PDP shows corporation" || no "H9 PDP shows corporation" "missing"

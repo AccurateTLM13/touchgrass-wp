@@ -92,7 +92,8 @@ h2.sec{font-family:var(--serif);font-weight:500;font-size:40px;letter-spacing:-.
 .pcard .pb{padding:1.4rem 1.5rem 1.6rem}
 .pcard .tag{font-family:var(--serif);font-style:italic;font-size:13.5px;color:var(--green);margin-bottom:.35rem;display:block;min-height:1.4em}
 .pcard .tag-empty{visibility:hidden}
-.pcard h3{font-family:var(--serif);font-weight:500;font-size:22px;letter-spacing:-.01em;margin-bottom:.3rem;color:var(--ink)}
+.pcard h3{font-family:var(--serif);font-weight:500;font-size:22px;letter-spacing:-.01em;margin-bottom:.15rem;color:var(--ink)}
+.pcard .plot-no{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:.4rem}
 .pcard .sub{font-size:14px;color:var(--muted);margin-bottom:1rem}
 .pcard .row{display:flex;align-items:center;justify-content:space-between}
 .price{font-weight:600;font-size:17px;color:var(--ink)}
