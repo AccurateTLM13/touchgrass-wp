@@ -27,7 +27,7 @@ function tg_brand_fields() {
 		],
 		'tg_announcement_text' => [
 			'label'   => __( 'Announcement text', 'touchgrass' ),
-			'default' => __( 'Fresh Cut Friday — <strong>20% off</strong> with code <code>GOOUTSIDE</code>, for the irony.', 'touchgrass' ),
+			'default' => __( 'Public notice — Fresh Cut Friday: <strong>20% abatement</strong> on all plots with code <code>GOOUTSIDE</code>.', 'touchgrass' ),
 			'type'    => 'textarea',
 			'section' => 'tg_bar',
 			'description' => __( 'Keep this consistent with a real coupon in WooCommerce → Coupons. Links allowed.', 'touchgrass' ),
@@ -42,7 +42,7 @@ function tg_brand_fields() {
 		],
 		'tg_hero_eyebrow' => [
 			'label'   => __( 'Hero eyebrow', 'touchgrass' ),
-			'default' => __( 'Cultivated indoors. Like you.', 'touchgrass' ),
+			'default' => __( 'Surrey Grassworks · Indoor Recreation Commodity Program', 'touchgrass' ),
 			'type'    => 'text',
 			'section' => 'tg_hero',
 		],
@@ -60,7 +60,7 @@ function tg_brand_fields() {
 		],
 		'tg_hero_cta_primary' => [
 			'label'   => __( 'Hero primary button label', 'touchgrass' ),
-			'default' => __( 'Shop the grass', 'touchgrass' ),
+			'default' => __( 'Browse the Registry', 'touchgrass' ),
 			'type'    => 'text',
 			'section' => 'tg_hero',
 		],
@@ -73,7 +73,7 @@ function tg_brand_fields() {
 		],
 		'tg_hero_cta_secondary' => [
 			'label'   => __( 'Hero secondary button label', 'touchgrass' ),
-			'default' => __( 'How it works', 'touchgrass' ),
+			'default' => __( 'The Program', 'touchgrass' ),
 			'type'    => 'text',
 			'section' => 'tg_hero',
 		],
@@ -127,13 +127,13 @@ function tg_brand_fields() {
 		],
 		'tg_shop_title' => [
 			'label'   => __( 'Shop heading', 'touchgrass' ),
-			'default' => __( 'Nine rectangles* of grass.', 'touchgrass' ),
+			'default' => __( 'Plots entered in the Registry.', 'touchgrass' ),
 			'type'    => 'text',
 			'section' => 'tg_shop',
 		],
 		'tg_shop_sub' => [
 			'label'   => __( 'Shop subheading', 'touchgrass' ),
-			'default' => __( '*Two are circles. Two are not grass. We counted them anyway.', 'touchgrass' ),
+			'default' => __( 'Two are circles. Two are not grass. All nine are entered.', 'touchgrass' ),
 			'type'    => 'text',
 			'section' => 'tg_shop',
 		],
@@ -151,12 +151,12 @@ function tg_brand_fields() {
 			'section' => 'tg_how',
 			'description' => __( 'Empty = the theme’s default photo.', 'touchgrass' ),
 		],
-		'tg_step_1_title' => [ 'label' => __( 'Step 1 title', 'touchgrass' ), 'default' => __( 'Admit it.', 'touchgrass' ), 'type' => 'text', 'section' => 'tg_how' ],
-		'tg_step_1_text'  => [ 'label' => __( 'Step 1 text', 'touchgrass' ), 'default' => __( 'You need grass. You won&rsquo;t go outside. This is fine. Everyone here has agreed not to mention it.', 'touchgrass' ), 'type' => 'textarea', 'section' => 'tg_how' ],
-		'tg_step_2_title' => [ 'label' => __( 'Step 2 title', 'touchgrass' ), 'default' => __( 'Pay us.', 'touchgrass' ), 'type' => 'text', 'section' => 'tg_how' ],
-		'tg_step_2_text'  => [ 'label' => __( 'Step 2 text', 'touchgrass' ), 'default' => __( 'Pick a plot. We ship within 48 hours. The money part is the easiest part — for us.', 'touchgrass' ), 'type' => 'textarea', 'section' => 'tg_how' ],
-		'tg_step_3_title' => [ 'label' => __( 'Step 3 title', 'touchgrass' ), 'default' => __( 'Touch it.', 'touchgrass' ), 'type' => 'text', 'section' => 'tg_how' ],
-		'tg_step_3_text'  => [ 'label' => __( 'Step 3 text', 'touchgrass' ), 'default' => __( 'Daily. That is the entire program.', 'touchgrass' ), 'type' => 'textarea', 'section' => 'tg_how' ],
+		'tg_step_1_title' => [ 'label' => __( 'Step 1 title', 'touchgrass' ), 'default' => __( 'File your claim.', 'touchgrass' ), 'type' => 'text', 'section' => 'tg_how' ],
+		'tg_step_1_text'  => [ 'label' => __( 'Step 1 text', 'touchgrass' ), 'default' => __( 'Select a plot from the Registry. No qualifications required. The bar is the floor.', 'touchgrass' ), 'type' => 'textarea', 'section' => 'tg_how' ],
+		'tg_step_2_title' => [ 'label' => __( 'Step 2 title', 'touchgrass' ), 'default' => __( 'Settle the invoice.', 'touchgrass' ), 'type' => 'text', 'section' => 'tg_how' ],
+		'tg_step_2_text'  => [ 'label' => __( 'Step 2 text', 'touchgrass' ), 'default' => __( 'Remit payment at checkout. Plots ship within 48 hours of cleared funds.', 'touchgrass' ), 'type' => 'textarea', 'section' => 'tg_how' ],
+		'tg_step_3_title' => [ 'label' => __( 'Step 3 title', 'touchgrass' ), 'default' => __( 'Take possession.', 'touchgrass' ), 'type' => 'text', 'section' => 'tg_how' ],
+		'tg_step_3_text'  => [ 'label' => __( 'Step 3 text', 'touchgrass' ), 'default' => __( 'Touch daily. That is the entire program.', 'touchgrass' ), 'type' => 'textarea', 'section' => 'tg_how' ],
 		/* Reviews */
 		'tg_proof_title' => [
 			'label'   => __( 'Reviews heading', 'touchgrass' ),
@@ -186,7 +186,7 @@ function tg_brand_fields() {
 		/* Footer */
 		'tg_footer_tagline' => [
 			'label'   => __( 'Footer tagline', 'touchgrass' ),
-			'default' => __( 'Premium plots of real grass for people who live indoors. Grown with care, shipped with speed, touched with joy.', 'touchgrass' ),
+			'default' => __( 'Surrey Grassworks administers the Indoor Recreation Commodity Program: premium plots of real grass for people who live indoors.', 'touchgrass' ),
 			'type'    => 'textarea',
 			'section' => 'tg_footer',
 		],

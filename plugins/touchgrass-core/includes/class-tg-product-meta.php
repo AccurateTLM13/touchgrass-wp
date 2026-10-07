@@ -34,14 +34,24 @@ class TG_Product_Meta {
 
 	public static function deed_tab_content() {
 		global $product;
+		$hier = tg_deed_hierarchy( $product );
 		$data = tg_deed_data( $product );
 		echo '<div class="tg-deed">';
-		echo '<p class="tg-deed-lede">' . esc_html__( 'Every plot ships with its deed: provenance, specifications, and warranty, recorded for posterity. The deed is legally meaningless.', 'touchgrass-core' ) . '</p>';
-		echo '<dl>';
+		echo '<p class="tg-deed-corp">' . esc_html( $hier['corporation'][1] ) . '</p>';
+		echo '<p class="tg-deed-doctitle">' . esc_html__( 'Deed of Grass', 'touchgrass-core' ) . '</p>';
+		echo '<dl class="tg-deed-hier">';
+		foreach ( [ 'division', 'program', 'harvest', 'plot', 'classification' ] as $field ) {
+			echo '<div class="tg-deed-row"><dt>' . esc_html( $hier[ $field ][0] ) . '</dt><dd>' . esc_html( $hier[ $field ][1] ) . '</dd></div>';
+		}
+		echo '</dl>';
+		echo '<dl class="tg-deed-specs">';
 		foreach ( $data as $row ) {
 			echo '<div class="tg-deed-row"><dt>' . esc_html( $row[0] ) . '</dt><dd>' . esc_html( $row[1] ) . '</dd></div>';
 		}
-		echo '</dl></div>';
+		echo '</dl>';
+		echo '<p class="tg-deed-auth">' . esc_html( $hier['authorization'][1] ) . '</p>';
+		echo '<p class="tg-deed-lede">' . esc_html__( 'Every plot ships with its deed: provenance, specifications, and warranty, recorded for posterity. The deed is legally meaningless.', 'touchgrass-core' ) . '</p>';
+		echo '</div>';
 	}
 
 	public static function register() {
@@ -58,6 +68,14 @@ class TG_Product_Meta {
 			'auth_callback' => function () { return current_user_can( 'edit_products' ); },
 		] );
 		foreach ( array_keys( self::deed_defaults() ) as $field ) {
+			register_post_meta( 'product', '_tg_deed_' . $field, [
+				'show_in_rest'  => true,
+				'single'        => true,
+				'type'          => 'string',
+				'auth_callback' => function () { return current_user_can( 'edit_products' ); },
+			] );
+		}
+		foreach ( array_keys( self::deed_hierarchy() ) as $field ) {
 			register_post_meta( 'product', '_tg_deed_' . $field, [
 				'show_in_rest'  => true,
 				'single'        => true,
@@ -85,6 +103,26 @@ class TG_Product_Meta {
 			'sunlight'   => [ __( 'Sunlight requirement', 'touchgrass-core' ), __( 'Optional. Like your ambition.', 'touchgrass-core' ) ],
 			'watering'   => [ __( 'Watering', 'touchgrass-core' ), __( 'Rain. Or tears.', 'touchgrass-core' ) ],
 			'warranty'   => [ __( 'Warranty', 'touchgrass-core' ), __( 'Photosynthesis guaranteed for 30 days.', 'touchgrass-core' ) ],
+		];
+	}
+
+	/**
+	 * "The Deed" institutional hierarchy. The corporation is the joke's
+	 * load-bearing wall: every plot belongs to the Surrey Grassworks,
+	 * which is filed, divided, programmed, harvested, plotted, classified,
+	 * and authorized. Dry data is the joke infrastructure.
+	 *
+	 * @return array field => [ label, default ]
+	 */
+	public static function deed_hierarchy() {
+		return [
+			'corporation'    => [ __( 'Corporation', 'touchgrass-core' ), __( 'Surrey Grassworks', 'touchgrass-core' ) ],
+			'division'       => [ __( 'Division', 'touchgrass-core' ), __( 'North Greenhouse Division', 'touchgrass-core' ) ],
+			'program'        => [ __( 'Program', 'touchgrass-core' ), __( 'Indoor Recreation Commodity Program', 'touchgrass-core' ) ],
+			'harvest'        => [ __( 'Harvest', 'touchgrass-core' ), __( 'Harvest 07', 'touchgrass-core' ) ],
+			'plot'           => [ __( 'Plot', 'touchgrass-core' ), '' ],
+			'classification' => [ __( 'Classification', 'touchgrass-core' ), __( 'Fescue Classification: Executive Desk Grade', 'touchgrass-core' ) ],
+			'authorization'  => [ __( 'Authorization', 'touchgrass-core' ), __( 'Authorized Indoor Use Only', 'touchgrass-core' ) ],
 		];
 	}
 
@@ -123,6 +161,13 @@ class TG_Product_Meta {
 		echo '</select><br>';
 		echo '<label for="tg_batch_field"><strong>' . esc_html__( 'Harvest batch', 'touchgrass-core' ) . '</strong></label><br>';
 		echo '<input type="text" id="tg_batch_field" name="tg_batch" value="' . esc_attr( get_post_meta( $post->ID, '_tg_batch', true ) ) . '" style="width:100%;margin:6px 0 12px" maxlength="60" placeholder="' . esc_attr__( 'Batch No. 7', 'touchgrass-core' ) . '"><br>';
+		echo '<strong>' . esc_html__( 'The Deed — institutional hierarchy', 'touchgrass-core' ) . '</strong>';
+		echo '<p class="description">' . esc_html__( 'The corporation the plot belongs to. Empty fields fall back to the house defaults.', 'touchgrass-core' ) . '</p>';
+		foreach ( self::deed_hierarchy() as $field => $def ) {
+			$value = get_post_meta( $post->ID, '_tg_deed_' . $field, true );
+			echo '<label for="tg_deed_' . esc_attr( $field ) . '_field">' . esc_html( $def[0] ) . '</label><br>';
+			echo '<input type="text" id="tg_deed_' . esc_attr( $field ) . '_field" name="tg_deed_' . esc_attr( $field ) . '" value="' . esc_attr( $value ) . '" style="width:100%;margin:6px 0 8px" maxlength="160" placeholder="' . esc_attr( $def[1] ) . '"><br>';
+		}
 		echo '<strong>' . esc_html__( 'The Deed — spec sheet', 'touchgrass-core' ) . '</strong>';
 		echo '<p class="description">' . esc_html__( 'Empty fields fall back to the house defaults.', 'touchgrass-core' ) . '</p>';
 		foreach ( self::deed_defaults() as $field => $def ) {
@@ -148,6 +193,12 @@ class TG_Product_Meta {
 			update_post_meta( $post_id, '_tg_batch', sanitize_text_field( wp_unslash( $_POST['tg_batch'] ) ) );
 		}
 		foreach ( array_keys( self::deed_defaults() ) as $field ) {
+			$input = 'tg_deed_' . $field;
+			if ( isset( $_POST[ $input ] ) ) {
+				update_post_meta( $post_id, '_tg_deed_' . $field, sanitize_text_field( wp_unslash( $_POST[ $input ] ) ) );
+			}
+		}
+		foreach ( array_keys( self::deed_hierarchy() ) as $field ) {
 			$input = 'tg_deed_' . $field;
 			if ( isset( $_POST[ $input ] ) ) {
 				update_post_meta( $post_id, '_tg_deed_' . $field, sanitize_text_field( wp_unslash( $_POST[ $input ] ) ) );
@@ -201,6 +252,28 @@ function tg_deed_data( $product ) {
 		$rows[] = [ $def[0], '' !== $value ? $value : $def[1] ];
 	}
 	return $rows;
+}
+
+/**
+ * "The Deed" institutional hierarchy for a product: field => [label, value].
+ * Saved meta wins; empty fields fall back to the house defaults. An empty
+ * plot number falls back to a deterministic Plot {id}-A so the document
+ * is never blank.
+ *
+ * @param WC_Product|int $product Product object or ID.
+ * @return array
+ */
+function tg_deed_hierarchy( $product ) {
+	$id  = $product instanceof WC_Product ? $product->get_id() : (int) $product;
+	$out = [];
+	foreach ( TG_Product_Meta::deed_hierarchy() as $field => $def ) {
+		$value = trim( (string) get_post_meta( $id, '_tg_deed_' . $field, true ) );
+		if ( '' === $value && 'plot' === $field ) {
+			$value = 'Plot ' . $id . '-A';
+		}
+		$out[ $field ] = [ $def[0], '' !== $value ? $value : $def[1] ];
+	}
+	return $out;
 }
 
 /**

@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Touch Grass — Core
  * Description: Functionality for the Touch Grass store: content types (FAQ, testimonials, subscribers), product fields, demo payment gateway, one-click demo importer, newsletter signup, and setup dashboard. Presentation lives in the Touch Grass theme.
- * Version: 2.2.0
+ * Version: 2.5.1
  * Author: Bobby John Studio
  * Text Domain: touchgrass-core
  * Domain Path: /languages
@@ -88,6 +88,7 @@ require_once TG_CORE_PATH . 'includes/class-tg-microcopy.php';
 require_once TG_CORE_PATH . 'includes/class-tg-admin.php';
 require_once TG_CORE_PATH . 'includes/class-tg-newsletter.php';
 require_once TG_CORE_PATH . 'includes/class-tg-demo-pay.php';
+require_once TG_CORE_PATH . 'includes/tg-club.php';
 
 /**
  * Everything here degrades gracefully when WooCommerce is inactive:

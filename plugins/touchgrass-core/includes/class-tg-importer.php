@@ -170,6 +170,46 @@ class TG_Importer {
 	}
 
 	/**
+	 * Per-product "Deed" institutional hierarchy overrides. Plot numbers are
+	 * deterministic per SKU — the registry does not improvise.
+	 *
+	 * @return array SKU => [ field => value ]
+	 */
+	public static function deed_hierarchy_overrides() {
+		return [
+			'TG-DAILY'    => [ 'plot' => __( 'Plot 184-C', 'touchgrass-core' ) ],
+			'TG-COMMUTER' => [ 'plot' => __( 'Plot 212-A', 'touchgrass-core' ) ],
+			'TG-STANDUP'  => [ 'plot' => __( 'Plot 96-F', 'touchgrass-core' ) ],
+			'TG-PROMAX'   => [
+				'plot'           => __( 'Plot 001-A', 'touchgrass-core' ),
+				'classification' => __( 'Fescue Classification: Championship Row Grade', 'touchgrass-core' ),
+			],
+			'TG-PAIR'     => [ 'plot' => __( 'Plots 9 & 10', 'touchgrass-core' ) ],
+			'TG-STARTER'  => [
+				'plot'           => __( 'Seed Vault 7', 'touchgrass-core' ),
+				'classification' => __( 'Seed Classification: Nascent Grade', 'touchgrass-core' ),
+			],
+			'TG-NIGHT'    => [
+				'division'       => __( 'Subterranean Division', 'touchgrass-core' ),
+				'plot'           => __( 'Plot 13-D', 'touchgrass-core' ),
+				'classification' => __( 'Shade-Tolerance Classification: Cave Dweller Grade', 'touchgrass-core' ),
+			],
+			'TG-MISTER'   => [
+				'division'       => __( 'Hydration Apparatus Division', 'touchgrass-core' ),
+				'harvest'        => __( 'Lot 12', 'touchgrass-core' ),
+				'plot'           => __( 'Unit 12-B', 'touchgrass-core' ),
+				'classification' => __( 'Brass Classification: Utilitarian', 'touchgrass-core' ),
+			],
+			'TG-GNOME'    => [
+				'division'       => __( 'Ornamental Division', 'touchgrass-core' ),
+				'harvest'        => __( 'Lot 3', 'touchgrass-core' ),
+				'plot'           => __( 'Unit 3-C', 'touchgrass-core' ),
+				'classification' => __( 'Ceramic Classification: Ornamental', 'touchgrass-core' ),
+			],
+		];
+	}
+
+	/**
 	 * Run the full import. Returns step => [ created, updated, skipped, failed ].
 	 */
 	public static function run() {
@@ -357,6 +397,7 @@ class TG_Importer {
 			if ( $term ) { $cat_ids[ $slug ] = (int) $term->term_id; }
 		}
 		$deed_overrides = self::deed_overrides();
+		$hier_overrides  = self::deed_hierarchy_overrides();
 		$plot_skus      = self::plot_skus();
 		foreach ( self::products() as $sku => $data ) {
 			$product_id = function_exists( 'wc_get_product_id_by_sku' ) ? wc_get_product_id_by_sku( $sku ) : 0;
@@ -365,7 +406,7 @@ class TG_Importer {
 				if ( isset( $cat_ids[ $slug ] ) ) { $ids[] = $cat_ids[ $slug ]; }
 			}
 			/* Voice fields: refreshed on every run, never commercial. */
-			$voice = function ( $product ) use ( $data, $sku, $deed_overrides, $plot_skus ) {
+			$voice = function ( $product ) use ( $data, $sku, $deed_overrides, $hier_overrides, $plot_skus ) {
 				$product->update_meta_data( '_tg_tagline', $data['tagline'] );
 				$product->update_meta_data( '_tg_badge', $data['badge'] );
 				if ( in_array( $sku, $plot_skus, true ) ) {
@@ -373,6 +414,11 @@ class TG_Importer {
 				}
 				if ( isset( $deed_overrides[ $sku ] ) ) {
 					foreach ( $deed_overrides[ $sku ] as $field => $value ) {
+						$product->update_meta_data( '_tg_deed_' . $field, $value );
+					}
+				}
+				if ( isset( $hier_overrides[ $sku ] ) ) {
+					foreach ( $hier_overrides[ $sku ] as $field => $value ) {
 						$product->update_meta_data( '_tg_deed_' . $field, $value );
 					}
 				}
@@ -451,7 +497,7 @@ class TG_Importer {
 		$coupon->set_code( $code );
 		$coupon->set_discount_type( 'percent' );
 		$coupon->set_amount( 20 );
-		$coupon->set_description( __( 'Fresh Cut Friday — 20% off, for the irony.', 'touchgrass-core' ) );
+		$coupon->set_description( __( 'Fresh Cut Friday — 20% abatement on all plots.', 'touchgrass-core' ) );
 		$id = $coupon->save();
 		if ( ! $id ) { $t['failed']++; } else { $t['created']++; }
 		return $t;

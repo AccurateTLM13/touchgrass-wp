@@ -10,8 +10,23 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
 
 require_once get_template_directory() . '/inc/customizer.php';
 require_once get_template_directory() . '/inc/template-tags.php';
+require_once get_template_directory() . '/inc/seo.php';
 
-define( 'TG_VERSION', '2.2.0' );
+/*
+ * Product thumbnails render below the fold everywhere they appear
+ * (lineup grids, ritual cross-sells). Core's loading optimizer can
+ * misclassify them as in-viewport and strip an explicit loading="lazy",
+ * so enforce it here for woocommerce_thumbnail images only.
+ */
+add_filter( 'wp_get_loading_optimization_attributes', function ( $attrs, $tag_name, $attr ) {
+	if ( 'img' === $tag_name && isset( $attr['class'] ) && str_contains( (string) $attr['class'], 'attachment-woocommerce_thumbnail' ) ) {
+		$attrs['loading'] = 'lazy';
+		unset( $attrs['fetchpriority'] );
+	}
+	return $attrs;
+}, 10, 3 );
+
+define( 'TG_VERSION', '2.5.1' );
 
 /* WooCommerce is optional; nudge admins (not visitors) if it's missing. */
 add_action( 'admin_notices', function () {
@@ -123,7 +138,7 @@ add_filter( 'render_block', function ( $block_content, $block ) {
 
 /* Coupon field label + demo hint live in the core plugin (TG_Microcopy::wire):
  * the plugin checks demo mode for the GOOUTSIDE hint and otherwise pulls the
- * merchant-editable "Bribe code" label from the microcopy map. */
+ * merchant-editable "Abatement code" label from the microcopy map. */
 
 /* PDP spine (P4): the tabs/upsells/related callbacks normally printed by
  * woocommerce_after_single_product_summary are replaced by the custom

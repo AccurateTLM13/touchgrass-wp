@@ -30,18 +30,24 @@ class TG_Microcopy {
 	public static function defaults() {
 		return [
 			'add_to_cart'       => __( 'Claim Your Plot', 'touchgrass-core' ),
-			'empty_cart'        => __( 'Nothing here. Like your step count.', 'touchgrass-core' ),
+			'empty_cart'        => __( 'The Registry shows no plots in your name.', 'touchgrass-core' ),
 			'cart_guarantee'    => __( 'Your money is safe. For now.', 'touchgrass-core' ),
-			'coupon_label'      => __( 'Bribe code', 'touchgrass-core' ),
+			'coupon_label'      => __( 'Abatement code', 'touchgrass-core' ),
 			'checkout_button'   => __( 'Complete Invoice', 'touchgrass-core' ),
 			'order_received_title' => __( 'Invoice paid. Grass dispatched.', 'touchgrass-core' ),
 			'order_received_text'  => __( "We're not judging. We're invoicing.", 'touchgrass-core' ),
 			'empty_search'      => __( "No grass found. Have you tried outside? It's free.", 'touchgrass-core' ),
 			/* {n} = live stock count at the low-stock threshold. */
-			'low_stock'         => __( 'Only {n} left. The grass is not infinite. Unlike your screen time.', 'touchgrass-core' ),
-			'newsletter_consent' => __( "Rare (but invoiced) emails. Unsubscribe anytime; we'll pretend it never happened.", 'touchgrass-core' ),
+			'low_stock'         => __( 'Only {n} remaining in this plot.', 'touchgrass-core' ),
+			'newsletter_consent' => __( 'Rare (but invoiced) dispatches. Unsubscribe anytime; your file will be closed without incident.', 'touchgrass-core' ),
 			'newsletter_success' => __( "You're on the list. The grass will write.", 'touchgrass-core' ),
-			'out_of_stock'      => __( 'Gone. The grass has left the building.', 'touchgrass-core' ),
+			'out_of_stock'      => __( 'This plot is fully claimed.', 'touchgrass-core' ),
+			/* Conveyance: the order becomes a deed transfer. {registry} = plot
+			 * registry number, {name} = billing name, {division} and
+			 * {classification} come from the first plot in the order. */
+			'conveyance_title'  => __( 'Official Notice of Conveyance', 'touchgrass-core' ),
+			'conveyance_text'   => __( 'Plot No. {registry} has been entered in the Surrey Grassworks Plot Registry in the name of {name}. The grass is now yours. The responsibility is also yours.', 'touchgrass-core' ),
+			'email_conveyance'  => __( 'This email serves as official notice: Plot No. {registry} is now registered in your name with the Surrey Grassworks Plot Registry, {division}. Classification: {classification}.', 'touchgrass-core' ),
 		];
 	}
 
@@ -64,6 +70,9 @@ class TG_Microcopy {
 			'newsletter_consent' => __( 'Newsletter consent line', 'touchgrass-core' ),
 			'newsletter_success' => __( 'Newsletter success message', 'touchgrass-core' ),
 			'out_of_stock'      => __( 'Out of stock text', 'touchgrass-core' ),
+			'conveyance_title'  => __( 'Conveyance notice heading', 'touchgrass-core' ),
+			'conveyance_text'   => __( 'Conveyance notice text ({registry}, {name})', 'touchgrass-core' ),
+			'email_conveyance'  => __( 'Email conveyance notice ({registry}, {division}, {classification})', 'touchgrass-core' ),
 		];
 	}
 
@@ -164,6 +173,26 @@ class TG_Microcopy {
 				. '</div>';
 		}, 5 );
 
+		/* Conveyance block: the order becomes a deed transfer. After the
+		 * invoice banner so the transaction voice lands first.
+		 * Paid orders only — a failed or pending payment conveys nothing. */
+		add_action( 'woocommerce_thankyou', function ( $order_id ) {
+			$order = wc_get_order( $order_id );
+			if ( ! $order instanceof WC_Order ) { return; }
+			if ( ! $order->is_paid() ) { return; }
+			$registry = tg_plot_registry_number( $order_id );
+			$name     = trim( $order->get_billing_first_name() . ' ' . $order->get_billing_last_name() );
+			$text     = str_replace(
+				[ '{registry}', '{name}' ],
+				[ $registry, $name ],
+				tg_microcopy( 'conveyance_text' )
+			);
+			echo '<div class="tg-conveyance" role="status">'
+				. '<strong>' . esc_html( tg_microcopy( 'conveyance_title' ) ) . '</strong><br>'
+				. esc_html( $text )
+				. '</div>';
+		}, 15 );
+
 		/* Coupon field label. Demo-mode GOOUTSIDE hint keeps precedence. */
 		add_filter( 'gettext', function ( $translated, $text, $domain ) {
 			if ( 'woocommerce' === $domain && 'Coupon code' === $text ) {
@@ -196,11 +225,54 @@ class TG_Microcopy {
 		add_filter( 'woocommerce_email_heading_customer_processing_order', function () {
 			return __( 'Deed of Grass Conveyance', 'touchgrass-core' );
 		} );
+
+		/* Official conveyance notice appended to the processing email.
+		 * Conservative markup: plain-text safe, one bordered paragraph. */
+		add_action( 'woocommerce_email_after_order_table', function ( $order, $sent_to_admin, $plain_text, $email ) {
+			if ( ! $order instanceof WC_Order ) { return; }
+			if ( ! $email || 'customer_processing_order' !== $email->id ) { return; }
+			$registry = tg_plot_registry_number( $order->get_id() );
+			$division = '';
+			$classification = '';
+			foreach ( $order->get_items() as $item ) {
+				$product = $item->get_product();
+				if ( $product ) {
+					$hier = function_exists( 'tg_deed_hierarchy' ) ? tg_deed_hierarchy( $product ) : [];
+					$division = $hier['division'][1] ?? '';
+					$classification = $hier['classification'][1] ?? '';
+					break;
+				}
+			}
+			$text = str_replace(
+				[ '{registry}', '{division}', '{classification}' ],
+				[ $registry, $division, $classification ],
+				tg_microcopy( 'email_conveyance' )
+			);
+			if ( $plain_text ) {
+				echo "\n" . $text . "\n";
+				return;
+			}
+			echo '<p style="border:1px solid #d8d2c2;padding:14px 16px;font-size:13px;color:#3c4a41;">'
+				. '<strong>' . esc_html( tg_microcopy( 'conveyance_title' ) ) . '</strong><br>'
+				. esc_html( $text )
+				. '</p>';
+		}, 10, 4 );
 	}
 
 }
 
 TG_Microcopy::init();
+
+/**
+ * Plot registry number for an order: TG- + zero-padded order ID.
+ * Order 42 becomes TG-00042. Deterministic, permanent, bureaucratic.
+ *
+ * @param int $order_id
+ * @return string
+ */
+function tg_plot_registry_number( $order_id ) {
+	return 'TG-' . str_pad( (int) $order_id, 5, '0', STR_PAD_LEFT );
+}
 
 /**
  * Microcopy lookup with default fallback. Empty saved values fall back to

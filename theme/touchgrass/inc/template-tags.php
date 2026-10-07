@@ -221,7 +221,7 @@ function tg_press_strip() {
 	];
 	?>
 	<div class="tg-press" role="complementary" aria-label="<?php esc_attr_e( 'Press', 'touchgrass' ); ?>">
-		<p class="tg-press-kicker"><?php esc_html_e( 'As reviewed by publications that definitely exist', 'touchgrass' ); ?></p>
+		<p class="tg-press-kicker"><?php esc_html_e( 'Press clippings, on file.', 'touchgrass' ); ?></p>
 		<ul class="tg-press-list">
 			<?php foreach ( $quotes as $q ) : ?>
 				<li>
@@ -343,7 +343,7 @@ function tg_product_card( $product ) {
 	?>
 	<article class="pcard">
 		<a class="pcard-link" href="<?php echo esc_url( $product->get_permalink() ); ?>">
-			<div class="ph"><?php echo $product->get_image( 'woocommerce_thumbnail' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></div>
+			<div class="ph"><?php echo $product->get_image( 'woocommerce_thumbnail', [ 'loading' => 'lazy' ] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></div>
 			<div class="pb">
 				<span class="tag<?php echo $badge_label ? '' : ' tag-empty'; ?>"><?php echo $badge_label ? esc_html( $badge_label ) : '&nbsp;'; ?></span>
 				<h3><?php echo esc_html( $product->get_name() ); ?></h3>

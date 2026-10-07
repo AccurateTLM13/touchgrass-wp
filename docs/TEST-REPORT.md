@@ -152,3 +152,116 @@ admin-only, non-publishing, merchant-edit-preserving.
   exercised (no API keys) — unchanged from v2.1.1.
 - **`.github/workflows/ci.yml`:** still needs the one manual web-UI add
   (API token lacks `workflow` scope).
+
+## v2.3.0 — The Grassworks Institution (Phase A)
+
+Worldbuilding over punchlines: the Surrey Grassworks becomes a fake global
+grass corporation treated with total seriousness. Three systems:
+
+- **A1. Institutional Deed hierarchy.** New product meta (corporation,
+  division, program, harvest, plot, classification, authorization) with house
+  defaults; importer assigns deterministic per-product values (Plot 184-C,
+  Subterranean Division for Night Shift, Hydration Apparatus Division for the
+  Mister, Ornamental Division + Unit 3-C for the Gnome). The Deed tab now
+  renders as a certificate: "Surrey Grassworks" serif masthead, "Deed of
+  Grass" letterspaced title, hierarchy rows, spec rows, "Authorized Indoor
+  Use Only". Empty plot numbers fall back to deterministic Plot {id}-A.
+- **A2. Ownership transfer.** `tg_plot_registry_number()` (order 42 →
+  TG-00042). Thank-you page gains an "Official Notice of Conveyance" block
+  (new microcopy map keys, {registry}/{name} placeholders). The processing
+  email keeps its "Deed of Grass Conveyance" heading and appends an official
+  notice with registry number, division, and classification (plain-text safe).
+- **A3. Grass Club tiers.** `tg_grass_club_tier()` computes Prospect /
+  Seedling / Sod / Estate honestly from completed orders, lifetime spend,
+  and the local newsletter subscriber record. Homepage club section rebuilt
+  around the four tiers (name + benefit each), "Your standing: X." for
+  logged-in members, newsletter form as the Seedling CTA.
+
+### Automated (playground)
+
+- `tests/integration.php`: **91 passed, 0 failed** (57 carried + 34 new:
+  hierarchy defaults and per-product importer values, plot fallback,
+  registry format, conveyance microcopy keys, thank-you block render with
+  registry + owner name, email hook registration, tier transitions
+  prospect → seedling → sod → estate-by-count → estate-by-spend → back,
+  with fabricated orders/users/subscribers cleaned up after).
+- `tests/http-tests.sh`: **47 passed, 0 failed** (31 carried + 16 new:
+  deed hierarchy on PDP, club tiers on homepage with dummy newsletter key,
+  conveyance block via scratch order, registry format).
+- `php -l`: every changed PHP file passes. `.pot` files regenerated for
+  both text domains (new strings included).
+
+### Manual / runtime (screenshot-verified)
+
+- **PDP deed (1440px + 390px):** certificate masthead "Surrey Grassworks" /
+  "Deed of Grass", full hierarchy (Division → Program → Harvest 07 →
+  Plot 184-C → Fescue Classification: Executive Desk Grade), spec rows,
+  "Authorized Indoor Use Only", legally-meaningless lede. Mobile stacks
+  label-above-value cleanly.
+- **Homepage club (1440px + 390px):** four tier cards (Prospect / Seedling /
+  Sod / Estate with benefits), "Enter as a Seedling" newsletter CTA;
+  4-column grid collapses to 1 column on mobile.
+- **Thank-you page (1440px):** invoice banner followed by the conveyance
+  block — "Plot No. TG-00180 has been entered in the Surrey Grassworks
+  Plot Registry in the name of Holly Hock. The grass is now yours. The
+  responsibility is also yours."
+
+### Known limitations (carried)
+
+- Block-based checkout button label and block-cart coupon placeholder render
+  via JS (PHP filters cover classic paths only).
+- Live Buttondown subscribe, real gateway checkout/refund, and actual email
+  delivery remain untested (no keys).
+- `.github/workflows/ci.yml` still needs the one manual web-UI add.
+
+## v2.4.0 — SEO + Social + Speed (2026-10-06)
+
+Review-first release (not deployed, no PR): social sharing, meta/schema, and
+measured performance fixes. Full review in `docs/SEO-SOCIAL-SPEED-REVIEW.md`.
+
+- **Social.** Generated art-directed OG image `assets/img/og-default.jpg`
+  (1200×630, 81 KB): studio grass-rectangle photograph, "Touch Grass" serif
+  headline, "SURREY GRASSWORKS" mark, "Going outside is free. This is $29."
+  New `inc/seo.php` outputs `og:image` (+width/height/alt) and `twitter:image`:
+  theme default site-wide, product featured image (real dimensions) on PDPs.
+  Existing `og:title/type/url/site_name/locale` and `twitter:card` come from
+  a live-only source outside this codebase, so the theme deliberately does
+  not re-emit them (no duplicates).
+- **SEO.** `<meta name="description">` + `og:description` (product short
+  description → tagline → fallback, ~155 chars word-trimmed). Product JSON-LD
+  on PDPs (name, image, description, brand "Surrey Grassworks", offers with
+  price/currency/availability from real stock status — validated parseable).
+  Organization + WebSite JSON-LD on homepage. FAQPage JSON-LD unchanged.
+- **Speed.** `fetchpriority="high"` on the LCP hero image; `loading="lazy"`
+  on product-card, ritual cross-sell, and sticky-ATC thumbnails (required a
+  targeted `wp_get_loading_optimization_attributes` filter — WP 7.1's
+  optimizer strips an explicit `loading="lazy"` from `WC_Product::get_image()`
+  output); explicit `width`/`height` on hardcoded images (12/12 now).
+  `font-display: swap` was already present. jQuery left render-blocking
+  (deferring is not trivially safe with WooCommerce).
+
+### Automated (playground)
+
+- `tests/integration.php`: **108 passed, 0 failed** (91 carried + 17 new:
+  OG default URL, product OG override + dimensions, meta description length,
+  product schema name/price/availability/brand, schema JSON-encodes, head
+  output has og:image/twitter:image/description and does NOT duplicate
+  og:title or twitter:card).
+- `tests/http-tests.sh`: **59 passed, 0 failed** (47 carried + 12 new:
+  og:image/twitter:image/meta/og:description on homepage + PDP, PDP override
+  off the default, Organization + Product schema blocks, hero fetchpriority,
+  lazy images present).
+- `php -l`: every changed PHP file passes. `.pot` files regenerated for
+  both text domains.
+
+### Manual / runtime (screenshot-verified)
+
+- **Homepage (1440px + 390px):** no visual regressions; lineup, trust,
+  deed teaser, how-it-works all render as before.
+- **PDP (1440px):** no visual regressions; deed accordions, ritual
+  cross-sells, sticky ATC, trust block intact.
+- **Performance (wget mirror, home + PDP):** 11/12 homepage images lazy
+  (was 2/12); hero fetchpriority high; 12/12 with width+height. Top costs
+  unchanged: Inter fonts ~1.3 MB (4 weights — flagged, needs a design
+  decision before cutting), full-size webp in srcsets (gallery serves
+  sized variants).

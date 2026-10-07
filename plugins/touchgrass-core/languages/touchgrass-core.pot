@@ -1,15 +1,15 @@
 # Copyright (C) 2026 Bobby John Studio
-# This file is distributed under the GPL-2.0-or-later.
+# This file is distributed under the GNU General Public License v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Touch Grass — Core 2.2.0\n"
+"Project-Id-Version: Touch Grass Core 2.5.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/touchgrass-core\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-05T02:58:05+00:00\n"
+"POT-Creation-Date: 2026-10-06T22:14:55+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: touchgrass-core\n"
@@ -29,13 +29,29 @@ msgstr ""
 msgid "Bobby John Studio"
 msgstr ""
 
+#: touchgrass-core.php:74
+msgid "Touch Grass: the legacy standalone “Touch Grass — Demo Pay” plugin is installed. It has been superseded by the Demo Pay gateway inside Touch Grass — Core and was prevented from loading (keeping both active would crash the site)."
+msgstr ""
+
+#: touchgrass-core.php:76
+msgid "Deactivate it"
+msgstr ""
+
+#: touchgrass-core.php:78
+msgid "and then delete it — it is no longer part of the supported installation."
+msgstr ""
+
+#: touchgrass-core.php:106
+msgid "Touch Grass — Core is active, but WooCommerce is not. The demo importer, Demo Pay gateway, and product fields need WooCommerce to do their jobs."
+msgstr ""
+
 #: includes/class-tg-admin.php:21
 #: includes/class-tg-admin.php:161
 msgid "Touch Grass Setup"
 msgstr ""
 
 #: includes/class-tg-admin.php:22
-#: includes/class-tg-product-meta.php:104
+#: includes/class-tg-product-meta.php:142
 msgid "Touch Grass"
 msgstr ""
 
@@ -77,7 +93,7 @@ msgid "WooCommerce inactive."
 msgstr ""
 
 #: includes/class-tg-admin.php:75
-#: includes/class-tg-importer.php:594
+#: includes/class-tg-importer.php:640
 msgid "Shop"
 msgstr ""
 
@@ -94,7 +110,6 @@ msgid "My account"
 msgstr ""
 
 #: includes/class-tg-admin.php:83
-#, php-format
 msgid "Missing or unpublished: %s"
 msgstr ""
 
@@ -119,7 +134,6 @@ msgid "Demo products"
 msgstr ""
 
 #: includes/class-tg-admin.php:102
-#, php-format
 msgid "%d of 9"
 msgstr ""
 
@@ -128,7 +142,7 @@ msgid "Categories"
 msgstr ""
 
 #: includes/class-tg-admin.php:106
-#: includes/class-tg-importer.php:252
+#: includes/class-tg-importer.php:292
 msgid "Plots"
 msgstr ""
 
@@ -137,7 +151,7 @@ msgid "Plots — missing"
 msgstr ""
 
 #: includes/class-tg-admin.php:106
-#: includes/class-tg-importer.php:253
+#: includes/class-tg-importer.php:293
 msgid "Accessories"
 msgstr ""
 
@@ -164,7 +178,6 @@ msgstr ""
 
 #: includes/class-tg-admin.php:112
 #: includes/class-tg-admin.php:115
-#, php-format
 msgid "%d found"
 msgstr ""
 
@@ -191,7 +204,6 @@ msgstr ""
 
 #: includes/class-tg-admin.php:132
 #: includes/class-tg-admin.php:135
-#, php-format
 msgid "Enabled: %s."
 msgstr ""
 
@@ -229,7 +241,6 @@ msgid "Demo import"
 msgstr ""
 
 #: includes/class-tg-admin.php:151
-#, php-format
 msgid "Last ran %s."
 msgstr ""
 
@@ -285,9 +296,7 @@ msgstr ""
 msgid "docs/CUSTOMIZE.md — every Customizer control and what it changes"
 msgstr ""
 
-#. translators: 1: created, 2: updated, 3: skipped, 4: failed
 #: includes/class-tg-admin.php:207
-#, php-format
 msgid "%1$d created · %2$d updated · %3$d already there · %4$d failed"
 msgstr ""
 
@@ -297,7 +306,7 @@ msgid "Permission denied."
 msgstr ""
 
 #: includes/class-tg-cpt.php:22
-#: includes/class-tg-importer.php:597
+#: includes/class-tg-importer.php:643
 msgid "FAQ"
 msgstr ""
 
@@ -385,7 +394,7 @@ msgid "Demo Pay: mock payment accepted. No real charge made; order left in proce
 msgstr ""
 
 #: includes/class-tg-importer.php:148
-#: includes/class-tg-product-meta.php:83
+#: includes/class-tg-product-meta.php:101
 msgid "Plot 7, Surrey Grassworks"
 msgstr ""
 
@@ -453,56 +462,132 @@ msgstr ""
 msgid "Refillable, endlessly."
 msgstr ""
 
-#: includes/class-tg-importer.php:177
-msgid "WooCommerce is not active. Activate it, then run the import."
+#: includes/class-tg-importer.php:180
+msgid "Plot 184-C"
+msgstr ""
+
+#: includes/class-tg-importer.php:181
+msgid "Plot 212-A"
+msgstr ""
+
+#: includes/class-tg-importer.php:182
+msgid "Plot 96-F"
+msgstr ""
+
+#: includes/class-tg-importer.php:184
+msgid "Plot 001-A"
+msgstr ""
+
+#: includes/class-tg-importer.php:185
+msgid "Fescue Classification: Championship Row Grade"
+msgstr ""
+
+#: includes/class-tg-importer.php:187
+msgid "Plots 9 & 10"
+msgstr ""
+
+#: includes/class-tg-importer.php:189
+msgid "Seed Vault 7"
+msgstr ""
+
+#: includes/class-tg-importer.php:190
+msgid "Seed Classification: Nascent Grade"
+msgstr ""
+
+#: includes/class-tg-importer.php:193
+msgid "Subterranean Division"
+msgstr ""
+
+#: includes/class-tg-importer.php:194
+msgid "Plot 13-D"
+msgstr ""
+
+#: includes/class-tg-importer.php:195
+msgid "Shade-Tolerance Classification: Cave Dweller Grade"
+msgstr ""
+
+#: includes/class-tg-importer.php:198
+msgid "Hydration Apparatus Division"
+msgstr ""
+
+#: includes/class-tg-importer.php:199
+msgid "Lot 12"
+msgstr ""
+
+#: includes/class-tg-importer.php:200
+msgid "Unit 12-B"
 msgstr ""
 
 #: includes/class-tg-importer.php:201
+msgid "Brass Classification: Utilitarian"
+msgstr ""
+
+#: includes/class-tg-importer.php:204
+msgid "Ornamental Division"
+msgstr ""
+
+#: includes/class-tg-importer.php:205
+msgid "Lot 3"
+msgstr ""
+
+#: includes/class-tg-importer.php:206
+msgid "Unit 3-C"
+msgstr ""
+
+#: includes/class-tg-importer.php:207
+msgid "Ceramic Classification: Ornamental"
+msgstr ""
+
+#: includes/class-tg-importer.php:217
+msgid "WooCommerce is not active. Activate it, then run the import."
+msgstr ""
+
+#: includes/class-tg-importer.php:241
 msgid "Store is in “coming soon” mode — launch it from WooCommerce → Settings when ready."
 msgstr ""
 
-#: includes/class-tg-importer.php:202
+#: includes/class-tg-importer.php:242
 msgid "Store is live."
 msgstr ""
 
-#: includes/class-tg-importer.php:220
+#: includes/class-tg-importer.php:260
 msgid "WooCommerce is not active."
 msgstr ""
 
-#: includes/class-tg-importer.php:279
+#: includes/class-tg-importer.php:319
 msgid "8,600 indoor humans.<br>Zero walks taken."
 msgstr ""
 
-#: includes/class-tg-importer.php:280
+#: includes/class-tg-importer.php:320
 msgid "8,600+"
 msgstr ""
 
-#: includes/class-tg-importer.php:281
+#: includes/class-tg-importer.php:321
 msgid "verified reviews"
 msgstr ""
 
-#: includes/class-tg-importer.php:282
+#: includes/class-tg-importer.php:322
 msgid "4.9"
 msgstr ""
 
-#: includes/class-tg-importer.php:283
+#: includes/class-tg-importer.php:323
 msgid "average rating"
 msgstr ""
 
-#: includes/class-tg-importer.php:372
-#: includes/class-tg-product-meta.php:125
+#: includes/class-tg-importer.php:413
+#: includes/class-tg-product-meta.php:163
 msgid "Batch No. 7"
 msgstr ""
 
-#: includes/class-tg-importer.php:454
-msgid "Fresh Cut Friday — 20% off, for the irony."
+#: includes/class-tg-importer.php:500
+msgid "Fresh Cut Friday — 20% abatement on all plots."
 msgstr ""
 
-#: includes/class-tg-importer.php:595
+#: includes/class-tg-importer.php:641
 msgid "Why grass?"
 msgstr ""
 
-#: includes/class-tg-importer.php:596
+#: includes/class-tg-importer.php:642
 msgid "Reviews"
 msgstr ""
 
@@ -511,7 +596,7 @@ msgid "Claim Your Plot"
 msgstr ""
 
 #: includes/class-tg-microcopy.php:33
-msgid "Nothing here. Like your step count."
+msgid "The Registry shows no plots in your name."
 msgstr ""
 
 #: includes/class-tg-microcopy.php:34
@@ -519,7 +604,7 @@ msgid "Your money is safe. For now."
 msgstr ""
 
 #: includes/class-tg-microcopy.php:35
-msgid "Bribe code"
+msgid "Abatement code"
 msgstr ""
 
 #: includes/class-tg-microcopy.php:36
@@ -539,11 +624,11 @@ msgid "No grass found. Have you tried outside? It's free."
 msgstr ""
 
 #: includes/class-tg-microcopy.php:41
-msgid "Only {n} left. The grass is not infinite. Unlike your screen time."
+msgid "Only {n} remaining in this plot."
 msgstr ""
 
 #: includes/class-tg-microcopy.php:42
-msgid "Rare (but invoiced) emails. Unsubscribe anytime; we'll pretend it never happened."
+msgid "Rare (but invoiced) dispatches. Unsubscribe anytime; your file will be closed without incident."
 msgstr ""
 
 #: includes/class-tg-microcopy.php:43
@@ -551,70 +636,94 @@ msgid "You're on the list. The grass will write."
 msgstr ""
 
 #: includes/class-tg-microcopy.php:44
-msgid "Gone. The grass has left the building."
+msgid "This plot is fully claimed."
 msgstr ""
 
-#: includes/class-tg-microcopy.php:55
-msgid "Add to cart button"
+#: includes/class-tg-microcopy.php:48
+msgid "Official Notice of Conveyance"
 msgstr ""
 
-#: includes/class-tg-microcopy.php:56
-msgid "Empty cart message"
+#: includes/class-tg-microcopy.php:49
+msgid "Plot No. {registry} has been entered in the Surrey Grassworks Plot Registry in the name of {name}. The grass is now yours. The responsibility is also yours."
 msgstr ""
 
-#: includes/class-tg-microcopy.php:57
-msgid "Cart guarantee line"
-msgstr ""
-
-#: includes/class-tg-microcopy.php:58
-msgid "Coupon field label"
-msgstr ""
-
-#: includes/class-tg-microcopy.php:59
-msgid "Checkout button"
-msgstr ""
-
-#: includes/class-tg-microcopy.php:60
-msgid "Order received heading"
+#: includes/class-tg-microcopy.php:50
+msgid "This email serves as official notice: Plot No. {registry} is now registered in your name with the Surrey Grassworks Plot Registry, {division}. Classification: {classification}."
 msgstr ""
 
 #: includes/class-tg-microcopy.php:61
-msgid "Order received text"
+msgid "Add to cart button"
 msgstr ""
 
 #: includes/class-tg-microcopy.php:62
-msgid "Empty search message"
+msgid "Empty cart message"
 msgstr ""
 
 #: includes/class-tg-microcopy.php:63
-msgid "Low stock notice ({n} = count)"
+msgid "Cart guarantee line"
 msgstr ""
 
 #: includes/class-tg-microcopy.php:64
-msgid "Newsletter consent line"
+msgid "Coupon field label"
 msgstr ""
 
 #: includes/class-tg-microcopy.php:65
-msgid "Newsletter success message"
+msgid "Checkout button"
 msgstr ""
 
 #: includes/class-tg-microcopy.php:66
+msgid "Order received heading"
+msgstr ""
+
+#: includes/class-tg-microcopy.php:67
+msgid "Order received text"
+msgstr ""
+
+#: includes/class-tg-microcopy.php:68
+msgid "Empty search message"
+msgstr ""
+
+#: includes/class-tg-microcopy.php:69
+msgid "Low stock notice ({n} = count)"
+msgstr ""
+
+#: includes/class-tg-microcopy.php:70
+msgid "Newsletter consent line"
+msgstr ""
+
+#: includes/class-tg-microcopy.php:71
+msgid "Newsletter success message"
+msgstr ""
+
+#: includes/class-tg-microcopy.php:72
 msgid "Out of stock text"
 msgstr ""
 
-#: includes/class-tg-microcopy.php:90
+#: includes/class-tg-microcopy.php:73
+msgid "Conveyance notice heading"
+msgstr ""
+
+#: includes/class-tg-microcopy.php:74
+msgid "Conveyance notice text ({registry}, {name})"
+msgstr ""
+
+#: includes/class-tg-microcopy.php:75
+msgid "Email conveyance notice ({registry}, {division}, {classification})"
+msgstr ""
+
+#: includes/class-tg-microcopy.php:99
 msgid "Microcopy"
 msgstr ""
 
-#: includes/class-tg-microcopy.php:109
+#: includes/class-tg-microcopy.php:118
 msgid "The two-register copy system: product pages speak luxury, the transaction layer speaks mercenary. Every string below is used somewhere real — empty the field to fall back to the default shown."
 msgstr ""
 
-#: includes/class-tg-microcopy.php:173
+#: includes/class-tg-microcopy.php:202
 msgid "Promo code (try GOOUTSIDE)"
 msgstr ""
 
-#: includes/class-tg-microcopy.php:197
+#: includes/class-tg-microcopy.php:226
 msgid "Deed of Grass Conveyance"
 msgstr ""
 
@@ -652,82 +761,146 @@ msgstr ""
 msgid "The Deed"
 msgstr ""
 
-#: includes/class-tg-product-meta.php:39
+#: includes/class-tg-product-meta.php:41
+msgid "Deed of Grass"
+msgstr ""
+
+#: includes/class-tg-product-meta.php:53
 msgid "Every plot ships with its deed: provenance, specifications, and warranty, recorded for posterity. The deed is legally meaningless."
 msgstr ""
 
-#: includes/class-tg-product-meta.php:83
+#: includes/class-tg-product-meta.php:101
 msgid "Provenance"
 msgstr ""
 
-#: includes/class-tg-product-meta.php:84
+#: includes/class-tg-product-meta.php:102
 msgid "Blade count"
 msgstr ""
 
-#: includes/class-tg-product-meta.php:84
+#: includes/class-tg-product-meta.php:102
 msgid "~40,000"
 msgstr ""
 
-#: includes/class-tg-product-meta.php:85
+#: includes/class-tg-product-meta.php:103
 msgid "Sunlight requirement"
 msgstr ""
 
-#: includes/class-tg-product-meta.php:85
+#: includes/class-tg-product-meta.php:103
 msgid "Optional. Like your ambition."
 msgstr ""
 
-#: includes/class-tg-product-meta.php:86
+#: includes/class-tg-product-meta.php:104
 msgid "Watering"
 msgstr ""
 
-#: includes/class-tg-product-meta.php:86
+#: includes/class-tg-product-meta.php:104
 msgid "Rain. Or tears."
 msgstr ""
 
-#: includes/class-tg-product-meta.php:87
+#: includes/class-tg-product-meta.php:105
 msgid "Warranty"
 msgstr ""
 
-#: includes/class-tg-product-meta.php:87
+#: includes/class-tg-product-meta.php:105
 msgid "Photosynthesis guaranteed for 30 days."
 msgstr ""
 
-#: includes/class-tg-product-meta.php:93
-msgid "— none —"
+#: includes/class-tg-product-meta.php:119
+msgid "Corporation"
 msgstr ""
 
-#: includes/class-tg-product-meta.php:94
-#: includes/class-tg-product-meta.php:171
-msgid "Bestseller"
+#: includes/class-tg-product-meta.php:119
+msgid "Surrey Grassworks"
 msgstr ""
 
-#: includes/class-tg-product-meta.php:95
-#: includes/class-tg-product-meta.php:172
-msgid "Low stock"
+#: includes/class-tg-product-meta.php:120
+msgid "Division"
 msgstr ""
 
-#: includes/class-tg-product-meta.php:96
-#: includes/class-tg-product-meta.php:173
-msgid "Staff pick"
+#: includes/class-tg-product-meta.php:120
+msgid "North Greenhouse Division"
 msgstr ""
 
-#: includes/class-tg-product-meta.php:116
-msgid "Tagline"
+#: includes/class-tg-product-meta.php:121
+msgid "Program"
 msgstr ""
 
-#: includes/class-tg-product-meta.php:118
-msgid "Badge"
+#: includes/class-tg-product-meta.php:121
+msgid "Indoor Recreation Commodity Program"
+msgstr ""
+
+#: includes/class-tg-product-meta.php:122
+msgid "Harvest"
+msgstr ""
+
+#: includes/class-tg-product-meta.php:122
+msgid "Harvest 07"
+msgstr ""
+
+#: includes/class-tg-product-meta.php:123
+msgid "Plot"
 msgstr ""
 
 #: includes/class-tg-product-meta.php:124
+msgid "Classification"
+msgstr ""
+
+#: includes/class-tg-product-meta.php:124
+msgid "Fescue Classification: Executive Desk Grade"
+msgstr ""
+
+#: includes/class-tg-product-meta.php:125
+msgid "Authorization"
+msgstr ""
+
+#: includes/class-tg-product-meta.php:125
+msgid "Authorized Indoor Use Only"
+msgstr ""
+
+#: includes/class-tg-product-meta.php:131
+msgid "— none —"
+msgstr ""
+
+#: includes/class-tg-product-meta.php:132
+#: includes/class-tg-product-meta.php:222
+msgid "Bestseller"
+msgstr ""
+
+#: includes/class-tg-product-meta.php:133
+#: includes/class-tg-product-meta.php:223
+msgid "Low stock"
+msgstr ""
+
+#: includes/class-tg-product-meta.php:134
+#: includes/class-tg-product-meta.php:224
+msgid "Staff pick"
+msgstr ""
+
+#: includes/class-tg-product-meta.php:154
+msgid "Tagline"
+msgstr ""
+
+#: includes/class-tg-product-meta.php:156
+msgid "Badge"
+msgstr ""
+
+#: includes/class-tg-product-meta.php:162
 msgid "Harvest batch"
 msgstr ""
 
-#: includes/class-tg-product-meta.php:126
+#: includes/class-tg-product-meta.php:164
+msgid "The Deed — institutional hierarchy"
+msgstr ""
+
+#: includes/class-tg-product-meta.php:165
+msgid "The corporation the plot belongs to. Empty fields fall back to the house defaults."
+msgstr ""
+
+#: includes/class-tg-product-meta.php:171
 msgid "The Deed — spec sheet"
 msgstr ""
 
-#: includes/class-tg-product-meta.php:127
+#: includes/class-tg-product-meta.php:172
 msgid "Empty fields fall back to the house defaults."
 msgstr ""
 
@@ -775,18 +948,34 @@ msgstr ""
 msgid "Save settings"
 msgstr ""
 
-#: touchgrass-core.php:74
-msgid "Touch Grass: the legacy standalone “Touch Grass — Demo Pay” plugin is installed. It has been superseded by the Demo Pay gateway inside Touch Grass — Core and was prevented from loading (keeping both active would crash the site)."
+#: includes/tg-club.php:25
+msgid "Prospect"
 msgstr ""
 
-#: touchgrass-core.php:76
-msgid "Deactivate it"
+#: includes/tg-club.php:26
+msgid "Unregistered. The Grassworks does not know you exist."
 msgstr ""
 
-#: touchgrass-core.php:78
-msgid "and then delete it — it is no longer part of the supported installation."
+#: includes/tg-club.php:29
+msgid "Seedling"
 msgstr ""
 
-#: touchgrass-core.php:105
-msgid "Touch Grass — Core is active, but WooCommerce is not. The demo importer, Demo Pay gateway, and product fields need WooCommerce to do their jobs."
+#: includes/tg-club.php:30
+msgid "Rare (but invoiced) emails. First cut of limited batches."
+msgstr ""
+
+#: includes/tg-club.php:33
+msgid "Sod"
+msgstr ""
+
+#: includes/tg-club.php:34
+msgid "Priority harvest allocation. Your plots ship first. Allegedly."
+msgstr ""
+
+#: includes/tg-club.php:37
+msgid "Estate"
+msgstr ""
+
+#: includes/tg-club.php:38
+msgid "Annual inspection waived. A brass plaque bearing your name."
 msgstr ""

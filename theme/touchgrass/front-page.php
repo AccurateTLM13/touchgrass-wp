@@ -69,7 +69,7 @@ $club_on = tg_brand( 'tg_section_club' ) && function_exists( 'tg_newsletter_conf
 		<figure class="hero-fig reveal">
 			<?php
 			if ( $hero_image_id ) {
-				echo wp_get_attachment_image( $hero_image_id, 'large', false, [ 'alt' => get_post_meta( $hero_image_id, '_wp_attachment_image_alt', true ) ?: __( 'Touch Grass', 'touchgrass' ) ] );
+				echo wp_get_attachment_image( $hero_image_id, 'large', false, [ 'alt' => get_post_meta( $hero_image_id, '_wp_attachment_image_alt', true ) ?: __( 'Touch Grass', 'touchgrass' ), 'fetchpriority' => 'high' ] );
 			} elseif ( ! empty( $products ) ) {
 				echo $products[0]->get_image( 'large' );
 			} else {
@@ -86,7 +86,7 @@ $club_on = tg_brand( 'tg_section_club' ) && function_exists( 'tg_newsletter_conf
 	<div class="wrap">
 		<div class="shop-head">
 			<div>
-				<div class="eyebrow reveal"><?php esc_html_e( 'The lineup', 'touchgrass' ); ?></div>
+				<div class="eyebrow reveal"><?php esc_html_e( 'The Plot Registry', 'touchgrass' ); ?></div>
 				<h2 class="sec reveal" id="shop-title"><?php echo esc_html( tg_brand( 'tg_shop_title' ) ); ?></h2>
 			</div>
 			<p class="sec-sub reveal"><?php echo esc_html( tg_brand( 'tg_shop_sub' ) ); ?></p>
@@ -101,6 +101,9 @@ $club_on = tg_brand( 'tg_section_club' ) && function_exists( 'tg_newsletter_conf
 						<?php $badge = function_exists( 'tg_product_badge' ) ? tg_product_badge( $product ) : ''; ?>
 						<span class="tag<?php echo $badge ? '' : ' tag-empty'; ?>"><?php echo $badge ? esc_html( $badge ) : '&nbsp;'; ?></span>
 						<h3><?php echo esc_html( $product->get_name() ); ?></h3>
+						<?php if ( function_exists( 'tg_deed_hierarchy' ) ) : $tg_hier = tg_deed_hierarchy( $product ); ?>
+						<div class="plot-no"><?php echo esc_html( $tg_hier['plot'][1] ); ?></div>
+						<?php endif; ?>
 						<div class="sub"><?php echo esc_html( function_exists( 'tg_product_tagline' ) ? tg_product_tagline( $product ) : '' ); ?></div>
 						<div class="row">
 							<span class="price"><?php echo $product->get_price_html(); // phpcs:ignore ?></span>
@@ -129,7 +132,7 @@ if ( function_exists( 'tg_trust_block' ) ) {
 <?php if ( tg_brand( 'tg_section_confession' ) ) : ?>
 <section class="confess" aria-labelledby="confess-title">
 	<div class="wrap confess-in">
-		<div class="eyebrow reveal"><?php esc_html_e( 'A moment of honesty', 'touchgrass' ); ?></div>
+		<div class="eyebrow reveal"><?php esc_html_e( 'Required disclosure', 'touchgrass' ); ?></div>
 		<h2 class="sec reveal" id="confess-title"><?php echo esc_html( tg_brand( 'tg_confession_title' ) ); ?></h2>
 		<p class="body reveal"><?php echo wp_kses_post( tg_brand( 'tg_confession_copy' ) ); ?></p>
 		<div class="vs reveal" role="table" aria-label="<?php esc_attr_e( 'Outside versus Touch Grass', 'touchgrass' ); ?>">
@@ -164,10 +167,26 @@ if ( function_exists( 'tg_trust_block' ) ) {
 <?php if ( $club_on ) : ?>
 <section class="club" id="club" aria-labelledby="club-title">
 	<div class="wrap">
-		<div class="club-panel reveal">
-			<div class="eyebrow"><?php esc_html_e( 'Membership has its privileges', 'touchgrass' ); ?></div>
-			<h2 id="club-title"><?php esc_html_e( 'The Grass Club.', 'touchgrass' ); ?></h2>
-			<p><?php esc_html_e( 'Members get rare (but invoiced) emails, first cut of limited batches, and absolutely no additional going outside.', 'touchgrass' ); ?></p>
+		<div class="eyebrow reveal"><?php esc_html_e( 'Membership has its privileges', 'touchgrass' ); ?></div>
+		<h2 id="club-title" class="reveal"><?php esc_html_e( 'The Grass Club.', 'touchgrass' ); ?></h2>
+		<p class="sec-sub reveal"><?php esc_html_e( 'Four tiers of belonging. The grass keeps score.', 'touchgrass' ); ?></p>
+		<?php
+		$club_tiers = function_exists( 'tg_club_tiers' ) ? tg_club_tiers() : [];
+		$standing   = ( function_exists( 'tg_grass_club_tier' ) && is_user_logged_in() ) ? tg_grass_club_tier( get_current_user_id() ) : null;
+		?>
+		<div class="tier-grid">
+			<?php foreach ( $club_tiers as $slug => $tier ) : ?>
+				<div class="tier-card reveal<?php echo ( $standing && $standing['slug'] === $slug ) ? ' tier-current' : ''; ?>">
+					<h3><?php echo esc_html( $tier['name'] ); ?></h3>
+					<p><?php echo esc_html( $tier['benefit'] ); ?></p>
+				</div>
+			<?php endforeach; ?>
+		</div>
+		<?php if ( $standing ) : ?>
+			<p class="tier-standing reveal"><?php echo wp_kses( sprintf( __( 'Your standing: <strong>%s</strong>.', 'touchgrass' ), esc_html( $standing['name'] ) ), tg_brand_kses() ); ?></p>
+		<?php endif; ?>
+		<div class="club-cta reveal">
+			<p><?php esc_html_e( 'Enter as a Seedling. Rare (but invoiced) emails, first cut of limited batches.', 'touchgrass' ); ?></p>
 			<?php tg_newsletter_form( 'club' ); ?>
 		</div>
 	</div>
@@ -199,7 +218,7 @@ if ( function_exists( 'tg_trust_block' ) ) {
 				echo wp_get_attachment_image( $how_image_id, 'large', false, [ 'alt' => get_post_meta( $how_image_id, '_wp_attachment_image_alt', true ) ?: __( 'How Touch Grass works', 'touchgrass' ), 'loading' => 'lazy' ] );
 			} else {
 				?>
-				<img src="<?php echo esc_url( get_template_directory_uri() . '/assets/img/hands.webp' ); ?>" alt="<?php esc_attr_e( 'Hands gently touching a tray of grass', 'touchgrass' ); ?>" loading="lazy">
+				<img src="<?php echo esc_url( get_template_directory_uri() . '/assets/img/hands.webp' ); ?>" alt="<?php esc_attr_e( 'Hands gently touching a tray of grass', 'touchgrass' ); ?>" loading="lazy" width="1920" height="1280">
 				<?php
 			}
 			?>
@@ -244,7 +263,7 @@ if ( function_exists( 'tg_trust_block' ) ) {
 		</div>
 		<?php endif; ?>
 		<figure class="desk-fig reveal">
-			<img src="<?php echo esc_url( get_template_directory_uri() . '/assets/img/desk.webp' ); ?>" alt="<?php esc_attr_e( 'A Touch Grass plot on a desk next to a laptop', 'touchgrass' ); ?>" loading="lazy">
+			<img src="<?php echo esc_url( get_template_directory_uri() . '/assets/img/desk.webp' ); ?>" alt="<?php esc_attr_e( 'A Touch Grass plot on a desk next to a laptop', 'touchgrass' ); ?>" loading="lazy" width="1920" height="1280">
 			<figcaption><?php esc_html_e( 'The Daily Driver, at work.', 'touchgrass' ); ?></figcaption>
 		</figure>
 	</div>
@@ -280,7 +299,7 @@ if ( function_exists( 'tg_faq_json_ld' ) ) {
 		<div class="news-panel reveal">
 			<div class="eyebrow"><?php esc_html_e( 'Field notes', 'touchgrass' ); ?></div>
 			<h2 id="news-title"><?php esc_html_e( 'Join the touched.', 'touchgrass' ); ?></h2>
-			<p><?php esc_html_e( 'One email a month. Occasionally about grass. Mostly about new ways to separate you from your money. Unsubscribe whenever; the grass will not take it personally.', 'touchgrass' ); ?></p>
+			<p><?php esc_html_e( 'One dispatch per month. Occasionally about grass. Unsubscribe at any time; your file will be closed without incident.', 'touchgrass' ); ?></p>
 			<?php tg_newsletter_form(); ?>
 		</div>
 	</div>

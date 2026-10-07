@@ -84,6 +84,54 @@ echo "$HOME_HTML" | grep -q "application/ld+json" && ok "H8 homepage has FAQ JSO
 # Note: the playground cart page uses WooCommerce blocks (JS-rendered), so the
 # PHP gettext filter applies to the classic cart path. Verify the mechanism.
 COUPON_LABEL=$($WP eval "echo apply_filters('gettext', 'Coupon code', 'Coupon code', 'woocommerce');" 2>/dev/null | tail -1)
-[ "$COUPON_LABEL" = "Bribe code" ] && ok "H8 coupon label from microcopy map" || no "H8 coupon label from microcopy map" "got: $COUPON_LABEL"
+[ "$COUPON_LABEL" = "Abatement code" ] && ok "H8 coupon label from microcopy map" || no "H8 coupon label from microcopy map" "got: $COUPON_LABEL"
+
+# H9: v2.3.0 Grassworks Institution — deed hierarchy, club tiers, conveyance
+echo "$PDP_HTML" | grep -q "Surrey Grassworks" && ok "H9 PDP shows corporation" || no "H9 PDP shows corporation" "missing"
+echo "$PDP_HTML" | grep -q "North Greenhouse Division" && ok "H9 PDP shows division" || no "H9 PDP shows division" "missing"
+echo "$PDP_HTML" | grep -q "Indoor Recreation Commodity Program" && ok "H9 PDP shows program" || no "H9 PDP shows program" "missing"
+echo "$PDP_HTML" | grep -q "Plot 184-C" && ok "H9 PDP shows plot number" || no "H9 PDP shows plot number" "missing"
+echo "$PDP_HTML" | grep -q "Executive Desk Grade" && ok "H9 PDP shows classification" || no "H9 PDP shows classification" "missing"
+echo "$PDP_HTML" | grep -q "Deed of Grass" && ok "H9 PDP deed certificate masthead" || no "H9 PDP deed certificate masthead" "missing"
+# Club section is gated on newsletter configuration: enable a dummy key for the render check, then remove it.
+$WP option update tg_buttondown_api_key tg_test_dummy --quiet 2>/dev/null
+HOME_CLUB_HTML=$(curl -s --max-time 20 "$BASE/")
+$WP option delete tg_buttondown_api_key --quiet 2>/dev/null
+echo "$HOME_CLUB_HTML" | grep -q "The grass keeps score" && ok "H9 homepage club tagline" || no "H9 homepage club tagline" "missing"
+for tier in Prospect Seedling Sod Estate; do
+  echo "$HOME_CLUB_HTML" | grep -q ">$tier<" && ok "H9 homepage shows $tier tier" || no "H9 homepage shows $tier tier" "missing"
+done
+echo "$HOME_CLUB_HTML" | grep -q "Annual inspection waived" && ok "H9 homepage estate benefit" || no "H9 homepage estate benefit" "missing"
+# Conveyance block: render the thankyou action for a scratch order via WP-CLI.
+CONV_HTML=$($WP eval "
+\$o = wc_create_order();
+\$o->set_billing_first_name('Holly');
+\$o->set_billing_last_name('Hock');
+\$o->add_product(wc_get_product(wc_get_product_id_by_sku('TG-DAILY')), 1);
+\$o->calculate_totals(); \$o->set_status('processing'); \$o->save();
+\$id = \$o->get_id();
+ob_start(); do_action('woocommerce_thankyou', \$id); \$h = ob_get_clean();
+echo \$h;
+\$o->delete(true);
+" 2>/dev/null | tail -5)
+echo "$CONV_HTML" | grep -q "Official Notice of Conveyance" && ok "H9 conveyance block renders" || no "H9 conveyance block renders" "missing"
+echo "$CONV_HTML" | grep -q "TG-00" && ok "H9 conveyance has registry number" || no "H9 conveyance has registry number" "missing"
+echo "$CONV_HTML" | grep -q "Holly Hock" && ok "H9 conveyance names owner" || no "H9 conveyance names owner" "missing"
+REG_FMT=$($WP eval "echo tg_plot_registry_number(42);" 2>/dev/null | tail -1)
+[ "$REG_FMT" = "TG-00042" ] && ok "H9 registry number format" || no "H9 registry number format" "got: $REG_FMT"
+
+# H10: v2.4.0 SEO + social + speed
+echo "$HOME_HTML" | grep -q 'property="og:image"' && ok "H10 homepage has og:image" || no "H10 homepage has og:image" "missing"
+echo "$HOME_HTML" | grep -q 'name="twitter:image"' && ok "H10 homepage has twitter:image" || no "H10 homepage has twitter:image" "missing"
+echo "$HOME_HTML" | grep -q 'name="description"' && ok "H10 homepage has meta description" || no "H10 homepage has meta description" "missing"
+echo "$HOME_HTML" | grep -q 'property="og:description"' && ok "H10 homepage has og:description" || no "H10 homepage has og:description" "missing"
+echo "$HOME_HTML" | grep -q 'og-default.jpg' && ok "H10 homepage og:image is theme default" || no "H10 homepage og:image default" "missing"
+echo "$HOME_HTML" | grep -q '"@type":"Organization"' && ok "H10 homepage has Organization schema" || no "H10 homepage Organization schema" "missing"
+echo "$PDP_HTML" | grep -q 'property="og:image"' && ok "H10 PDP has og:image" || no "H10 PDP og:image" "missing"
+echo "$PDP_HTML" | grep -q 'og-default.jpg' && no "H10 PDP og:image overrides default" "still default" || ok "H10 PDP og:image overrides default"
+echo "$PDP_HTML" | grep -q '"@type":"Product"' && ok "H10 PDP has Product schema" || no "H10 PDP Product schema" "missing"
+echo "$PDP_HTML" | grep -q '"price"' && ok "H10 PDP schema has price" || no "H10 PDP schema price" "missing"
+echo "$HOME_HTML" | grep -q 'fetchpriority="high"' && ok "H10 hero image has fetchpriority" || no "H10 hero fetchpriority" "missing"
+echo "$HOME_HTML" | grep -o 'loading="lazy"' | wc -l | grep -q '[1-9]' && ok "H10 below-fold images lazy" || no "H10 lazy images" "none found"
 
 echo ""; echo "$PASS passed, $FAIL failed"

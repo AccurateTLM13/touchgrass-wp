@@ -104,7 +104,7 @@ t( 'importer recovers deleted testimonials without duplicates', 3 === (int) wp_c
 set_theme_mod( 'tg_shop_title', 'Custom Shop Title' );
 t( 'theme mod read back through tg_brand()', 'Custom Shop Title' === tg_brand( 'tg_shop_title' ) );
 remove_theme_mod( 'tg_shop_title' );
-t( 'tg_brand() falls back to default after removal', 'Nine rectangles* of grass.' === tg_brand( 'tg_shop_title' ), tg_brand( 'tg_shop_title' ) );
+t( 'tg_brand() falls back to default after removal', 'Plots entered in the Registry.' === tg_brand( 'tg_shop_title' ), tg_brand( 'tg_shop_title' ) );
 
 /* ---------- 9. newsletter provider error paths (fake key) ---------- */
 update_option( 'tg_buttondown_api_key', 'tg_test_fake_key_123' );
@@ -186,14 +186,14 @@ TG_Importer::run();
 
 /* ---------- 15. v2.2.0: microcopy map defaults + override ---------- */
 t( 'microcopy default add_to_cart', 'Claim Your Plot' === tg_microcopy( 'add_to_cart' ), tg_microcopy( 'add_to_cart' ) );
-t( 'microcopy default empty_cart', 'Nothing here. Like your step count.' === tg_microcopy( 'empty_cart' ) );
+t( 'microcopy default empty_cart', 'The Registry shows no plots in your name.' === tg_microcopy( 'empty_cart' ) );
 t( 'microcopy default checkout_button', 'Complete Invoice' === tg_microcopy( 'checkout_button' ) );
 t( 'microcopy default order_received_title', 'Invoice paid. Grass dispatched.' === tg_microcopy( 'order_received_title' ) );
 t( 'microcopy unknown key returns empty', '' === tg_microcopy( 'nope_not_a_key' ) );
 update_option( 'tg_microcopy_coupon_label', 'Merchant bribe label' );
 t( 'microcopy override wins', 'Merchant bribe label' === tg_microcopy( 'coupon_label' ), tg_microcopy( 'coupon_label' ) );
 update_option( 'tg_microcopy_coupon_label', '' );
-t( 'microcopy empty override falls back to default', 'Bribe code' === tg_microcopy( 'coupon_label' ) );
+t( 'microcopy empty override falls back to default', 'Abatement code' === tg_microcopy( 'coupon_label' ) );
 delete_option( 'tg_microcopy_coupon_label' );
 
 /* ---------- 16. v2.2.0: checkout button + email heading wired to map ---------- */
@@ -228,6 +228,230 @@ $daily_xs = wc_get_product( $daily_id )->get_cross_sell_ids();
 $mister_id = wc_get_product_id_by_sku( 'TG-MISTER' );
 t( 'plots cross-sell the mister', in_array( $mister_id, array_map( 'intval', $daily_xs ), true ) );
 t( 'plots cross-sell the gnome', in_array( (int) $gnome_id, array_map( 'intval', $daily_xs ), true ) );
+
+/* ---------- 19. v2.3.0: deed institutional hierarchy ---------- */
+$hier = tg_deed_hierarchy( $daily_id );
+t( 'deed corporation default', 'Surrey Grassworks' === $hier['corporation'][1], $hier['corporation'][1] ?? '' );
+t( 'deed division default', 'North Greenhouse Division' === $hier['division'][1], $hier['division'][1] ?? '' );
+t( 'deed program default', 'Indoor Recreation Commodity Program' === $hier['program'][1], $hier['program'][1] ?? '' );
+t( 'deed harvest default', 'Harvest 07' === $hier['harvest'][1], $hier['harvest'][1] ?? '' );
+t( 'deed authorization default', 'Authorized Indoor Use Only' === $hier['authorization'][1], $hier['authorization'][1] ?? '' );
+t( 'deed classification default', 'Fescue Classification: Executive Desk Grade' === $hier['classification'][1], $hier['classification'][1] ?? '' );
+t( 'daily plot assigned by importer', 'Plot 184-C' === $hier['plot'][1], $hier['plot'][1] ?? '' );
+
+$night_id = wc_get_product_id_by_sku( 'TG-NIGHT' );
+$night_hier = tg_deed_hierarchy( $night_id );
+t( 'night shift gets subterranean division', 'Subterranean Division' === $night_hier['division'][1], $night_hier['division'][1] ?? '' );
+t( 'night shift plot 13-D', 'Plot 13-D' === $night_hier['plot'][1], $night_hier['plot'][1] ?? '' );
+t( 'night shift cave dweller classification', 'Shade-Tolerance Classification: Cave Dweller Grade' === $night_hier['classification'][1] );
+
+$gnome_hier = tg_deed_hierarchy( $gnome_id );
+t( 'gnome ornamental division', 'Ornamental Division' === $gnome_hier['division'][1], $gnome_hier['division'][1] ?? '' );
+t( 'gnome lot not harvest', 'Lot 3' === $gnome_hier['harvest'][1], $gnome_hier['harvest'][1] ?? '' );
+t( 'gnome unit 3-C', 'Unit 3-C' === $gnome_hier['plot'][1], $gnome_hier['plot'][1] ?? '' );
+t( 'gnome ceramic classification', 'Ceramic Classification: Ornamental' === $gnome_hier['classification'][1] );
+
+$mister_hier = tg_deed_hierarchy( $mister_id );
+t( 'mister hydration division', 'Hydration Apparatus Division' === $mister_hier['division'][1], $mister_hier['division'][1] ?? '' );
+
+/* Plot fallback: a product with no plot meta gets deterministic Plot {id}-A. */
+$fallback_id = wp_insert_post( [ 'post_title' => 'TG Test Fallback', 'post_type' => 'product', 'post_status' => 'draft' ] );
+$fallback_hier = tg_deed_hierarchy( $fallback_id );
+t( 'plot fallback is deterministic', 'Plot ' . $fallback_id . '-A' === $fallback_hier['plot'][1], $fallback_hier['plot'][1] ?? '' );
+wp_delete_post( $fallback_id, true );
+
+/* ---------- 20. v2.3.0: registry numbers + conveyance microcopy ---------- */
+t( 'registry pads to five digits', 'TG-00042' === tg_plot_registry_number( 42 ), tg_plot_registry_number( 42 ) );
+t( 'registry single digit', 'TG-00007' === tg_plot_registry_number( 7 ) );
+t( 'conveyance title default', 'Official Notice of Conveyance' === tg_microcopy( 'conveyance_title' ) );
+t( 'conveyance text has placeholders', false !== strpos( tg_microcopy( 'conveyance_text' ), '{registry}' ) && false !== strpos( tg_microcopy( 'conveyance_text' ), '{name}' ) );
+t( 'email conveyance has placeholders', false !== strpos( tg_microcopy( 'email_conveyance' ), '{registry}' ) && false !== strpos( tg_microcopy( 'email_conveyance' ), '{division}' ) );
+
+/* Thank-you conveyance block renders with registry + name — paid orders only. */
+$conv_order = wc_create_order();
+$conv_order->set_billing_first_name( 'Testy' );
+$conv_order->set_billing_last_name( 'McTest' );
+$conv_order->add_product( wc_get_product( $daily_id ), 1 );
+$conv_order->calculate_totals();
+$conv_order->set_status( 'processing' );
+$conv_order->set_date_paid( time() );
+$conv_order->save();
+$conv_id = $conv_order->get_id();
+ob_start();
+do_action( 'woocommerce_thankyou', $conv_id );
+$conv_html = ob_get_clean();
+t( 'thankyou shows conveyance title when paid', false !== strpos( $conv_html, 'Official Notice of Conveyance' ) );
+t( 'thankyou shows registry number when paid', false !== strpos( $conv_html, tg_plot_registry_number( $conv_id ) ), tg_plot_registry_number( $conv_id ) );
+t( 'thankyou names the owner when paid', false !== strpos( $conv_html, 'Testy McTest' ) );
+$conv_order->delete( true );
+
+/* Unpaid orders convey nothing: pending, failed, on-hold, cancelled. */
+foreach ( [ 'pending', 'failed', 'on-hold', 'cancelled' ] as $unpaid_status ) {
+	$u_order = wc_create_order();
+	$u_order->add_product( wc_get_product( $daily_id ), 1 );
+	$u_order->calculate_totals();
+	$u_order->set_status( $unpaid_status );
+	$u_order->save();
+	ob_start();
+	do_action( 'woocommerce_thankyou', $u_order->get_id() );
+	$u_html = ob_get_clean();
+	t( "thankyou hides conveyance when {$unpaid_status}", false === strpos( $u_html, 'Official Notice of Conveyance' ) );
+	$u_order->delete( true );
+}
+
+/* Email conveyance hook is registered for the processing email. */
+t( 'email conveyance hook registered', false !== has_action( 'woocommerce_email_after_order_table' ) );
+
+/* ---------- 21. v2.3.0: grass club tiers ---------- */
+$tiers = tg_club_tiers();
+t( 'four tiers defined', 4 === count( $tiers ) && isset( $tiers['prospect'], $tiers['seedling'], $tiers['sod'], $tiers['estate'] ) );
+t( 'unknown user is prospect', 'prospect' === tg_grass_club_tier( 0 )['slug'] );
+t( 'nonexistent user is prospect', 'prospect' === tg_grass_club_tier( 999999 )['slug'] );
+
+$club_uid = wp_insert_user( [ 'user_login' => 'tg_club_test', 'user_email' => 'tgclubtest@example.com', 'user_pass' => wp_generate_password() ] );
+t( 'fresh account is prospect', 'prospect' === tg_grass_club_tier( $club_uid )['slug'], tg_grass_club_tier( $club_uid )['slug'] );
+
+/* Seedling: subscriber record, zero orders. */
+$sub_slug = 'sub-' . md5( 'tgclubtest@example.com' );
+$sub_id = wp_insert_post( [ 'post_title' => 'tgclubtest@example.com', 'post_name' => $sub_slug, 'post_type' => 'tg_subscriber', 'post_status' => 'publish' ] );
+t( 'subscriber with no orders is seedling', 'seedling' === tg_grass_club_tier( $club_uid )['slug'] );
+
+$make_order = function ( $uid, $sku, $qty ) {
+	$order = wc_create_order();
+	$order->set_customer_id( $uid );
+	$order->set_billing_email( 'tgclubtest@example.com' );
+	$order->add_product( wc_get_product( wc_get_product_id_by_sku( $sku ) ), $qty );
+	$order->calculate_totals();
+	$order->set_status( 'completed' );
+	$order->save();
+	return $order->get_id();
+};
+
+/* Sod: one completed order. */
+$sod_oid = $make_order( $club_uid, 'TG-DAILY', 1 );
+t( 'one completed order is sod', 'sod' === tg_grass_club_tier( $club_uid )['slug'] );
+
+/* Estate by count: five completed orders (5 x $29 = $145, under the spend bar). */
+$estate_oids = [ $sod_oid ];
+for ( $i = 0; $i < 4; $i++ ) { $estate_oids[] = $make_order( $club_uid, 'TG-DAILY', 1 ); }
+t( 'five completed orders is estate', 'estate' === tg_grass_club_tier( $club_uid )['slug'] );
+foreach ( $estate_oids as $oid ) { $o = wc_get_order( $oid ); if ( $o ) { $o->delete( true ); } }
+
+/* Estate by spend: 4 x $59 = $236 with only four orders. */
+$spend_oids = [];
+for ( $i = 0; $i < 4; $i++ ) { $spend_oids[] = $make_order( $club_uid, 'TG-PROMAX', 1 ); }
+t( 'high spend is estate', 'estate' === tg_grass_club_tier( $club_uid )['slug'] );
+
+/* Partial refund drops net spend back below the Estate bar. */
+$refund = new WC_Order_Refund();
+$refund->set_parent_id( $spend_oids[0] );
+$refund->set_amount( 100 );
+$refund->save();
+t( 'refund recorded', 100.0 === (float) wc_get_order( $spend_oids[0] )->get_total_refunded() );
+t( 'partial refund drops tier below estate', 'sod' === tg_grass_club_tier( $club_uid )['slug'], tg_grass_club_tier( $club_uid )['slug'] );
+$refund->delete( true );
+foreach ( $spend_oids as $oid ) { $o = wc_get_order( $oid ); if ( $o ) { $o->delete( true ); } }
+
+/* Back to seedling once orders are gone. */
+t( 'tier drops back to seedling', 'seedling' === tg_grass_club_tier( $club_uid )['slug'] );
+wp_delete_post( $sub_id, true );
+wp_delete_user( $club_uid );
+
+/* ---------- v2.4.0: SEO + social ---------- */
+$og_default = tg_og_image_default();
+t( 'og default is absolute theme asset URL', 0 === strpos( $og_default, 'http' ) && 'og-default.jpg' === basename( strtok( $og_default, '?' ) ), $og_default );
+
+/* Simulate a product page for is_product()-gated helpers. */
+$seo_pid  = wc_get_product_id_by_sku( 'TG-DAILY' );
+$seo_prod = wc_get_product( $seo_pid );
+global $wp_query, $post;
+$seo_old_query = $wp_query;
+$seo_old_post  = $post ?? null;
+$wp_query = new WP_Query( [ 'post_type' => 'product', 'p' => $seo_pid ] );
+$wp_query->the_post();
+
+t( 'is_product true in simulated context', is_product() );
+
+$og_data = tg_og_image_data();
+t( 'product og image overrides default', false !== strpos( $og_data[0], 'uploads' ) && false === strpos( $og_data[0], 'og-default.jpg' ), $og_data[0] );
+t( 'product og image has dimensions', $og_data[1] > 0 && $og_data[2] > 0 );
+
+$seo_desc = tg_meta_description();
+t( 'product meta description non-empty', '' !== $seo_desc, substr( $seo_desc, 0, 60 ) );
+t( 'product meta description within ~160 chars', mb_strlen( $seo_desc ) <= 165, (string) mb_strlen( $seo_desc ) );
+
+$schema = tg_product_schema();
+t( 'product schema has name', ( $schema['name'] ?? '' ) === $seo_prod->get_name() );
+t( 'product schema offers price matches', (string) ( $schema['offers']['price'] ?? '' ) === (string) $seo_prod->get_price(), (string) ( $schema['offers']['price'] ?? '?' ) );
+t( 'product schema availability honest', in_array( $schema['offers']['availability'] ?? '', [ 'https://schema.org/InStock', 'https://schema.org/OutOfStock', 'https://schema.org/BackOrder' ], true ) );
+
+/* Explicit stock-status mapping: backorders must not claim InStock. */
+$tg_map_prod = wc_get_product( $daily_id );
+$tg_map_prod->set_manage_stock( true );
+$tg_map_prod->set_stock_status( 'instock' );
+t( 'instock maps to InStock', 'https://schema.org/InStock' === tg_stock_availability( $tg_map_prod ) );
+$tg_map_prod->set_stock_status( 'outofstock' );
+t( 'outofstock maps to OutOfStock', 'https://schema.org/OutOfStock' === tg_stock_availability( $tg_map_prod ) );
+$tg_map_prod->set_stock_status( 'onbackorder' );
+t( 'onbackorder maps to BackOrder', 'https://schema.org/BackOrder' === tg_stock_availability( $tg_map_prod ) );
+$tg_map_prod->set_stock_status( 'instock' );
+$tg_map_prod->save();
+t( 'product schema brand is Surrey Grassworks', ( $schema['brand']['name'] ?? '' ) === 'Surrey Grassworks' );
+t( 'product schema JSON-encodes', null !== json_decode( wp_json_encode( $schema ) ) );
+
+ob_start();
+tg_seo_head();
+$seo_head = ob_get_clean();
+t( 'head has og:image', false !== strpos( $seo_head, 'property="og:image"' ) );
+t( 'head has twitter:image', false !== strpos( $seo_head, 'name="twitter:image"' ) );
+t( 'head has meta description', false !== strpos( $seo_head, 'name="description"' ) );
+t( 'head does NOT duplicate og:title', false === strpos( $seo_head, 'property="og:title"' ) );
+t( 'head does NOT duplicate twitter:card', false === strpos( $seo_head, 'name="twitter:card"' ) );
+
+/* Yoast OG dedupe: theme stays the single source for og:image/og:description. */
+/* Yoast dedupe: theme stays the single source for description, og:image,
+ * og:description, and twitter:image. */
+/* Yoast dedupe: theme stays the single source for description, og:image,
+ * og:description, and twitter:image. */
+t( 'yoast dedupe filter registered', false !== has_filter( 'wpseo_frontend_presenters', 'tg_dedupe_yoast_og_presenters' ) );
+foreach ( [ 'Image_Presenter', 'Description_Presenter', 'Title_Presenter' ] as $tg_cls ) {
+	$tg_fqcn = 'Yoast\\WP\\SEO\\Presenters\\Open_Graph\\' . $tg_cls;
+	if ( ! class_exists( $tg_fqcn ) ) {
+		eval( "namespace Yoast\\WP\\SEO\\Presenters\\Open_Graph; class {$tg_cls} {}" );
+	}
+}
+foreach ( [ 'Yoast\\WP\\SEO\\Presenters\\Description_Presenter', 'Yoast\\WP\\SEO\\Presenters\\Twitter\\Image_Presenter' ] as $tg_fqcn2 ) {
+	if ( ! class_exists( $tg_fqcn2 ) ) {
+		$tg_ns2 = substr( $tg_fqcn2, 0, strrpos( $tg_fqcn2, '\\' ) );
+		$tg_cls2 = substr( $tg_fqcn2, strrpos( $tg_fqcn2, '\\' ) + 1 );
+		eval( "namespace {$tg_ns2}; class {$tg_cls2} {}" );
+	}
+}
+$tg_fake_presenters = [
+	new \Yoast\WP\SEO\Presenters\Open_Graph\Image_Presenter(),
+	new \Yoast\WP\SEO\Presenters\Open_Graph\Description_Presenter(),
+	new \Yoast\WP\SEO\Presenters\Description_Presenter(),
+	new \Yoast\WP\SEO\Presenters\Twitter\Image_Presenter(),
+	new \Yoast\WP\SEO\Presenters\Open_Graph\Title_Presenter(),
+	new \stdClass(),
+];
+$tg_deduped = tg_dedupe_yoast_og_presenters( $tg_fake_presenters );
+$tg_dedupe_classes = array_map( 'get_class', array_filter( $tg_deduped, 'is_object' ) );
+t( 'yoast og:image presenter removed', ! in_array( 'Yoast\\WP\\SEO\\Presenters\\Open_Graph\\Image_Presenter', $tg_dedupe_classes, true ) );
+t( 'yoast og:description presenter removed', ! in_array( 'Yoast\\WP\\SEO\\Presenters\\Open_Graph\\Description_Presenter', $tg_dedupe_classes, true ) );
+t( 'yoast meta description presenter removed', ! in_array( 'Yoast\\WP\\SEO\\Presenters\\Description_Presenter', $tg_dedupe_classes, true ) );
+t( 'yoast twitter:image presenter removed', ! in_array( 'Yoast\\WP\\SEO\\Presenters\\Twitter\\Image_Presenter', $tg_dedupe_classes, true ) );
+t( 'other yoast presenters kept', in_array( 'Yoast\\WP\\SEO\\Presenters\\Open_Graph\\Title_Presenter', $tg_dedupe_classes, true ) );
+t( 'non-presenter entries kept', 2 === count( $tg_deduped ) );
+t( 'non-array input passes through', null === tg_dedupe_yoast_og_presenters( null ) );
+
+/* Restore query; homepage schema + fallback description need no product. */
+$wp_query = $seo_old_query;
+if ( $seo_old_post ) { $post = $seo_old_post; } else { unset( $post ); }
+wp_reset_postdata();
+
+$fallback_desc = tg_meta_description();
+t( 'meta description fallback non-empty', '' !== $fallback_desc );
 
 echo "\n" . $GLOBALS['tg_pass'] . " passed, " . $GLOBALS['tg_fail'] . " failed\n";
 exit( $GLOBALS['tg_fail'] > 0 ? 1 : 0 );
