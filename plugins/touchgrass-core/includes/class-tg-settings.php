@@ -79,11 +79,11 @@ class TG_Settings {
 	}
 
 	public static function newsletter_section_text() {
-		echo '<p>' . esc_html__( 'Signups are delivered to a Buttondown audience via its API. When no key is saved, the newsletter section is hidden on the site. See docs/NEWSLETTER.md for setup steps.', 'touchgrass-core' ) . '</p>';
+		echo '<p>' . esc_html__( 'Every signup is captured on this server (see Subscribers above for the CSV export). Adding a Buttondown key also delivers each signup to a Buttondown audience. See docs/NEWSLETTER.md.', 'touchgrass-core' ) . '</p>';
 		if ( tg_newsletter_configured() ) {
-			echo '<p><strong>' . esc_html__( 'A key is saved. New signups reach your Buttondown audience.', 'touchgrass-core' ) . '</strong></p>';
+			echo '<p><strong>' . esc_html__( 'A key is saved. New signups also reach your Buttondown audience.', 'touchgrass-core' ) . '</strong></p>';
 		} else {
-			echo '<p>' . esc_html__( 'No key saved — the signup form is currently hidden on the site.', 'touchgrass-core' ) . '</p>';
+			echo '<p>' . esc_html__( 'No key saved — running in local-only mode.', 'touchgrass-core' ) . '</p>';
 		}
 	}
 

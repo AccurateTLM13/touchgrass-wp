@@ -113,6 +113,21 @@ t( 'provider call with bad key returns structured error (HTTP path exercised)', 
 delete_option( 'tg_buttondown_api_key' );
 t( 'newsletter reports unconfigured when no key', ! tg_newsletter_configured() );
 
+/* ---------- 9b. local newsletter capture + export rows ---------- */
+$tg_nl_email = 'local-capture-' . time() . '@example.com';
+$tg_nl_id = TG_Newsletter::subscribe_local( $tg_nl_email, 'test' );
+t( 'local subscribe records signup', $tg_nl_id && 'tg_subscriber' === get_post_type( $tg_nl_id ) );
+t( 'local subscribe blocks duplicates', false === TG_Newsletter::subscribe_local( $tg_nl_email, 'test' ) );
+t( 'local subscribe rejects bad email', false === TG_Newsletter::subscribe_local( 'not-an-email', 'test' ) );
+$tg_nl_rows = tg_get_subscribers();
+$tg_nl_found = array_values( array_filter( $tg_nl_rows, function ( $r ) use ( $tg_nl_email ) { return $r['email'] === $tg_nl_email; } ) );
+t( 'subscriber appears in export rows', 1 === count( $tg_nl_found ) );
+t( 'export row records local provider', 'local' === $tg_nl_found[0]['provider'] );
+t( 'export row records source', 'test' === $tg_nl_found[0]['source'] );
+t( 'export row has consent timestamp', '' !== $tg_nl_found[0]['subscribed_at'] );
+wp_delete_post( $tg_nl_id, true );
+t( 'deleted subscriber leaves export rows', 0 === count( array_filter( tg_get_subscribers(), function ( $r ) use ( $tg_nl_email ) { return $r['email'] === $tg_nl_email; } ) ) );
+
 /* ---------- 10. coming-soon preservation ---------- */
 update_option( 'woocommerce_coming_soon', 'yes' );
 TG_Importer::run();

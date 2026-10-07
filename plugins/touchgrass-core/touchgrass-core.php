@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Touch Grass — Core
  * Description: Functionality for the Touch Grass store: content types (FAQ, testimonials, subscribers), product fields, demo payment gateway, one-click demo importer, newsletter signup, and setup dashboard. Presentation lives in the Touch Grass theme.
- * Version: 2.5.1
+ * Version: 2.6.0
  * Author: Bobby John Studio
  * Text Domain: touchgrass-core
  * Domain Path: /languages

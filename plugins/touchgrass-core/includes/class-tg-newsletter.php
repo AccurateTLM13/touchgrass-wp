@@ -1,6 +1,6 @@
 <?php
 /**
- * Newsletter signup, delivered to a Buttondown audience.
+ * Newsletter signup, captured locally with optional Buttondown delivery.
  *
  * AJAX action: tg_newsletter_subscribe (nonce: tg_newsletter_nonce, action 'tg_newsletter').
  * A second action, tg_newsletter_nonce_refresh, hands the theme JS a fresh
@@ -8,17 +8,17 @@
  * retry instead of an error.
  *
  * Abuse protection: honeypot field, per-IP rate limiting (5 attempts/hour),
- * nonce verification. Success is reported only after the provider confirms
- * the subscription.
+ * nonce verification.
  *
- * When no Buttondown API key is configured the theme hides the signup
- * section entirely; the handler then refuses with a clear message.
+ * Every signup is stored as a private local tg_subscriber record (email,
+ * consent timestamp, source, provider) — the server is the system of record,
+ * and the Subscribers section of the Touch Grass dashboard exports them as
+ * CSV. When a Buttondown API key is configured the signup is ALSO delivered
+ * to the Buttondown audience; a provider failure never loses the signup, it
+ * is still captured locally and the error is logged.
  *
- * A private local tg_subscriber record is kept for every confirmed signup
- * (consent timestamp, source, provider reference) so the store owner has
- * their own records. Unsubscribing happens through Buttondown (its emails
- * carry unsubscribe links); deleting the local record is documented in
- * docs/NEWSLETTER.md.
+ * Unsubscribing happens through Buttondown (its emails carry unsubscribe
+ * links); deleting the local record is documented in docs/NEWSLETTER.md.
  */
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
@@ -77,9 +77,7 @@ class TG_Newsletter {
 			wp_send_json_error( [ 'message' => __( 'That email doesn’t look right. Try again?', 'touchgrass-core' ) ] );
 		}
 
-		if ( ! tg_newsletter_configured() ) {
-			wp_send_json_error( [ 'message' => __( 'Signups are not enabled on this site right now.', 'touchgrass-core' ) ] );
-		}
+		$source = isset( $_POST['source'] ) ? sanitize_key( $_POST['source'] ) : 'site';
 
 		/* Local duplicate check first: cheap, no API call. */
 		$slug = 'sub-' . md5( strtolower( $email ) );
@@ -87,28 +85,54 @@ class TG_Newsletter {
 			wp_send_json_error( [ 'message' => __( 'You’re already on the list. The grass remembers.', 'touchgrass-core' ) ] );
 		}
 
-		$result = self::subscribe_buttondown( $email );
+		$provider    = 'local';
+		$external_id = '';
 
-		if ( 'subscribed' === $result['status'] ) {
-			self::record_local( $email, $slug, $result['id'] );
-			wp_send_json_success( [
-				'message' => function_exists( 'tg_microcopy' ) ? tg_microcopy( 'newsletter_success' ) : __( 'You are on the list. The first invoice is being prepared.', 'touchgrass-core' ),
-			] );
-		}
+		if ( tg_newsletter_configured() ) {
+			$result = self::subscribe_buttondown( $email );
 
-		if ( 'duplicate' === $result['status'] ) {
-			/* Provider says already subscribed: keep the local record in sync. */
-			if ( ! get_page_by_path( $slug, OBJECT, 'tg_subscriber' ) ) {
-				self::record_local( $email, $slug, '' );
+			if ( 'subscribed' === $result['status'] ) {
+				$provider    = 'buttondown';
+				$external_id = $result['id'];
+			} elseif ( 'duplicate' === $result['status'] ) {
+				/* Provider says already subscribed: keep the local record in sync. */
+				self::record_local( $email, $slug, 'buttondown', '', $source );
+				wp_send_json_error( [ 'message' => __( 'You’re already on the list. The grass remembers.', 'touchgrass-core' ) ] );
+			} else {
+				/* Provider error: never lose the signup — capture locally anyway. */
+				if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+					error_log( 'Touch Grass newsletter error: ' . $result['detail'] );
+				}
 			}
-			wp_send_json_error( [ 'message' => __( 'You’re already on the list. The grass remembers.', 'touchgrass-core' ) ] );
 		}
 
-		/* 'error': log the detail for the admin, show the visitor something human. */
-		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			error_log( 'Touch Grass newsletter error: ' . $result['detail'] );
+		self::record_local( $email, $slug, $provider, $external_id, $source );
+		wp_send_json_success( [
+			'message' => function_exists( 'tg_microcopy' ) ? tg_microcopy( 'newsletter_success' ) : __( 'You are on the list. The first invoice is being prepared.', 'touchgrass-core' ),
+		] );
+	}
+
+	/**
+	 * Capture a signup locally without a provider round-trip.
+	 *
+	 * Used by the test suite and available to other callers; the AJAX
+	 * handler above is the normal path.
+	 *
+	 * @param string $email  Email address.
+	 * @param string $source Where the signup came from.
+	 * @return int|false Post ID of the tg_subscriber record, false on invalid/duplicate.
+	 */
+	public static function subscribe_local( $email, $source = 'site' ) {
+		$email = sanitize_email( $email );
+		if ( ! is_email( $email ) ) {
+			return false;
 		}
-		wp_send_json_error( [ 'message' => __( 'Something wilted on our end. Please try again.', 'touchgrass-core' ) ] );
+		$slug = 'sub-' . md5( strtolower( $email ) );
+		if ( get_page_by_path( $slug, OBJECT, 'tg_subscriber' ) ) {
+			return false;
+		}
+		$post_id = self::record_local( $email, $slug, 'local', '', sanitize_key( $source ) );
+		return $post_id ? $post_id : false;
 	}
 
 	/**
@@ -169,22 +193,47 @@ class TG_Newsletter {
 		return [ 'status' => 'error', 'id' => '', 'detail' => "HTTP $code: " . substr( (string) $detail, 0, 300 ) ];
 	}
 
-	protected static function record_local( $email, $slug, $external_id ) {
-		$source = isset( $_POST['source'] ) ? sanitize_key( $_POST['source'] ) : 'site';
+	protected static function record_local( $email, $slug, $provider, $external_id, $source = 'site' ) {
 		$post_id = wp_insert_post( [
 			'post_type'   => 'tg_subscriber',
 			'post_title'  => $email,
 			'post_name'   => $slug,
 			'post_status' => 'private',
 		] );
-		if ( ! $post_id || is_wp_error( $post_id ) ) { return; }
+		if ( ! $post_id || is_wp_error( $post_id ) ) { return 0; }
 		update_post_meta( $post_id, '_tg_subscribed_at', current_time( 'mysql' ) );
-		update_post_meta( $post_id, '_tg_source', $source );
-		update_post_meta( $post_id, '_tg_provider', 'buttondown' );
+		update_post_meta( $post_id, '_tg_source', sanitize_key( $source ) );
+		update_post_meta( $post_id, '_tg_provider', sanitize_key( $provider ) );
 		if ( $external_id ) {
-			update_post_meta( $post_id, '_tg_external_id', $external_id );
+			update_post_meta( $post_id, '_tg_external_id', sanitize_text_field( $external_id ) );
 		}
+		return $post_id;
 	}
+}
+
+/**
+ * All locally captured subscribers, oldest first.
+ *
+ * @return array[] Each row: email, subscribed_at, source, provider.
+ */
+function tg_get_subscribers() {
+	$posts = get_posts( [
+		'post_type'   => 'tg_subscriber',
+		'post_status' => 'private',
+		'numberposts' => -1,
+		'orderby'     => 'date',
+		'order'       => 'ASC',
+	] );
+	$rows = [];
+	foreach ( $posts as $p ) {
+		$rows[] = [
+			'email'         => $p->post_title,
+			'subscribed_at' => get_post_meta( $p->ID, '_tg_subscribed_at', true ),
+			'source'        => get_post_meta( $p->ID, '_tg_source', true ),
+			'provider'      => get_post_meta( $p->ID, '_tg_provider', true ),
+		];
+	}
+	return $rows;
 }
 
 TG_Newsletter::init();

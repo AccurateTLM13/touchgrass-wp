@@ -42,8 +42,8 @@ if ( '' === $trust_rating ) {
 
 $testimonials = tg_get_testimonials();
 $faqs = tg_get_faqs();
-$newsletter_on = tg_brand( 'tg_section_news' ) && function_exists( 'tg_newsletter_configured' ) && tg_newsletter_configured();
-$club_on = tg_brand( 'tg_section_club' ) && function_exists( 'tg_newsletter_configured' ) && tg_newsletter_configured();
+$newsletter_on = tg_brand( 'tg_section_news' );
+$club_on = tg_brand( 'tg_section_club' );
 ?>
 
 <section class="hero">

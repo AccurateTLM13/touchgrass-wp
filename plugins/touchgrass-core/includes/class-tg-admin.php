@@ -14,6 +14,7 @@ class TG_Admin {
 		add_action( 'admin_enqueue_scripts', [ __CLASS__, 'assets' ] );
 		add_action( 'wp_ajax_tg_import_demo', [ __CLASS__, 'ajax_import' ] );
 		add_action( 'wp_ajax_tg_reset_products', [ __CLASS__, 'ajax_reset' ] );
+		add_action( 'admin_post_tg_export_subscribers', [ __CLASS__, 'export_subscribers' ] );
 	}
 
 	public static function menu() {
@@ -140,7 +141,7 @@ class TG_Admin {
 		$rows[] = [ __( 'Payment gateways', 'touchgrass-core' ), $gw_state, $gw_detail ];
 
 		$nl = tg_newsletter_configured();
-		$rows[] = [ __( 'Newsletter (Buttondown)', 'touchgrass-core' ), $nl ? 'ok' : 'warn', $nl ? __( 'Configured — signups reach your audience.', 'touchgrass-core' ) : __( 'No API key — the signup section is hidden on the site.', 'touchgrass-core' ) ];
+		$rows[] = [ __( 'Newsletter', 'touchgrass-core' ), 'ok', $nl ? __( 'Local capture + Buttondown delivery active.', 'touchgrass-core' ) : __( 'Local capture active — signups are stored on this server. Add a Buttondown key below to also deliver them to an audience.', 'touchgrass-core' ) ];
 
 		if ( get_option( 'tg_legacy_demo_pay_blocked' ) ) {
 			$rows[] = [ __( 'Legacy Demo Pay plugin', 'touchgrass-core' ), 'warn', __( 'Superseded standalone plugin detected and prevented from loading. Deactivate and delete it.', 'touchgrass-core' ) ];
@@ -171,6 +172,17 @@ class TG_Admin {
 		TG_Settings::form();
 		echo '</div>';
 
+		echo '<div class="tg-section"><h2>' . esc_html__( 'Subscribers', 'touchgrass-core' ) . '</h2>';
+		$tg_sub_count = count( tg_get_subscribers() );
+		echo '<p>' . sprintf(
+			/* translators: %d: number of captured signups */
+			esc_html__( '%d signups captured on this server.', 'touchgrass-core' ),
+			$tg_sub_count
+		) . '</p>';
+		echo '<p><a class="button" href="' . esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=tg_export_subscribers' ), 'tg_export_subscribers' ) ) . '">'
+			. esc_html__( 'Download CSV', 'touchgrass-core' ) . '</a></p>';
+		echo '</div>';
+
 		echo '<div class="tg-section"><h2>' . esc_html__( 'Demo content', 'touchgrass-core' ) . '</h2>';
 		echo '<p>' . esc_html__( 'Import installs the demo store: categories, images, nine products, coupon, FAQs, testimonials, and navigation. Running it again updates the importer’s own fields instead of duplicating — your product names, descriptions, and prices are never overwritten.', 'touchgrass-core' ) . '</p>';
 		echo '<p><button class="button button-primary button-hero" id="tg-import-btn">' . esc_html__( 'Import Demo Content', 'touchgrass-core' ) . '</button></p>';
@@ -190,6 +202,27 @@ class TG_Admin {
 		echo '</ul></div>';
 
 		echo '</div>';
+	}
+
+	/**
+	 * Stream all subscribers as a CSV download. Administrators only.
+	 */
+	public static function export_subscribers() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'You are not allowed to export subscribers.', 'touchgrass-core' ), 403 );
+		}
+		check_admin_referer( 'tg_export_subscribers' );
+
+		$filename = 'touchgrass-subscribers-' . gmdate( 'Ymd' ) . '.csv';
+		header( 'Content-Type: text/csv; charset=utf-8' );
+		header( 'Content-Disposition: attachment; filename=' . $filename );
+		$out = fopen( 'php://output', 'w' );
+		fputcsv( $out, [ 'email', 'subscribed_at', 'source', 'provider' ] );
+		foreach ( tg_get_subscribers() as $row ) {
+			fputcsv( $out, [ $row['email'], $row['subscribed_at'], $row['source'], $row['provider'] ] );
+		}
+		fclose( $out );
+		exit;
 	}
 
 	public static function row_html( $row ) {
