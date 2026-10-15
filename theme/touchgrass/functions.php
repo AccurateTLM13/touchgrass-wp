@@ -26,7 +26,47 @@ add_filter( 'wp_get_loading_optimization_attributes', function ( $attrs, $tag_na
 	return $attrs;
 }, 10, 3 );
 
-define( 'TG_VERSION', '2.6.0' );
+
+/*
+ * Performance: responsive image fixes (v2.7.0, mobile audit).
+ *
+ * 1. Jetpack Photon appends zoom=2/zoom=3 srcset candidates that upscale the
+ *    300px thumbnail (pure byte bloat, zero extra detail). Strip them so the
+ *    browser picks from real generated sizes.
+ * 2. Core's default sizes for woocommerce_thumbnail ("(max-width: 300px)
+ *    100vw, 300px") doesn't match the card grid (1col mobile / 2col tablet /
+ *    3col desktop). Provide accurate sizes.
+ * 3. Preconnect to Google Fonts origins (saves a round trip on the
+ *    render-blocking font CSS).
+ */
+add_filter( 'wp_get_attachment_image_srcset', function ( $srcset ) {
+	if ( ! is_string( $srcset ) || '' === $srcset || ! str_contains( $srcset, 'zoom=' ) ) {
+		return $srcset;
+	}
+	$candidates = array_filter(
+		array_map( 'trim', explode( ',', $srcset ) ),
+		function ( $c ) { return ! str_contains( $c, 'zoom=' ); }
+	);
+	return implode( ', ', $candidates );
+}, 20 );
+
+add_filter( 'wp_calculate_image_sizes', function ( $sizes, $size ) {
+	$is_thumb = ( is_array( $size ) && 300 === (int) $size[0] ) || 'woocommerce_thumbnail' === $size;
+	if ( $is_thumb ) {
+		return '(max-width: 600px) 92vw, (max-width: 960px) 46vw, 380px';
+	}
+	return $sizes;
+}, 10, 2 );
+
+add_filter( 'wp_resource_hints', function ( $urls, $relation_type ) {
+	if ( 'preconnect' === $relation_type ) {
+		$urls[] = 'https://fonts.googleapis.com';
+		$urls[] = [ 'href' => 'https://fonts.gstatic.com', 'crossorigin' => 'anonymous' ];
+	}
+	return $urls;
+}, 10, 2 );
+
+define( 'TG_VERSION', '2.7.0' );
 
 /* WooCommerce is optional; nudge admins (not visitors) if it's missing. */
 add_action( 'admin_notices', function () {
