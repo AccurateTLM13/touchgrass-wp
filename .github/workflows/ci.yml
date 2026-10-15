@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  push:
+    branches: [main, production-quality]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    name: PHP + JS syntax
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.1"
+
+      - name: PHP syntax check (theme)
+        run: |
+          fail=0
+          for f in $(find theme -name "*.php"); do
+            php -l "$f" >/dev/null || { echo "FAIL: $f"; fail=1; }
+          done
+          exit $fail
+
+      - name: PHP syntax check (plugin)
+        run: |
+          fail=0
+          for f in $(find plugins -name "*.php"); do
+            php -l "$f" >/dev/null || { echo "FAIL: $f"; fail=1; }
+          done
+          exit $fail
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: JS syntax check
+        run: |
+          fail=0
+          for f in $(find theme plugins -name "*.js" -not -path "*/node_modules/*"); do
+            node --check "$f" || { echo "FAIL: $f"; fail=1; }
+          done
+          exit $fail
+
+  build:
+    name: Reproducible ZIP build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq zip unzip
+      - run: bash build.sh dist
+      - run: ls -la dist/
