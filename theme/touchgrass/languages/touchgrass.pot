@@ -2,14 +2,14 @@
 # This file is distributed under the GNU General Public License v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Touch Grass 2.7.2\n"
+"Project-Id-Version: Touch Grass 2.7.3\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/touchgrass\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-15T16:15:09+00:00\n"
+"POT-Creation-Date: 2026-10-15T21:15:57+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: touchgrass\n"
@@ -109,7 +109,7 @@ msgid "Returns"
 msgstr ""
 
 #: footer.php:49
-#: functions.php:104
+#: functions.php:131
 msgid "Cart"
 msgstr ""
 
@@ -298,59 +298,59 @@ msgstr ""
 msgid "One dispatch per month. Occasionally about grass. Unsubscribe at any time; your file will be closed without incident."
 msgstr ""
 
-#: functions.php:60
+#: functions.php:87
 msgid "Touch Grass theme: WooCommerce is not active. The storefront design will load, but the shop, cart, and checkout need WooCommerce."
 msgstr ""
 
-#: functions.php:79
+#: functions.php:106
 msgid "Primary navigation"
 msgstr ""
 
-#: functions.php:80
+#: functions.php:107
 msgid "Footer — Shop"
 msgstr ""
 
-#: functions.php:81
+#: functions.php:108
 msgid "Footer — Company"
 msgstr ""
 
-#: functions.php:82
+#: functions.php:109
 msgid "Footer — Support"
 msgstr ""
 
-#: functions.php:123
+#: functions.php:150
 msgid "%1$s out of 5 stars"
 msgstr ""
 
-#: functions.php:128
+#: functions.php:155
 msgid "(%d reviews)"
 msgstr ""
 
-#: functions.php:153
+#: functions.php:180
 msgid "Demo store."
 msgstr ""
 
-#: functions.php:154
+#: functions.php:181
 msgid "Checkout is a mock — no card is charged, no grass is actually shipped. Yet."
 msgstr ""
 
-#: functions.php:180
+#: functions.php:207
 msgid "Orders leave the greenhouse within 48 hours. Shipping is calculated at checkout like a responsible adult."
 msgstr ""
 
-#: functions.php:181
+#: functions.php:208
 msgid "Returns: 30 days, no interrogation. If your grass dies within 30 days, we replace it."
 msgstr ""
 
-#: functions.php:184
+#: functions.php:211
 msgid "Your grass arrives in the Deed Box: a deed-styled box with a tiny brass plaque bearing your plot’s name. The plaque is real brass. The deed is legally meaningless."
 msgstr ""
 
-#: functions.php:189
+#: functions.php:216
 msgid "Shipping & Returns"
 msgstr ""
 
-#: functions.php:194
+#: functions.php:221
 msgid "How It Ships"
 msgstr ""
 

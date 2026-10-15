@@ -10,7 +10,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")" && pwd)"
 OUT="${1:-$ROOT/dist}"
-VERSION="2.7.2"
+VERSION="2.7.3"
 
 command -v zip >/dev/null || { echo "zip is required"; exit 1; }
 

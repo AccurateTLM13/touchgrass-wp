@@ -50,7 +50,34 @@ add_filter( 'wp_calculate_image_sizes', function ( $sizes, $size ) {
 }, 10, 2 );
 
 
-define( 'TG_VERSION', '2.7.2' );
+
+/*
+ * Performance round 3 (v2.7.3): strip scripts the storefront never uses.
+ *
+ * Every plugin injects its own "just in case" JS. Measured on the homepage:
+ * - jquery-migrate: legacy shim for pre-3.0 jQuery APIs. Nothing in this
+ *   theme or WooCommerce calls them.
+ * - nfd-performance-lazy-loader: Bluehost's lazy loader. LiteSpeed Cache
+ *   already lazy-loads images; running two loaders is pure overhead.
+ * - sourcebuster-js / wc-order-attribution: Woo's traffic-source tracking
+ *   for attributing orders. Meaningless except on checkout / thank-you.
+ * - wp-emoji: WordPress's emoji detection script + styles. The theme has
+ *   no emoji anywhere.
+ */
+add_action( 'wp_enqueue_scripts', function () {
+	wp_dequeue_script( 'jquery-migrate' );
+	wp_deregister_script( 'jquery-migrate' );
+	wp_dequeue_script( 'nfd-performance-lazy-loader' );
+	if ( function_exists( 'is_checkout' ) && ! is_checkout() && ! is_order_received_page() ) {
+		wp_dequeue_script( 'sourcebuster-js' );
+		wp_dequeue_script( 'wc-order-attribution' );
+	}
+}, 100 );
+
+remove_action( 'wp_head', 'print_emoji_detection_script', 7 );
+remove_action( 'wp_print_styles', 'print_emoji_styles' );
+
+define( 'TG_VERSION', '2.7.3' );
 
 /* WooCommerce is optional; nudge admins (not visitors) if it's missing. */
 add_action( 'admin_notices', function () {
