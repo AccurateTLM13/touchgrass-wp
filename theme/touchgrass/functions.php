@@ -28,7 +28,7 @@ add_filter( 'wp_get_loading_optimization_attributes', function ( $attrs, $tag_na
 
 
 /*
- * Performance: responsive image fixes (v2.7.1, mobile audit).
+ * Performance: responsive image + font fixes (v2.7.2, mobile audit).
  *
  * 1. Jetpack Photon auto-generates zoom=2/zoom=3 srcset candidates that
  *    upscale the 300px thumbnail (pure byte bloat, zero extra detail).
@@ -36,8 +36,8 @@ add_filter( 'wp_get_loading_optimization_attributes', function ( $attrs, $tag_na
  * 2. Core's default sizes for woocommerce_thumbnail ("(max-width: 300px)
  *    100vw, 300px") doesn't match the card grid (1col mobile / 2col tablet /
  *    3col desktop). Provide accurate sizes.
- * 3. Preconnect to Google Fonts origins (saves a round trip on the
- *    render-blocking font CSS).
+ * 3. Self-hosted fonts (v2.7.2): assets/css/fonts.css + assets/fonts/*.woff2,
+ *    no more Google Fonts round trip.
  */
 add_filter( 'jetpack_photon_srcset_multipliers', '__return_false' );
 
@@ -49,15 +49,8 @@ add_filter( 'wp_calculate_image_sizes', function ( $sizes, $size ) {
 	return $sizes;
 }, 10, 2 );
 
-add_filter( 'wp_resource_hints', function ( $urls, $relation_type ) {
-	if ( 'preconnect' === $relation_type ) {
-		$urls[] = 'https://fonts.googleapis.com';
-		$urls[] = [ 'href' => 'https://fonts.gstatic.com', 'crossorigin' => 'anonymous' ];
-	}
-	return $urls;
-}, 10, 2 );
 
-define( 'TG_VERSION', '2.7.1' );
+define( 'TG_VERSION', '2.7.2' );
 
 /* WooCommerce is optional; nudge admins (not visitors) if it's missing. */
 add_action( 'admin_notices', function () {
@@ -91,7 +84,7 @@ add_action( 'after_setup_theme', function () {
 } );
 
 add_action( 'wp_enqueue_scripts', function () {
-	wp_enqueue_style( 'tg-fonts', 'https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap', [], null );
+	wp_enqueue_style( 'tg-fonts', get_template_directory_uri() . '/assets/css/fonts.css', [], TG_VERSION ); /* self-hosted 2.7.2: no more Google Fonts round trip */
 	wp_enqueue_style( 'touchgrass', get_template_directory_uri() . '/assets/css/main.css', [ 'tg-fonts' ], TG_VERSION );
 	wp_enqueue_script( 'touchgrass', get_template_directory_uri() . '/assets/js/main.js', [], TG_VERSION, true );
 } );
