@@ -16,6 +16,12 @@ command -v zip >/dev/null || { echo "zip is required"; exit 1; }
 
 rm -rf "$OUT"
 mkdir -p "$OUT"
+# CI runs build.sh with a relative out-dir, but the zip step cds into
+# another directory first — absolutize OUT so the path stays valid.
+case "$OUT" in
+  /*) ;;
+  *) OUT="$(cd "$OUT" && pwd)" ;;
+esac
 
 build_zip() { # name srcdir
 	local name="$1"
