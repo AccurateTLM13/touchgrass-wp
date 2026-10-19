@@ -12,7 +12,7 @@ no()   { FAIL=$((FAIL+1)); echo "FAIL: $1 -- $2"; }
 HOME_HTML=$(curl -s --max-time 20 "$BASE/")
 echo "$HOME_HTML" | grep -qi "fatal error\|call to undefined" && no "H1 homepage no fatal" "fatal text found" || ok "H1 homepage no fatal"
 echo "$HOME_HTML" | grep -q "tg-demo-note" && no "H1 no demo notice when demo off" "notice found" || ok "H1 no demo notice when demo off"
-echo "$HOME_HTML" | grep -q 'id="newsForm"' && no "H1 newsletter hidden when unconfigured" "form found" || ok "H1 newsletter hidden when unconfigured"
+echo "$HOME_HTML" | grep -q 'id="newsForm"' && ok "H1 newsletter form shown (local capture always on)" || no "H1 newsletter form shown (local capture always on)" "form missing"
 echo "$HOME_HTML" | grep -q 'class="skip-link"' && ok "H1 skip link present" || no "H1 skip link present" "missing"
 
 # nonce for newsletter tests

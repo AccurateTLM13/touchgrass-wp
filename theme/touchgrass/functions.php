@@ -26,7 +26,67 @@ add_filter( 'wp_get_loading_optimization_attributes', function ( $attrs, $tag_na
 	return $attrs;
 }, 10, 3 );
 
-define( 'TG_VERSION', '2.5.1' );
+
+/*
+ * Performance: responsive image + font fixes (v2.7.2, mobile audit).
+ *
+ * 1. Jetpack Photon auto-generates zoom=2/zoom=3 srcset candidates that
+ *    upscale the 300px thumbnail (pure byte bloat, zero extra detail).
+ *    Disable them at the source via Jetpack's own filter.
+ * 2. Core's default sizes for woocommerce_thumbnail ("(max-width: 300px)
+ *    100vw, 300px") doesn't match the card grid (1col mobile / 2col tablet /
+ *    3col desktop). Provide accurate sizes.
+ * 3. Self-hosted fonts (v2.7.2): assets/css/fonts.css + assets/fonts/*.woff2,
+ *    no more Google Fonts round trip.
+ */
+add_filter( 'jetpack_photon_srcset_multipliers', '__return_false' );
+
+add_filter( 'wp_calculate_image_sizes', function ( $sizes, $size ) {
+	$is_thumb = ( is_array( $size ) && 300 === (int) $size[0] ) || 'woocommerce_thumbnail' === $size;
+	if ( $is_thumb ) {
+		return '(max-width: 600px) 92vw, (max-width: 960px) 46vw, 380px';
+	}
+	return $sizes;
+}, 10, 2 );
+
+
+
+/*
+ * Performance round 3 (v2.7.3): strip scripts the storefront never uses.
+ *
+ * Every plugin injects its own "just in case" JS. Measured on the homepage:
+ * - jquery-migrate: legacy shim for pre-3.0 jQuery APIs. Nothing in this
+ *   theme or WooCommerce calls them. (Removed from jquery's dep list
+ *   surgically — deregistering it silently kills the whole jquery handle.)
+ * - nfd-performance-lazy-loader: Bluehost's lazy loader. LiteSpeed Cache
+ *   already lazy-loads images; running two loaders is pure overhead.
+ * - sourcebuster-js / wc-order-attribution: Woo's traffic-source tracking
+ *   for attributing orders. Meaningless except on checkout / thank-you.
+ * - wp-emoji: WordPress's emoji detection script + styles. The theme has
+ *   no emoji anywhere.
+ */
+add_action( 'wp_enqueue_scripts', function () {
+	/*
+	 * Drop jquery-migrate WITHOUT deregistering it: wp_deregister_script()
+	 * poisons the whole 'jquery' handle (WP silently skips a script whose
+	 * dependency is unregistered, taking jquery-core and every dependent
+	 * with it). Instead, surgically remove it from jquery's dep list.
+	 */
+	$jq = wp_scripts()->query( 'jquery' );
+	if ( $jq ) {
+		$jq->deps = array_values( array_diff( $jq->deps, array( 'jquery-migrate' ) ) );
+	}
+	wp_dequeue_script( 'nfd-performance-lazy-loader' );
+	if ( function_exists( 'is_checkout' ) && ! is_checkout() && ! is_order_received_page() ) {
+		wp_dequeue_script( 'sourcebuster-js' );
+		wp_dequeue_script( 'wc-order-attribution' );
+	}
+}, 100 );
+
+remove_action( 'wp_head', 'print_emoji_detection_script', 7 );
+remove_action( 'wp_print_styles', 'print_emoji_styles' );
+
+define( 'TG_VERSION', '2.7.4' );
 
 /* WooCommerce is optional; nudge admins (not visitors) if it's missing. */
 add_action( 'admin_notices', function () {
@@ -60,7 +120,7 @@ add_action( 'after_setup_theme', function () {
 } );
 
 add_action( 'wp_enqueue_scripts', function () {
-	wp_enqueue_style( 'tg-fonts', 'https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap', [], null );
+	wp_enqueue_style( 'tg-fonts', get_template_directory_uri() . '/assets/css/fonts.css', [], TG_VERSION ); /* self-hosted 2.7.2: no more Google Fonts round trip */
 	wp_enqueue_style( 'touchgrass', get_template_directory_uri() . '/assets/css/main.css', [ 'tg-fonts' ], TG_VERSION );
 	wp_enqueue_script( 'touchgrass', get_template_directory_uri() . '/assets/js/main.js', [], TG_VERSION, true );
 } );

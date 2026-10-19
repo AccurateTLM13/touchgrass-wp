@@ -2,14 +2,14 @@
 # This file is distributed under the GNU General Public License v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Touch Grass Core 2.5.1\n"
+"Project-Id-Version: Touch Grass Core 2.6.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/touchgrass-core\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-06T22:14:55+00:00\n"
+"POT-Creation-Date: 2026-10-07T01:11:50+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: touchgrass-core\n"
@@ -45,263 +45,279 @@ msgstr ""
 msgid "Touch Grass — Core is active, but WooCommerce is not. The demo importer, Demo Pay gateway, and product fields need WooCommerce to do their jobs."
 msgstr ""
 
-#: includes/class-tg-admin.php:21
-#: includes/class-tg-admin.php:161
+#: includes/class-tg-admin.php:22
+#: includes/class-tg-admin.php:162
 msgid "Touch Grass Setup"
 msgstr ""
 
-#: includes/class-tg-admin.php:22
+#: includes/class-tg-admin.php:23
 #: includes/class-tg-product-meta.php:142
 msgid "Touch Grass"
 msgstr ""
 
-#: includes/class-tg-admin.php:44
+#: includes/class-tg-admin.php:45
 msgid "Importing…"
 msgstr ""
 
-#: includes/class-tg-admin.php:45
+#: includes/class-tg-admin.php:46
 msgid "Resetting…"
 msgstr ""
 
-#: includes/class-tg-admin.php:46
+#: includes/class-tg-admin.php:47
 msgid "Finished."
 msgstr ""
 
-#: includes/class-tg-admin.php:47
+#: includes/class-tg-admin.php:48
 msgid "Failed. See below."
 msgstr ""
 
-#: includes/class-tg-admin.php:48
+#: includes/class-tg-admin.php:49
 msgid "Reset all demo-managed products to their demo name, description, and prices? Your other products are never touched. This cannot be undone."
 msgstr ""
 
-#: includes/class-tg-admin.php:69
+#: includes/class-tg-admin.php:70
 msgid "WooCommerce active"
 msgstr ""
 
-#: includes/class-tg-admin.php:69
+#: includes/class-tg-admin.php:70
 msgid "Store engine ready."
 msgstr ""
 
-#: includes/class-tg-admin.php:69
+#: includes/class-tg-admin.php:70
 msgid "Install and activate WooCommerce first."
 msgstr ""
 
-#: includes/class-tg-admin.php:71
-#: includes/class-tg-admin.php:121
+#: includes/class-tg-admin.php:72
+#: includes/class-tg-admin.php:122
 msgid "WooCommerce inactive."
 msgstr ""
 
-#: includes/class-tg-admin.php:75
+#: includes/class-tg-admin.php:76
 #: includes/class-tg-importer.php:640
 msgid "Shop"
 msgstr ""
 
-#: includes/class-tg-admin.php:75
+#: includes/class-tg-admin.php:76
 msgid "Cart"
 msgstr ""
 
-#: includes/class-tg-admin.php:75
+#: includes/class-tg-admin.php:76
 msgid "Checkout"
 msgstr ""
 
-#: includes/class-tg-admin.php:75
+#: includes/class-tg-admin.php:76
 msgid "My account"
 msgstr ""
 
-#: includes/class-tg-admin.php:83
+#: includes/class-tg-admin.php:84
 msgid "Missing or unpublished: %s"
 msgstr ""
 
-#: includes/class-tg-admin.php:85
+#: includes/class-tg-admin.php:86
 msgid "Store pages exist & published"
 msgstr ""
 
-#: includes/class-tg-admin.php:90
+#: includes/class-tg-admin.php:91
 msgid "Store visibility"
 msgstr ""
 
-#: includes/class-tg-admin.php:92
+#: includes/class-tg-admin.php:93
 msgid "“Coming soon” is ON — the catalog is hidden until you launch it (WooCommerce → Settings). The demo importer never changes this."
 msgstr ""
 
-#: includes/class-tg-admin.php:92
+#: includes/class-tg-admin.php:93
 msgid "Live."
 msgstr ""
 
-#: includes/class-tg-admin.php:102
+#: includes/class-tg-admin.php:103
 msgid "Demo products"
 msgstr ""
 
-#: includes/class-tg-admin.php:102
+#: includes/class-tg-admin.php:103
 msgid "%d of 9"
 msgstr ""
 
-#: includes/class-tg-admin.php:106
+#: includes/class-tg-admin.php:107
 msgid "Categories"
 msgstr ""
 
-#: includes/class-tg-admin.php:106
+#: includes/class-tg-admin.php:107
 #: includes/class-tg-importer.php:292
 msgid "Plots"
 msgstr ""
 
-#: includes/class-tg-admin.php:106
+#: includes/class-tg-admin.php:107
 msgid "Plots — missing"
 msgstr ""
 
-#: includes/class-tg-admin.php:106
+#: includes/class-tg-admin.php:107
 #: includes/class-tg-importer.php:293
 msgid "Accessories"
 msgstr ""
 
-#: includes/class-tg-admin.php:106
+#: includes/class-tg-admin.php:107
 msgid "Accessories — missing"
 msgstr ""
 
-#: includes/class-tg-admin.php:109
+#: includes/class-tg-admin.php:110
 msgid "Coupon GOOUTSIDE"
 msgstr ""
 
-#: includes/class-tg-admin.php:109
+#: includes/class-tg-admin.php:110
 msgid "20% off, active."
 msgstr ""
 
-#: includes/class-tg-admin.php:109
+#: includes/class-tg-admin.php:110
 msgid "Not created yet."
 msgstr ""
 
-#: includes/class-tg-admin.php:112
+#: includes/class-tg-admin.php:113
 #: includes/class-tg-cpt.php:21
 msgid "FAQs"
 msgstr ""
 
-#: includes/class-tg-admin.php:112
-#: includes/class-tg-admin.php:115
+#: includes/class-tg-admin.php:113
+#: includes/class-tg-admin.php:116
 msgid "%d found"
 msgstr ""
 
-#: includes/class-tg-admin.php:115
+#: includes/class-tg-admin.php:116
 #: includes/class-tg-cpt.php:35
 msgid "Testimonials"
 msgstr ""
 
-#: includes/class-tg-admin.php:118
+#: includes/class-tg-admin.php:119
 msgid "Primary menu assigned"
 msgstr ""
 
-#: includes/class-tg-admin.php:118
+#: includes/class-tg-admin.php:119
 msgid "Navigation ready."
 msgstr ""
 
-#: includes/class-tg-admin.php:118
+#: includes/class-tg-admin.php:119
 msgid "Assign a menu to the Primary location."
 msgstr ""
 
-#: includes/class-tg-admin.php:131
+#: includes/class-tg-admin.php:132
 msgid "DEMO MODE is on — mock payments may be offered. Do not take real orders."
 msgstr ""
 
-#: includes/class-tg-admin.php:132
-#: includes/class-tg-admin.php:135
+#: includes/class-tg-admin.php:133
+#: includes/class-tg-admin.php:136
 msgid "Enabled: %s."
 msgstr ""
 
-#: includes/class-tg-admin.php:137
+#: includes/class-tg-admin.php:138
 msgid "No payment gateway enabled. Configure one under WooCommerce → Settings → Payments."
 msgstr ""
 
-#: includes/class-tg-admin.php:140
+#: includes/class-tg-admin.php:141
 msgid "Payment gateways"
 msgstr ""
 
-#: includes/class-tg-admin.php:143
-#: includes/class-tg-settings.php:44
-msgid "Newsletter (Buttondown)"
+#: includes/class-tg-admin.php:144
+msgid "Newsletter"
 msgstr ""
 
-#: includes/class-tg-admin.php:143
-msgid "Configured — signups reach your audience."
+#: includes/class-tg-admin.php:144
+msgid "Local capture + Buttondown delivery active."
 msgstr ""
 
-#: includes/class-tg-admin.php:143
-msgid "No API key — the signup section is hidden on the site."
+#: includes/class-tg-admin.php:144
+msgid "Local capture active — signups are stored on this server. Add a Buttondown key below to also deliver them to an audience."
 msgstr ""
 
-#: includes/class-tg-admin.php:146
+#: includes/class-tg-admin.php:147
 msgid "Legacy Demo Pay plugin"
 msgstr ""
 
-#: includes/class-tg-admin.php:146
+#: includes/class-tg-admin.php:147
 msgid "Superseded standalone plugin detected and prevented from loading. Deactivate and delete it."
 msgstr ""
 
-#: includes/class-tg-admin.php:151
+#: includes/class-tg-admin.php:152
 msgid "Demo import"
 msgstr ""
 
-#: includes/class-tg-admin.php:151
+#: includes/class-tg-admin.php:152
 msgid "Last ran %s."
 msgstr ""
 
-#: includes/class-tg-admin.php:163
+#: includes/class-tg-admin.php:164
 msgid "Status"
 msgstr ""
 
-#: includes/class-tg-admin.php:170
+#: includes/class-tg-admin.php:171
 msgid "Settings"
 msgstr ""
 
-#: includes/class-tg-admin.php:174
-msgid "Demo content"
-msgstr ""
-
 #: includes/class-tg-admin.php:175
-msgid "Import installs the demo store: categories, images, nine products, coupon, FAQs, testimonials, and navigation. Running it again updates the importer’s own fields instead of duplicating — your product names, descriptions, and prices are never overwritten."
-msgstr ""
-
-#: includes/class-tg-admin.php:176
-msgid "Import Demo Content"
-msgstr ""
-
-#: includes/class-tg-admin.php:178
-msgid "Reset demo products"
+#: includes/class-tg-cpt.php:50
+msgid "Subscribers"
 msgstr ""
 
 #: includes/class-tg-admin.php:179
-msgid "Restores the demo name, description, and prices on products the importer manages. Your own products are never touched. This is the only action that overwrites commercial fields."
+msgid "%d signups captured on this server."
 msgstr ""
 
-#: includes/class-tg-admin.php:180
-msgid "Reset Demo Products"
-msgstr ""
-
-#: includes/class-tg-admin.php:184
-msgid "Documentation"
+#: includes/class-tg-admin.php:183
+msgid "Download CSV"
 msgstr ""
 
 #: includes/class-tg-admin.php:186
-msgid "docs/INSTALL.md — installation, updates, uninstall"
+msgid "Demo content"
 msgstr ""
 
 #: includes/class-tg-admin.php:187
-msgid "docs/PAYMENTS.md — production payment setup and demo mode"
+msgid "Import installs the demo store: categories, images, nine products, coupon, FAQs, testimonials, and navigation. Running it again updates the importer’s own fields instead of duplicating — your product names, descriptions, and prices are never overwritten."
 msgstr ""
 
 #: includes/class-tg-admin.php:188
+msgid "Import Demo Content"
+msgstr ""
+
+#: includes/class-tg-admin.php:190
+msgid "Reset demo products"
+msgstr ""
+
+#: includes/class-tg-admin.php:191
+msgid "Restores the demo name, description, and prices on products the importer manages. Your own products are never touched. This is the only action that overwrites commercial fields."
+msgstr ""
+
+#: includes/class-tg-admin.php:192
+msgid "Reset Demo Products"
+msgstr ""
+
+#: includes/class-tg-admin.php:196
+msgid "Documentation"
+msgstr ""
+
+#: includes/class-tg-admin.php:198
+msgid "docs/INSTALL.md — installation, updates, uninstall"
+msgstr ""
+
+#: includes/class-tg-admin.php:199
+msgid "docs/PAYMENTS.md — production payment setup and demo mode"
+msgstr ""
+
+#: includes/class-tg-admin.php:200
 msgid "docs/NEWSLETTER.md — Buttondown setup, unsubscribe, data retention"
 msgstr ""
 
-#: includes/class-tg-admin.php:189
+#: includes/class-tg-admin.php:201
 msgid "docs/CUSTOMIZE.md — every Customizer control and what it changes"
 msgstr ""
 
-#: includes/class-tg-admin.php:207
+#: includes/class-tg-admin.php:212
+msgid "You are not allowed to export subscribers."
+msgstr ""
+
+#: includes/class-tg-admin.php:240
 msgid "%1$d created · %2$d updated · %3$d already there · %4$d failed"
 msgstr ""
 
-#: includes/class-tg-admin.php:227
-#: includes/class-tg-admin.php:239
+#: includes/class-tg-admin.php:260
+#: includes/class-tg-admin.php:272
 msgid "Permission denied."
 msgstr ""
 
@@ -328,10 +344,6 @@ msgstr ""
 
 #: includes/class-tg-cpt.php:38
 msgid "Edit testimonial"
-msgstr ""
-
-#: includes/class-tg-cpt.php:50
-msgid "Subscribers"
 msgstr ""
 
 #: includes/class-tg-cpt.php:51
@@ -732,7 +744,7 @@ msgid "Your session expired. Trying again with a fresh one…"
 msgstr ""
 
 #: includes/class-tg-newsletter.php:68
-#: includes/class-tg-newsletter.php:95
+#: includes/class-tg-newsletter.php:111
 msgid "You are on the list. The first invoice is being prepared."
 msgstr ""
 
@@ -744,17 +756,9 @@ msgstr ""
 msgid "That email doesn’t look right. Try again?"
 msgstr ""
 
-#: includes/class-tg-newsletter.php:81
-msgid "Signups are not enabled on this site right now."
-msgstr ""
-
-#: includes/class-tg-newsletter.php:87
-#: includes/class-tg-newsletter.php:104
+#: includes/class-tg-newsletter.php:85
+#: includes/class-tg-newsletter.php:100
 msgid "You’re already on the list. The grass remembers."
-msgstr ""
-
-#: includes/class-tg-newsletter.php:111
-msgid "Something wilted on our end. Please try again."
 msgstr ""
 
 #: includes/class-tg-product-meta.php:28
@@ -912,6 +916,10 @@ msgstr ""
 msgid "Enable demo mode"
 msgstr ""
 
+#: includes/class-tg-settings.php:44
+msgid "Newsletter (Buttondown)"
+msgstr ""
+
 #: includes/class-tg-settings.php:50
 msgid "Buttondown API key"
 msgstr ""
@@ -929,15 +937,15 @@ msgid "This is a demo store (enable mock payments and demo notices)"
 msgstr ""
 
 #: includes/class-tg-settings.php:82
-msgid "Signups are delivered to a Buttondown audience via its API. When no key is saved, the newsletter section is hidden on the site. See docs/NEWSLETTER.md for setup steps."
+msgid "Every signup is captured on this server (see Subscribers above for the CSV export). Adding a Buttondown key also delivers each signup to a Buttondown audience. See docs/NEWSLETTER.md."
 msgstr ""
 
 #: includes/class-tg-settings.php:84
-msgid "A key is saved. New signups reach your Buttondown audience."
+msgid "A key is saved. New signups also reach your Buttondown audience."
 msgstr ""
 
 #: includes/class-tg-settings.php:86
-msgid "No key saved — the signup form is currently hidden on the site."
+msgid "No key saved — running in local-only mode."
 msgstr ""
 
 #: includes/class-tg-settings.php:93
